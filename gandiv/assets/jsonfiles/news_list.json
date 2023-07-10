@@ -1,0 +1,56 @@
+[
+  {
+    "newsId": 1,
+	"locationId": 1,
+    "heading": "Test News1",
+    "subHeading": "This is a test news",
+    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    "newsImage": "https://avatars.githubusercontent.com/u/1?v=4",
+    "createdDateTime": "2023-05-05T08:00:00Z"
+  },
+  {
+    "newsId": 2,
+	  "locationId": 2,
+    "heading": "Test News2",
+    "subHeading": "This is another test news",
+    "content": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    "newsImage": "https://avatars.githubusercontent.com/u/2?v=4",
+    "createdDateTime": "2023-05-05T08:00:00Z"
+  },
+  {
+    "newsId": 3,
+	"locationId": 3,
+    "heading": "Test News1",
+    "subHeading": "This is a test news",
+    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    "newsImage": "https://avatars.githubusercontent.com/u/1?v=4",
+    "createdDateTime": "2023-05-05T08:00:00Z"
+  },
+  {
+    "newsId": 4,
+	  "locationId": 4,
+    "heading": "Test News2",
+    "subHeading": "This is another test news",
+    "content": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    "newsImage": "https://avatars.githubusercontent.com/u/2?v=4",
+    "createdDateTime": "2023-05-05T08:00:00Z"
+  },
+  {
+    "newsId": 5,
+	"locationId": 5,
+    "heading": "Test News1",
+    "subHeading": "This is a test news",
+    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    "newsImage": "https://avatars.githubusercontent.com/u/1?v=4",
+    "createdDateTime": "2023-05-05T08:00:00Z"
+  },
+  {
+    "newsId": 6,
+	  "locationId": 6,
+    "heading": "Test News2",
+    "subHeading": "This is another test news",
+    "content": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    "newsImage": "https://avatars.githubusercontent.com/u/2?v=4",
+    "createdDateTime": "2023-05-05T08:00:00Z"
+  }
+]
