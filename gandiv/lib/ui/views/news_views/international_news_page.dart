@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:gandiv/ui/controllers/international_news_page_controller.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:share/share.dart';
-
 import '../../../constants/utils.dart';
 import '../../../constants/values/app_colors.dart';
 import '../../../constants/values/app_images.dart';
 import '../../../route_management/routes.dart';
 import '../../controllers/dashboard_page_cotroller.dart';
-import '../../controllers/international_news_page_controller.dart';
 import '../../controllers/state_news_page_controller.dart';
-import 'comman_news_list_row.dart';
 
 class InterNationalNewsPage extends StatelessWidget {
   const InterNationalNewsPage({super.key});
@@ -35,7 +31,7 @@ class InterNationalNewsPage extends StatelessWidget {
 }
 
 // ignore: must_be_immutable
-class StateNewsPageListRow extends GetView<StateNewsPageController> {
+class StateNewsPageListRow extends GetView<InterNationalNewsPageController> {
   DashboardPageController dashboardPageController =
       Get.find<DashboardPageController>();
   StateNewsPageListRow({
@@ -229,9 +225,9 @@ class StateNewsPageListRow extends GetView<StateNewsPageController> {
                     child: GestureDetector(
                       onTap: () {
                         if (controller.newsList[index].isBookmark == true) {
-                          controller.setBookmark(false, index);
+                          controller.removeBookmark(index);
                         } else {
-                          controller.setBookmark(true, index);
+                          controller.setBookmark(index);
                         }
                       },
                       child: Image.asset(

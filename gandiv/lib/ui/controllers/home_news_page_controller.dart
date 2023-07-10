@@ -47,8 +47,10 @@ class HomeNewsPageController extends FullLifeCycleController
     newsList[index].isBookmark = true;
     newsList[index] = newsList[index]; // <- Just assign
     update();
-    final newsListDao = appDatabase.newsListDao;
-    await newsListDao.deleteNewsById(newsList[index].id!);
+    try {
+      final newsListDao = appDatabase.newsListDao;
+      await newsListDao.insertNews(newsList[index]);
+    } on Exception catch (exception) {}
     // final result = await newsListDao.findAllNews();
     // final xx = "";
   }
@@ -57,8 +59,10 @@ class HomeNewsPageController extends FullLifeCycleController
     newsList[index].isBookmark = false;
     newsList[index] = newsList[index]; // <- Just assign
     update();
-    final newsListDao = appDatabase.newsListDao;
-    await newsListDao.insertNews(newsList[index]);
+    try {
+      final newsListDao = appDatabase.newsListDao;
+      await newsListDao.deleteNewsById(newsList[index].id!);
+    } on Exception catch (exception) {}
     // final result = await newsListDao.findAllNews();
     // final xx = "";
   }

@@ -9,7 +9,7 @@ import '../../../route_management/routes.dart';
 import '../../controllers/bookmark_page_controller.dart';
 import '../../controllers/dashboard_page_cotroller.dart';
 
-class BookmarkPage extends GetView<BookmarkPageController> {
+class BookmarkPage extends StatelessWidget {
   const BookmarkPage({super.key});
 
   @override
@@ -17,15 +17,6 @@ class BookmarkPage extends GetView<BookmarkPageController> {
     return SafeArea(
       child: Scaffold(
         body: BookmarkPageListRow(),
-        // body: Obx(
-        //   () => controller.isDataLoading.value || controller.newsList.isEmpty
-        //       ? Container(
-        //           width: double.infinity,
-        //           height: double.infinity,
-        //           color: AppColors.transparent,
-        //           child: const Center(child: CircularProgressIndicator()))
-        //       : HomeNewsPageListRow(),
-        // ),
       ),
     );
   }
@@ -86,25 +77,6 @@ class BookmarkPageListRow extends GetView<BookmarkPageController> {
                         },
                       ),
               ),
-              // ignore: unrelated_type_equality_checks
-              if (controller.isLoadMoreItems.value == true)
-                Padding(
-                  padding: const EdgeInsets.only(top: 20, bottom: 40),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Text('loading'.tr,
-                            style: TextStyle(
-                                color: AppColors.colorPrimary,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16)),
-                        CircularProgressIndicator(
-                          color: AppColors.colorPrimary,
-                        ),
-                      ],
-                    ),
-                  ),
-                )
             ],
           ));
   }

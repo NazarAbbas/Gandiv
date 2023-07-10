@@ -55,18 +55,6 @@ class DashboardPage extends GetView<DashboardPageController> {
                 .elementAt(controller.bottomTabbarIndex.value)),
           ),
           bottomNavigationBar: buildBottomNavigationMenu(),
-          // floatingActionButton: FloatingActionButton(
-          //   onPressed: () {
-          //     //Navigator.pop(context);
-          //     //Get.toNamed(Routes.kLoginScreen);
-          //     // controller.getDashboardData();
-          //     // Get.changeTheme(
-          //     //   Get.isDarkMode ? ThemeData.light() : ThemeData.dark(),
-          //     // );
-          //   },
-          //   tooltip: 'Increment',
-          //   child: const Icon(Icons.add),
-          // ), // This trailing comma makes auto-formatting nicer for build methods.
         ),
       ),
     );

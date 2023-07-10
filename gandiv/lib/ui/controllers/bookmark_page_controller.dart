@@ -6,13 +6,12 @@ import 'package:get/get.dart';
 import '../../database/app_database.dart';
 import '../../models/news_list_response.dart';
 
-class BookmarkPageController extends GetxController {
+class BookmarkPageController extends FullLifeCycleController
+    with FullLifeCycleMixin {
   final AppDatabase appDatabase = Get.find<AppDatabase>();
   List<NewsList> newsList = <NewsList>[].obs;
   ScrollController controller = ScrollController();
-
   var isDataLoading = false.obs;
-  var isLoadMoreItems = false.obs;
   @override
   void onInit() {
     super.onInit();
@@ -36,6 +35,7 @@ class BookmarkPageController extends GetxController {
   }
 
   Future<void> getBookmarkNews() async {
+    isDataLoading.value = true;
     try {
       final bookmarkNews = await appDatabase.newsListDao.findAllNews();
       newsList.addAll(bookmarkNews);
@@ -51,8 +51,28 @@ class BookmarkPageController extends GetxController {
         print("Got error : $exception");
       }
     } finally {
-      //  isDataLoading.value = false;
+      isDataLoading.value = false;
       // isLoadMoreItems.value = false;
     }
+  }
+
+  @override
+  void onDetached() {
+    final xx = "";
+  }
+
+  @override
+  void onInactive() {
+    final xx = "";
+  }
+
+  @override
+  void onPaused() {
+    final xx = "";
+  }
+
+  @override
+  void onResumed() {
+    final xx = "";
   }
 }

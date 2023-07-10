@@ -3,14 +3,15 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../database/app_database.dart';
 import '../../models/news_list_response.dart';
 import '../../network/rest_api.dart';
 
 class StateNewsPageController extends FullLifeCycleController
     with FullLifeCycleMixin {
   final RestAPI restAPI = Get.find<RestAPI>();
+  final AppDatabase appDatabase = Get.find<AppDatabase>();
   ScrollController controller = ScrollController();
   int pageNo = 1;
   int pageSize = 10;
@@ -41,10 +42,26 @@ class StateNewsPageController extends FullLifeCycleController
     });
   }
 
-  void setBookmark(bool istrue, int index) {
-    newsList[index].isBookmark = istrue;
+  void setBookmark(int index) async {
+    newsList[index].isBookmark = true;
     newsList[index] = newsList[index]; // <- Just assign
     update();
+    final newsListDao = appDatabase.newsListDao;
+    await newsListDao.insertNews(newsList[index]);
+
+    // final result = await newsListDao.findAllNews();
+    // final xx = "";
+  }
+
+  void removeBookmark(int index) async {
+    newsList[index].isBookmark = false;
+    newsList[index] = newsList[index]; // <- Just assign
+    update();
+    final newsListDao = appDatabase.newsListDao;
+    await newsListDao.deleteNewsById(newsList[index].id!);
+
+    // final result = await newsListDao.findAllNews();
+    // final xx = "";
   }
 
   void setAudioPlaying(bool istrue, int index) {

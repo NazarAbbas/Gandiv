@@ -245,9 +245,9 @@ class HomeNewsPageListRow extends GetView<HomeNewsPageController> {
                     child: GestureDetector(
                       onTap: () async {
                         if (controller.newsList[index].isBookmark == true) {
-                          controller.setBookmark(index);
-                        } else {
                           controller.removeBookmark(index);
+                        } else {
+                          controller.setBookmark(index);
                         }
                       },
                       child: Image.asset(

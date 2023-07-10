@@ -224,9 +224,9 @@ class StateNewsPageListRow extends GetView<StateNewsPageController> {
                     child: GestureDetector(
                       onTap: () {
                         if (controller.newsList[index].isBookmark == true) {
-                          controller.setBookmark(false, index);
+                          controller.removeBookmark(index);
                         } else {
-                          controller.setBookmark(true, index);
+                          controller.setBookmark(index);
                         }
                       },
                       child: Image.asset(
