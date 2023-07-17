@@ -1,6 +1,5 @@
 import 'package:gandiv/route_management/routes.dart';
 import 'package:gandiv/ui/binding/screen_binding.dart';
-import 'package:gandiv/ui/controllers/about_us_page_controller.dart';
 import 'package:gandiv/ui/views/account/edit_profile_page.dart';
 import 'package:gandiv/ui/views/account/signup_page.dart';
 import 'package:gandiv/ui/views/account/upload_news_page.dart';
@@ -45,10 +44,13 @@ class AllPages {
         binding: ScreenBindings(),
       ),
       GetPage(name: Routes.splashPage, page: () => const SplashPage()),
-      GetPage(name: Routes.newsDetailPage, page: () => NewsDetailPage()),
+      GetPage(
+          name: Routes.newsDetailPage,
+          page: () => const NewsDetailPage(),
+          binding: ScreenBindings()),
       GetPage(
         name: Routes.aboutUsPage,
-        page: () => const AboutUsPage(),
+        page: () => AboutUsPage(),
         binding: ScreenBindings(),
       ),
       GetPage(

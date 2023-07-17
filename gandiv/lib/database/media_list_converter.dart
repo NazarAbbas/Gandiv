@@ -6,12 +6,12 @@ class MediaListConverter extends TypeConverter<List<MediaList>, String> {
   @override
   List<MediaList> decode(String databaseValue) {
     final jsonFile = json.decode(databaseValue);
-    List<MediaList> finances = [];
-    finances = List.from(jsonFile['mediaList'])
+    List<MediaList> mediaList = [];
+    mediaList = List.from(jsonFile['mediaList'])
         .map((e) => MediaList.fromJson(jsonDecode(e)))
         .toList();
 
-    return finances;
+    return mediaList;
   }
 
   @override
@@ -21,3 +21,16 @@ class MediaListConverter extends TypeConverter<List<MediaList>, String> {
     return json.encode(data);
   }
 }
+
+// class  MediaListConverter extends TypeConverter<List<MediaList>, String>
+//     with ListConverter<MediaList> {
+//   @override
+//   int fromDB(String databaseValue) {
+//     return int.parse(databaseValue);
+//   }
+
+//   @override
+//   String toDB(int value) {
+//     return value.toString();
+//   }
+// }

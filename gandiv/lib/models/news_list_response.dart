@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:floor/floor.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:gandiv/database/media_list_converter.dart';
-part 'news_list_response.g.dart';
 
 @JsonSerializable()
 class NewsListResponse {
@@ -78,27 +77,25 @@ class NewsListData {
       };
 }
 
-@entity
 @JsonSerializable()
 class NewsList {
-  @primaryKey
   @JsonKey(name: 'id')
   final String? id;
   @JsonKey(name: 'heading')
-  final String? heading;
+  late final String? heading;
   @JsonKey(name: 'subHeading')
-  final String? subHeading;
+  late final String? subHeading;
   @JsonKey(name: 'newsContent')
-  final String? newsContent;
+  late String? newsContent;
   @JsonKey(name: 'category')
   final String? category;
   @JsonKey(name: 'location')
   final String? location;
   @JsonKey(name: 'language')
   final String? language;
-  //@TypeConverters([MediaListConverter])
-//  @JsonKey(name: 'mediaList')
-  // final String? mediaList;
+  @TypeConverters([MediaListConverter])
+  @JsonKey(name: 'mediaList')
+  late MediaList? mediaList;
   @JsonKey(name: 'publishedOn')
   final String? publishedOn;
   @JsonKey(name: 'publishedBy')
@@ -109,18 +106,18 @@ class NewsList {
   bool? isAudioPlaying;
 
   NewsList({
-    required this.id,
-    required this.heading,
-    required this.subHeading,
-    required this.newsContent,
-    required this.category,
-    required this.location,
-    required this.language,
-    //required this.mediaList,
-    required this.publishedOn,
-    required this.publishedBy,
-    required this.isBookmark,
-    required this.isAudioPlaying,
+    this.id,
+    this.heading,
+    this.subHeading,
+    this.newsContent,
+    this.category,
+    this.location,
+    this.language,
+    this.mediaList,
+    this.publishedOn,
+    this.publishedBy,
+    this.isBookmark,
+    this.isAudioPlaying,
   });
 
   factory NewsList.fromRawJson(String str) =>
@@ -136,7 +133,7 @@ class NewsList {
         category: json["category"],
         location: json["location"],
         language: json["language"],
-        // mediaList: json["mediaList"],
+        mediaList: MediaList.fromJson(json["mediaList"]),
         publishedOn: json["publishedOn"],
         publishedBy: json["publishedBy"],
         isBookmark: json["isBookmark"],
@@ -151,7 +148,7 @@ class NewsList {
         "category": category,
         "location": location,
         "language": language,
-        // "mediaList": mediaList,
+        "mediaList": mediaList,
         "publishedOn": publishedOn,
         "publishedBy": publishedBy,
         "isBookmark": isBookmark,
@@ -159,27 +156,45 @@ class NewsList {
       };
 }
 
-@JsonSerializable()
 class MediaList {
-  @JsonKey(name: 'url')
-  final String url;
-  @JsonKey(name: 'type')
-  final String type;
-  @JsonKey(name: 'placeholder')
-  final String placeholder;
+  List<ImageList>? imageList;
+  List<VideoList>? videoList;
+  List<AudioList>? audioList;
 
   MediaList({
-    required this.url,
-    required this.type,
-    required this.placeholder,
+    this.imageList,
+    this.videoList,
+    this.audioList,
   });
 
-  factory MediaList.fromRawJson(String str) =>
-      MediaList.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
-
   factory MediaList.fromJson(Map<String, dynamic> json) => MediaList(
+        imageList: List<ImageList>.from(
+            json["imageList"].map((x) => ImageList.fromJson(x))),
+        videoList: List<VideoList>.from(
+            json["videoList"].map((x) => VideoList.fromJson(x))),
+        audioList: List<AudioList>.from(
+            json["audioList"].map((x) => AudioList.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "imageList": List<dynamic>.from(imageList!.map((x) => x.toJson())),
+        "videoList": List<dynamic>.from(videoList!.map((x) => x.toJson())),
+        "audioList": List<dynamic>.from(audioList!.map((x) => x.toJson())),
+      };
+}
+
+class ImageList {
+  String? url;
+  String? type;
+  String? placeholder;
+
+  ImageList({
+    this.url,
+    this.type,
+    this.placeholder,
+  });
+
+  factory ImageList.fromJson(Map<String, dynamic> json) => ImageList(
         url: json["url"],
         type: json["type"],
         placeholder: json["placeholder"],
@@ -191,3 +206,84 @@ class MediaList {
         "placeholder": placeholder,
       };
 }
+
+class VideoList {
+  String? url;
+  String? type;
+  String? placeholder;
+
+  VideoList({
+    this.url,
+    this.type,
+    this.placeholder,
+  });
+
+  factory VideoList.fromJson(Map<String, dynamic> json) => VideoList(
+        url: json["url"],
+        type: json["type"],
+        placeholder: json["placeholder"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "url": url,
+        "type": type,
+        "placeholder": placeholder,
+      };
+}
+
+class AudioList {
+  String? url;
+  String? type;
+  String? placeholder;
+
+  AudioList({
+    this.url,
+    this.type,
+    this.placeholder,
+  });
+
+  factory AudioList.fromJson(Map<String, dynamic> json) => AudioList(
+        url: json["url"],
+        type: json["type"],
+        placeholder: json["placeholder"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "url": url,
+        "type": type,
+        "placeholder": placeholder,
+      };
+}
+
+// @JsonSerializable()
+// class MediaList {
+//   @JsonKey(name: 'url')
+//   final String url;
+//   @JsonKey(name: 'type')
+//   final String type;
+//   @JsonKey(name: 'placeholder')
+//   final String placeholder;
+
+//   MediaList({
+//     required this.url,
+//     required this.type,
+//     required this.placeholder,
+//   });
+
+//   factory MediaList.fromRawJson(String str) =>
+//       MediaList.fromJson(json.decode(str));
+
+//   String toRawJson() => json.encode(toJson());
+
+//   factory MediaList.fromJson(Map<String, dynamic> json) => MediaList(
+//         url: json["url"],
+//         type: json["type"],
+//         placeholder: json["placeholder"],
+//       );
+
+//   Map<String, dynamic> toJson() => {
+//         "url": url,
+//         "type": type,
+//         "placeholder": placeholder,
+//       };
+// }

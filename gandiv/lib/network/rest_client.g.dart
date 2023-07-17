@@ -195,6 +195,7 @@ class _RestClient implements RestClient {
   Future<NewsListResponse> newsListApi([
     categoryId = '',
     locationId = '',
+    laguageId = '',
     pageSize = 10,
     pageNumber = 1,
   ]) async {
@@ -202,6 +203,7 @@ class _RestClient implements RestClient {
     final queryParameters = <String, dynamic>{
       r'CategoryId': categoryId,
       r'LocationId': locationId,
+      r'LanguageId': laguageId,
       r'PageSize': pageSize,
       r'PageNumber': pageNumber,
     };

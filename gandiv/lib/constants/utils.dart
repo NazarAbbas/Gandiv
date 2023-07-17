@@ -1,8 +1,10 @@
+import 'dart:convert';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
-import 'package:get/utils.dart';
+import '../models/news_list_response.dart';
 
 class Utils {
   Utils(this.context);
@@ -77,4 +79,39 @@ class Utils {
   }
 
   void loginButtonClick() {}
+
+  static String convertImageListToJsonList(List<ImageList>? imageList) {
+    return jsonEncode(imageList?.map((e) => e.toJson()).toList());
+  }
+
+  static List<ImageList> convertJsonListToImageList(String? json) {
+    var tagsJson = jsonDecode(json!) as List;
+    return tagsJson.map((tagJson) => ImageList.fromJson(tagJson)).toList();
+  }
+
+  static String convertVideoListToJsonList(List<VideoList>? videoList) {
+    return jsonEncode(videoList?.map((e) => e.toJson()).toList());
+  }
+
+  static List<VideoList> convertJsonListToVideoList(String? json) {
+    var tagsJson = jsonDecode(json!) as List;
+    return tagsJson.map((tagJson) => VideoList.fromJson(tagJson)).toList();
+  }
+
+  static String convertAudioListToJsonList(List<AudioList>? audioList) {
+    return jsonEncode(audioList?.map((e) => e.toJson()).toList());
+  }
+
+  static List<AudioList> convertJsonListToAudioList(String? json) {
+    var tagsJson = jsonDecode(json!) as List;
+    return tagsJson.map((tagJson) => AudioList.fromJson(tagJson)).toList();
+  }
+
+  static String convertToJsonObject(NewsList newsList) {
+    return json.encode(newsList.toJson());
+  }
+
+  static NewsList convertToObject(String json) {
+    return NewsList.fromRawJson(json);
+  }
 }

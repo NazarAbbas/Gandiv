@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import '../../constants/constant.dart';
 import '../../constants/values/app_images.dart';
 import '../../route_management/routes.dart';
 
@@ -16,6 +18,8 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
+    final selectedLanguage = GetStorage();
+    selectedLanguage.write(Constant.selectedLanguage, 1);
     Timer(
         const Duration(seconds: 3), () => Get.toNamed(Routes.dashboardScreen));
   }

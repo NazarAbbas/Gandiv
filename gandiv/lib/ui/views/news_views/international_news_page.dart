@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:gandiv/ui/controllers/international_news_page_controller.dart';
 import 'package:get/get.dart';
@@ -38,6 +39,11 @@ class StateNewsPageListRow extends GetView<InterNationalNewsPageController> {
     super.key,
   });
 
+  Future<void> _pullRefresh() async {
+    controller.newsList.clear();
+    controller.onInit();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() => controller.isDataLoading.value
@@ -66,14 +72,31 @@ class StateNewsPageListRow extends GetView<InterNationalNewsPageController> {
                           ),
                         ),
                       )
-                    : ListView.builder(
-                        itemCount: controller.newsList.length,
-                        controller: controller.controller,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                              onTap: () => {Get.toNamed(Routes.newsDetailPage)},
-                              child: rowWidget(index, context));
-                        },
+                    : RefreshIndicator(
+                        color: AppColors.colorPrimary,
+                        onRefresh: _pullRefresh,
+                        child: ListView.builder(
+                          itemCount: controller.newsList.length,
+                          controller: controller.controller,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () => {
+                                Utils(context).stopAudio(controller
+                                            .newsList[selectedPosition]
+                                            .newsContent ==
+                                        null
+                                    ? ""
+                                    : controller.newsList[selectedPosition]
+                                        .newsContent!),
+                                controller.setAudioPlaying(
+                                    false, selectedPosition),
+                                Get.toNamed(Routes.newsDetailPage,
+                                    arguments: controller.newsList[index])
+                              },
+                              child: rowWidget(index, context),
+                            );
+                          },
+                        ),
                       ),
               ),
               // ignore: unrelated_type_equality_checks
@@ -99,6 +122,7 @@ class StateNewsPageListRow extends GetView<InterNationalNewsPageController> {
           ));
   }
 
+  int selectedPosition = 0;
   Obx rowWidget(int index, BuildContext context) {
     return Obx(
       () => Card(
@@ -111,59 +135,108 @@ class StateNewsPageListRow extends GetView<InterNationalNewsPageController> {
           children: [
             Padding(
               padding: const EdgeInsets.all(10),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  controller.newsList[index].heading!,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
+              child: Visibility(
+                visible:
+                    controller.newsList[index].heading == null ? false : true,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    controller.newsList[index].heading == null
+                        ? ""
+                        : controller.newsList[index].heading!,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(10),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  controller.newsList[index].newsContent!,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: dashboardPageController.isDarkTheme.value == true
-                        ? AppColors.white
-                        : AppColors.black,
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.normal,
+              child: Visibility(
+                visible: controller.newsList[index].newsContent == null
+                    ? false
+                    : true,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    controller.newsList[index].newsContent == null
+                        ? ""
+                        : controller.newsList[index].newsContent!,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: dashboardPageController.isDarkTheme.value == true
+                          ? AppColors.white
+                          : AppColors.black,
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              // child: Image.network(
-              //   controller.newsList[index].mediaList == null
-              //       ? 'https://avatars.githubusercontent.com/u/1?v=4"'
-              //       : controller.newsList[index].mediaList!,
-              child: Image.network(
-                'https://avatars.githubusercontent.com/u/1?v=4',
-                height: MediaQuery.of(context).size.width * (3 / 4),
-                width: MediaQuery.of(context).size.width,
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent? loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
-                    ),
-                  );
-                },
+            Visibility(
+              visible: controller.newsList[index].mediaList?.imageList == null
+                  ? false
+                  : true,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: CarouselSlider(
+                  options: CarouselOptions(
+                      pauseAutoPlayOnTouch: true,
+                      autoPlay: false,
+                      height: MediaQuery.of(context).size.width * (3 / 4),
+                      enlargeCenterPage: true),
+                  items:
+                      controller.newsList[index].mediaList?.imageList?.map((i) {
+                    return Builder(
+                      builder: (BuildContext context) {
+                        return Image.network(
+                          fit: BoxFit.cover,
+                          i.url!,
+                          width: MediaQuery.of(context).size.width,
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes !=
+                                        null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                    : null,
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  }).toList(),
+                ),
+
+                // child: Image.network(
+                //   controller.newsList[index].mediaList[0].url ??
+                //       'https://avatars.githubusercontent.com/u/1?v=4"',
+
+                //   height: MediaQuery.of(context).size.width * (3 / 4),
+                //   width: MediaQuery.of(context).size.width,
+                //   loadingBuilder: (BuildContext context, Widget child,
+                //       ImageChunkEvent? loadingProgress) {
+                //     if (loadingProgress == null) return child;
+                //     return Center(
+                //       child: CircularProgressIndicator(
+                //         value: loadingProgress.expectedTotalBytes != null
+                //             ? loadingProgress.cumulativeBytesLoaded /
+                //                 loadingProgress.expectedTotalBytes!
+                //             : null,
+                //       ),
+                //     );
+                //   },
+                // ),
               ),
             ),
             Padding(
@@ -197,13 +270,21 @@ class StateNewsPageListRow extends GetView<InterNationalNewsPageController> {
                   const Spacer(),
                   GestureDetector(
                     onTap: () {
+                      final newsContent =
+                          controller.newsList[index].newsContent == null
+                              ? ""
+                              : controller.newsList[index].newsContent!;
+                      if (newsContent.isEmpty) {
+                        return;
+                      }
                       if (controller.newsList[index].isAudioPlaying == true) {
-                        Utils(context)
-                            .stopAudio(controller.newsList[index].newsContent!);
+                        Utils(context).stopAudio(newsContent);
                         controller.setAudioPlaying(false, index);
                       } else {
-                        Utils(context).startAudio(
-                            controller.newsList[index].newsContent!);
+                        Utils(context).stopAudio(newsContent);
+                        controller.setAudioPlaying(false, selectedPosition);
+                        selectedPosition = index;
+                        Utils(context).startAudio(newsContent);
                         controller.setAudioPlaying(true, index);
                       }
                     },
@@ -223,7 +304,7 @@ class StateNewsPageListRow extends GetView<InterNationalNewsPageController> {
                   Padding(
                     padding: const EdgeInsets.only(left: 10),
                     child: GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         if (controller.newsList[index].isBookmark == true) {
                           controller.removeBookmark(index);
                         } else {

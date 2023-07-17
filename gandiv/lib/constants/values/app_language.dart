@@ -54,6 +54,7 @@ class Languages extends Translations {
           'enter_last_name': 'कृपया अंतिम नाम दर्ज करें',
           'loading': 'लोड हो रहा है...',
           'no_news_available': 'कोई समाचार उपलब्ध नहीं है',
+          'news_details': 'समाचार विवरण',
         },
         'en_US': {
           'setting': 'SETTING',
@@ -106,6 +107,7 @@ class Languages extends Translations {
           'phoneNumber': 'Mobile Number',
           'loading': 'Loading...',
           'no_news_available': 'No news avaiable',
+          'news_details': 'News Details',
         },
       };
 }

@@ -1,4 +1,4 @@
-import 'package:floor/floor.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:get/get.dart';
@@ -6,7 +6,6 @@ import 'package:share/share.dart';
 import '../../../constants/utils.dart';
 import '../../../constants/values/app_images.dart';
 import '../../../database/app_database.dart';
-import '../../../network/rest_api.dart';
 import '../../../route_management/routes.dart';
 import '../../controllers/dashboard_page_cotroller.dart';
 import '../../controllers/home_news_page_controller.dart';
@@ -46,6 +45,13 @@ class HomeNewsPageListRow extends GetView<HomeNewsPageController> {
     super.key,
   });
 
+  Future<void> _pullRefresh() async {
+    controller.pageNo = 1;
+    controller.pageSize = 10;
+    controller.newsList.clear();
+    controller.getHomeNews();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() => controller.isDataLoading.value
@@ -74,21 +80,32 @@ class HomeNewsPageListRow extends GetView<HomeNewsPageController> {
                           ),
                         ),
                       )
-                    : ListView.builder(
-                        itemCount: controller.newsList.length,
-                        controller: controller.controller,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
+                    : RefreshIndicator(
+                        color: AppColors.colorPrimary,
+                        onRefresh: _pullRefresh,
+                        child: ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: controller.newsList.length,
+                          controller: controller.controller,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
                               onTap: () => {
-                                    Utils(context).stopAudio(controller
-                                        .newsList[selectedPosition]
+                                Utils(context).stopAudio(controller
+                                            .newsList[selectedPosition]
+                                            .newsContent ==
+                                        null
+                                    ? ""
+                                    : controller.newsList[selectedPosition]
                                         .newsContent!),
-                                    controller.setAudioPlaying(
-                                        false, selectedPosition),
-                                    Get.toNamed(Routes.newsDetailPage)
-                                  },
-                              child: rowWidget(index, context));
-                        },
+                                controller.setAudioPlaying(
+                                    false, selectedPosition),
+                                Get.toNamed(Routes.newsDetailPage,
+                                    arguments: controller.newsList[index])
+                              },
+                              child: rowWidget(index, context),
+                            );
+                          },
+                        ),
                       ),
               ),
               // ignore: unrelated_type_equality_checks
@@ -127,59 +144,108 @@ class HomeNewsPageListRow extends GetView<HomeNewsPageController> {
           children: [
             Padding(
               padding: const EdgeInsets.all(10),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  controller.newsList[index].heading!,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
+              child: Visibility(
+                visible:
+                    controller.newsList[index].heading == null ? false : true,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    controller.newsList[index].heading == null
+                        ? ""
+                        : controller.newsList[index].heading!,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(10),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  controller.newsList[index].newsContent!,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: dashboardPageController.isDarkTheme.value == true
-                        ? AppColors.white
-                        : AppColors.black,
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.normal,
+              child: Visibility(
+                visible: controller.newsList[index].newsContent == null
+                    ? false
+                    : true,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    controller.newsList[index].newsContent == null
+                        ? ""
+                        : controller.newsList[index].newsContent!,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: dashboardPageController.isDarkTheme.value == true
+                          ? AppColors.white
+                          : AppColors.black,
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              // child: Image.network(
-              //   controller.newsList[index].mediaList == null
-              //       ? 'https://avatars.githubusercontent.com/u/1?v=4"'
-              //       : controller.newsList[index].mediaList!,
-              child: Image.network(
-                'https://avatars.githubusercontent.com/u/1?v=4',
-                height: MediaQuery.of(context).size.width * (3 / 4),
-                width: MediaQuery.of(context).size.width,
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent? loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
-                    ),
-                  );
-                },
+            Visibility(
+              visible: controller.newsList[index].mediaList?.imageList == null
+                  ? false
+                  : true,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: CarouselSlider(
+                  options: CarouselOptions(
+                      pauseAutoPlayOnTouch: true,
+                      autoPlay: false,
+                      height: MediaQuery.of(context).size.width * (3 / 4),
+                      enlargeCenterPage: true),
+                  items:
+                      controller.newsList[index].mediaList?.imageList?.map((i) {
+                    return Builder(
+                      builder: (BuildContext context) {
+                        return Image.network(
+                          fit: BoxFit.cover,
+                          i.url!,
+                          width: MediaQuery.of(context).size.width,
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes !=
+                                        null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                    : null,
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  }).toList(),
+                ),
+
+                // child: Image.network(
+                //   controller.newsList[index].mediaList[0].url ??
+                //       'https://avatars.githubusercontent.com/u/1?v=4"',
+
+                //   height: MediaQuery.of(context).size.width * (3 / 4),
+                //   width: MediaQuery.of(context).size.width,
+                //   loadingBuilder: (BuildContext context, Widget child,
+                //       ImageChunkEvent? loadingProgress) {
+                //     if (loadingProgress == null) return child;
+                //     return Center(
+                //       child: CircularProgressIndicator(
+                //         value: loadingProgress.expectedTotalBytes != null
+                //             ? loadingProgress.cumulativeBytesLoaded /
+                //                 loadingProgress.expectedTotalBytes!
+                //             : null,
+                //       ),
+                //     );
+                //   },
+                // ),
               ),
             ),
             Padding(
@@ -213,17 +279,21 @@ class HomeNewsPageListRow extends GetView<HomeNewsPageController> {
                   const Spacer(),
                   GestureDetector(
                     onTap: () {
+                      final newsContent =
+                          controller.newsList[index].newsContent == null
+                              ? ""
+                              : controller.newsList[index].newsContent!;
+                      if (newsContent.isEmpty) {
+                        return;
+                      }
                       if (controller.newsList[index].isAudioPlaying == true) {
-                        Utils(context)
-                            .stopAudio(controller.newsList[index].newsContent!);
+                        Utils(context).stopAudio(newsContent);
                         controller.setAudioPlaying(false, index);
                       } else {
-                        Utils(context).stopAudio(
-                            controller.newsList[selectedPosition].newsContent!);
+                        Utils(context).stopAudio(newsContent);
                         controller.setAudioPlaying(false, selectedPosition);
                         selectedPosition = index;
-                        Utils(context).startAudio(
-                            controller.newsList[index].newsContent!);
+                        Utils(context).startAudio(newsContent);
                         controller.setAudioPlaying(true, index);
                       }
                     },

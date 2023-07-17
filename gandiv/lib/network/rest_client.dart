@@ -1,7 +1,4 @@
-import 'dart:ffi';
-
 import 'package:gandiv/models/about_us_response.dart';
-import 'package:gandiv/models/dashboard_screen_model.dart';
 import 'package:gandiv/models/e_paper.dart';
 import 'package:gandiv/models/login_request.dart';
 import 'package:gandiv/models/login_response.dart';
@@ -54,14 +51,7 @@ abstract class RestClient {
   Future<NewsListResponse> newsListApi(
       [@Query("CategoryId") String categoryId = '',
       @Query("LocationId") String locationId = '',
+      @Query("LanguageId") String laguageId = '',
       @Query("PageSize") int pageSize = 10,
       @Query("PageNumber") int pageNumber = 1]);
-
-  // @POST('/store')
-  // @MultiPart()
-  // Future<dynamic> store({
-  //   @Part() required String title,
-  //   @Part() required int part,
-  //   @Part() File? attach,
-  // });
 }

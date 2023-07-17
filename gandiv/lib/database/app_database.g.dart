@@ -85,7 +85,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `NewsList` (`id` TEXT, `heading` TEXT, `subHeading` TEXT, `newsContent` TEXT, `category` TEXT, `location` TEXT, `language` TEXT, `publishedOn` TEXT, `publishedBy` TEXT, `isBookmark` INTEGER, `isAudioPlaying` INTEGER, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `NewsListDB` (`id` TEXT, `heading` TEXT, `subHeading` TEXT, `newsContent` TEXT, `category` TEXT, `location` TEXT, `language` TEXT, `imageListDb` TEXT, `videoListDb` TEXT, `audioListDb` TEXT, `publishedOn` TEXT, `publishedBy` TEXT, `isBookmark` INTEGER, `isAudioPlaying` INTEGER, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -104,10 +104,10 @@ class _$NewsListDao extends NewsListDao {
     this.database,
     this.changeListener,
   )   : _queryAdapter = QueryAdapter(database),
-        _newsListInsertionAdapter = InsertionAdapter(
+        _newsListDBInsertionAdapter = InsertionAdapter(
             database,
-            'NewsList',
-            (NewsList item) => <String, Object?>{
+            'NewsListDB',
+            (NewsListDB item) => <String, Object?>{
                   'id': item.id,
                   'heading': item.heading,
                   'subHeading': item.subHeading,
@@ -115,6 +115,9 @@ class _$NewsListDao extends NewsListDao {
                   'category': item.category,
                   'location': item.location,
                   'language': item.language,
+                  'imageListDb': item.imageListDb,
+                  'videoListDb': item.videoListDb,
+                  'audioListDb': item.audioListDb,
                   'publishedOn': item.publishedOn,
                   'publishedBy': item.publishedBy,
                   'isBookmark': item.isBookmark == null
@@ -131,12 +134,12 @@ class _$NewsListDao extends NewsListDao {
 
   final QueryAdapter _queryAdapter;
 
-  final InsertionAdapter<NewsList> _newsListInsertionAdapter;
+  final InsertionAdapter<NewsListDB> _newsListDBInsertionAdapter;
 
   @override
-  Future<List<NewsList>> findAllNews() async {
-    return _queryAdapter.queryList('SELECT * FROM NewsList',
-        mapper: (Map<String, Object?> row) => NewsList(
+  Future<List<NewsListDB>> findAllNews() async {
+    return _queryAdapter.queryList('SELECT * FROM NewsListDB',
+        mapper: (Map<String, Object?> row) => NewsListDB(
             id: row['id'] as String?,
             heading: row['heading'] as String?,
             subHeading: row['subHeading'] as String?,
@@ -144,6 +147,9 @@ class _$NewsListDao extends NewsListDao {
             category: row['category'] as String?,
             location: row['location'] as String?,
             language: row['language'] as String?,
+            imageListDb: row['imageListDb'] as String?,
+            videoListDb: row['videoListDb'] as String?,
+            audioListDb: row['audioListDb'] as String?,
             publishedOn: row['publishedOn'] as String?,
             publishedBy: row['publishedBy'] as String?,
             isBookmark: row['isBookmark'] == null
@@ -155,9 +161,9 @@ class _$NewsListDao extends NewsListDao {
   }
 
   @override
-  Future<NewsList?> findNewsById(String id) async {
-    return _queryAdapter.query('SELECT * FROM NewsList WHERE id = ?1',
-        mapper: (Map<String, Object?> row) => NewsList(
+  Future<NewsListDB?> findNewsById(String id) async {
+    return _queryAdapter.query('SELECT * FROM NewsListDB WHERE id = ?1',
+        mapper: (Map<String, Object?> row) => NewsListDB(
             id: row['id'] as String?,
             heading: row['heading'] as String?,
             subHeading: row['subHeading'] as String?,
@@ -165,6 +171,9 @@ class _$NewsListDao extends NewsListDao {
             category: row['category'] as String?,
             location: row['location'] as String?,
             language: row['language'] as String?,
+            imageListDb: row['imageListDb'] as String?,
+            videoListDb: row['videoListDb'] as String?,
+            audioListDb: row['audioListDb'] as String?,
             publishedOn: row['publishedOn'] as String?,
             publishedBy: row['publishedBy'] as String?,
             isBookmark: row['isBookmark'] == null
@@ -179,11 +188,12 @@ class _$NewsListDao extends NewsListDao {
   @override
   Future<void> deleteNewsById(String id) async {
     await _queryAdapter
-        .queryNoReturn('DELETE FROM NewsList WHERE id = ?1', arguments: [id]);
+        .queryNoReturn('DELETE FROM NewsListDB WHERE id = ?1', arguments: [id]);
   }
 
   @override
-  Future<void> insertNews(NewsList newsList) async {
-    await _newsListInsertionAdapter.insert(newsList, OnConflictStrategy.abort);
+  Future<void> insertNews(NewsListDB newsList) async {
+    await _newsListDBInsertionAdapter.insert(
+        newsList, OnConflictStrategy.abort);
   }
 }

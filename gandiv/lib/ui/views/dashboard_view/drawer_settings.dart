@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:gandiv/constants/constant.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../controllers/dashboard_page_cotroller.dart';
 import '../../../constants/values/app_images.dart';
 
@@ -198,6 +200,8 @@ class DrawerSettings extends GetView<DashboardPageController> {
                   Get.updateLocale(const Locale('hi', 'IN'));
                   controller.selectLanguage(value.toString());
                   closeNavigationDrawer();
+                  final selectedLanguage = GetStorage();
+                  selectedLanguage.write(Constant.selectedLanguage, 1);
                 },
               ),
               RadioListTile(
@@ -217,6 +221,8 @@ class DrawerSettings extends GetView<DashboardPageController> {
                   Get.updateLocale(const Locale('en', 'US'));
                   controller.selectLanguage(value.toString());
                   closeNavigationDrawer();
+                  final selectedLanguage = GetStorage();
+                  selectedLanguage.write(Constant.selectedLanguage, 2);
                 },
               )
             ],

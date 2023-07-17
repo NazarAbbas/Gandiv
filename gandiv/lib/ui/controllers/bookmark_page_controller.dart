@@ -1,13 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:gandiv/constants/utils.dart';
 import 'package:get/get.dart';
 
 import '../../database/app_database.dart';
 import '../../models/news_list_response.dart';
 
-class BookmarkPageController extends FullLifeCycleController
-    with FullLifeCycleMixin {
+class BookmarkPageController extends FullLifeCycleController {
   final AppDatabase appDatabase = Get.find<AppDatabase>();
   List<NewsList> newsList = <NewsList>[].obs;
   ScrollController controller = ScrollController();
@@ -15,17 +15,8 @@ class BookmarkPageController extends FullLifeCycleController
   @override
   void onInit() {
     super.onInit();
+    newsList.clear;
     getBookmarkNews();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
   }
 
   void setAudioPlaying(bool istrue, int index) {
@@ -34,11 +25,45 @@ class BookmarkPageController extends FullLifeCycleController
     update();
   }
 
+  void removeBookmark(int index) async {
+    newsList[index].isBookmark = false;
+    newsList[index] = newsList[index]; // <- Just assign
+    update();
+    try {
+      final newsListDao = appDatabase.newsListDao;
+      await newsListDao.deleteNewsById(newsList[index].id!);
+    } on Exception catch (exception) {
+      if (kDebugMode) {
+        print(exception);
+      }
+    }
+  }
+
   Future<void> getBookmarkNews() async {
     isDataLoading.value = true;
     try {
       final bookmarkNews = await appDatabase.newsListDao.findAllNews();
-      newsList.addAll(bookmarkNews);
+      for (int i = 0; i < bookmarkNews.length; i++) {
+        // final xx =
+        //     Utils.convertJsonListToMediaList(bookmarkNews[i].imageListDb);
+        // final mediaList = MediaList(imageList: xx);
+        final news = NewsList(
+            id: bookmarkNews[i].id,
+            heading: bookmarkNews[i].heading,
+            subHeading: bookmarkNews[i].subHeading,
+            newsContent: bookmarkNews[i].newsContent,
+            category: bookmarkNews[i].category,
+            location: bookmarkNews[i].location,
+            language: bookmarkNews[i].language,
+            mediaList: MediaList(
+                imageList: Utils.convertJsonListToImageList(
+                    bookmarkNews[i].imageListDb)),
+            publishedOn: bookmarkNews[i].publishedOn,
+            publishedBy: bookmarkNews[i].publishedBy,
+            isBookmark: bookmarkNews[i].isBookmark,
+            isAudioPlaying: bookmarkNews[i].isAudioPlaying);
+        newsList.add(news);
+      }
     } on DioError catch (obj) {
       final res = (obj).response;
       if (kDebugMode) {
@@ -52,27 +77,6 @@ class BookmarkPageController extends FullLifeCycleController
       }
     } finally {
       isDataLoading.value = false;
-      // isLoadMoreItems.value = false;
     }
-  }
-
-  @override
-  void onDetached() {
-    final xx = "";
-  }
-
-  @override
-  void onInactive() {
-    final xx = "";
-  }
-
-  @override
-  void onPaused() {
-    final xx = "";
-  }
-
-  @override
-  void onResumed() {
-    final xx = "";
   }
 }

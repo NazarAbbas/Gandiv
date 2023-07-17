@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:gandiv/ui/controllers/about_us_page_controller.dart';
-import 'package:gandiv/ui/controllers/e_paper_controller.dart';
 import 'package:get/get.dart';
 
-class AboutUsPage extends GetView<AboutUsPageController> {
-  const AboutUsPage({Key? key}) : super(key: key);
+import '../../controllers/dashboard_page_cotroller.dart';
 
+// ignore: must_be_immutable
+class AboutUsPage extends GetView<AboutUsPageController> {
+  AboutUsPage({Key? key}) : super(key: key);
+  DashboardPageController dashboardPageController =
+      Get.find<DashboardPageController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,17 +1,17 @@
 import 'package:floor/floor.dart';
-import 'package:gandiv/models/news_list_response.dart';
+import '../../models/news_list_db_model.dart';
 
 @dao
 abstract class NewsListDao {
-  @Query('SELECT * FROM NewsList')
-  Future<List<NewsList>> findAllNews();
+  @Query('SELECT * FROM NewsListDB')
+  Future<List<NewsListDB>> findAllNews();
 
-  @Query('SELECT * FROM NewsList WHERE id = :id')
-  Future<NewsList?> findNewsById(String id);
+  @Query('SELECT * FROM NewsListDB WHERE id = :id')
+  Future<NewsListDB?> findNewsById(String id);
 
-  @Query('DELETE FROM NewsList WHERE id = :id')
+  @Query('DELETE FROM NewsListDB WHERE id = :id')
   Future<void> deleteNewsById(String id);
 
   @insert
-  Future<void> insertNews(NewsList newsList);
+  Future<void> insertNews(NewsListDB newsList);
 }

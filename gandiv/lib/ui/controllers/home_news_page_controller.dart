@@ -1,16 +1,15 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../../constants/utils.dart';
 import '../../database/app_database.dart';
+import '../../models/news_list_db_model.dart';
 import '../../models/news_list_response.dart';
 import '../../network/rest_api.dart';
 
-class HomeNewsPageController extends FullLifeCycleController
-    with FullLifeCycleMixin {
+class HomeNewsPageController extends FullLifeCycleController {
   final RestAPI restAPI = Get.find<RestAPI>();
   final AppDatabase appDatabase = Get.find<AppDatabase>();
   ScrollController controller = ScrollController();
@@ -48,11 +47,39 @@ class HomeNewsPageController extends FullLifeCycleController
     newsList[index] = newsList[index]; // <- Just assign
     update();
     try {
+      final bookmarkNews = newsList[index];
+
+      final newsListDB = NewsListDB(
+          id: bookmarkNews.id,
+          heading: bookmarkNews.heading,
+          subHeading: bookmarkNews.subHeading,
+          newsContent: bookmarkNews.newsContent,
+          category: bookmarkNews.category,
+          location: bookmarkNews.location,
+          language: bookmarkNews.language,
+          imageListDb: newsList[index].mediaList?.imageList == null
+              ? null
+              : Utils.convertImageListToJsonList(
+                  newsList[index].mediaList?.imageList),
+          videoListDb: newsList[index].mediaList?.videoList == null
+              ? null
+              : Utils.convertVideoListToJsonList(
+                  newsList[index].mediaList?.videoList),
+          audioListDb: newsList[index].mediaList?.imageList == null
+              ? null
+              : Utils.convertAudioListToJsonList(
+                  newsList[index].mediaList?.audioList),
+          publishedOn: bookmarkNews.publishedOn,
+          publishedBy: bookmarkNews.publishedBy,
+          isBookmark: bookmarkNews.isBookmark,
+          isAudioPlaying: bookmarkNews.isAudioPlaying);
       final newsListDao = appDatabase.newsListDao;
-      await newsListDao.insertNews(newsList[index]);
-    } on Exception catch (exception) {}
-    // final result = await newsListDao.findAllNews();
-    // final xx = "";
+      await newsListDao.insertNews(newsListDB);
+    } on Exception catch (exception) {
+      if (kDebugMode) {
+        print(exception);
+      }
+    }
   }
 
   void removeBookmark(int index) async {
@@ -62,20 +89,17 @@ class HomeNewsPageController extends FullLifeCycleController
     try {
       final newsListDao = appDatabase.newsListDao;
       await newsListDao.deleteNewsById(newsList[index].id!);
-    } on Exception catch (exception) {}
-    // final result = await newsListDao.findAllNews();
-    // final xx = "";
+    } on Exception catch (exception) {
+      if (kDebugMode) {
+        print(exception);
+      }
+    }
   }
 
   void setAudioPlaying(bool istrue, int index) {
     newsList[index].isAudioPlaying = istrue;
     newsList[index] = newsList[index]; // <- Just assign
     update();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
   }
 
   Future<void> getHomeNews() async {
@@ -86,11 +110,8 @@ class HomeNewsPageController extends FullLifeCycleController
           pageNumber: pageNo,
           pageSize: pageSize);
       totalCount = response.newsListData.totalCount!;
-
-      // final bookmarkNews = await appDatabase.newsListDao.findAllNews();
-      // final xx = "";
-
       for (int i = 0; i < response.newsListData.newsList.length; i++) {
+        //response.newsListData.newsList[i].newsContent = null;
         final bookMarkNews = await appDatabase.newsListDao
             .findNewsById(response.newsListData.newsList[i].id!);
         if (bookMarkNews != null) {
@@ -113,27 +134,6 @@ class HomeNewsPageController extends FullLifeCycleController
       isDataLoading.value = false;
       isLoadMoreItems.value = false;
     }
-  }
-
-  @override
-  void onDetached() {
-    // TODO: implement onDetached
-  }
-
-  @override
-  void onInactive() {
-    // TODO: implement onInactive
-  }
-
-  @override
-  void onPaused() {
-    // TODO: implement onPaused
-  }
-
-  @override
-  Future<void> onResumed() async {
-    // final homeNews = readNewsListJson();
-    // getHomeNews();
   }
 
   // Fetch json content from the assests file

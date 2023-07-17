@@ -8,6 +8,8 @@ import 'package:gandiv/models/news_list_response.dart';
 import 'package:gandiv/models/verify_response.dart';
 import 'package:gandiv/network/rest_client.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import '../constants/constant.dart';
 import '../models/dashboard_screen_model.dart';
 import '../models/signup_request.dart';
 import '../models/signup_response.dart';
@@ -98,6 +100,7 @@ class RestAPI {
       required String locationId,
       required int pageSize,
       required int pageNumber}) async {
+    final selectedLanguage = GetStorage().read(Constant.selectedLanguage);
     final client = RestClient(dio);
     final response = await client.newsListApi();
     return response;
