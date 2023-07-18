@@ -111,7 +111,6 @@ class HomeNewsPageController extends FullLifeCycleController {
           pageSize: pageSize);
       totalCount = response.newsListData.totalCount!;
       for (int i = 0; i < response.newsListData.newsList.length; i++) {
-        //response.newsListData.newsList[i].newsContent = null;
         final bookMarkNews = await appDatabase.newsListDao
             .findNewsById(response.newsListData.newsList[i].id!);
         if (bookMarkNews != null) {

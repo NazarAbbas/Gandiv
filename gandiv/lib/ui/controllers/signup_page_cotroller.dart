@@ -1,14 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:gandiv/models/profile_db_model.dart';
 import 'package:gandiv/models/signup_request.dart';
-import 'package:gandiv/models/signup_response.dart';
 import 'package:get/get.dart';
-
+import '../../database/app_database.dart';
 import '../../network/rest_api.dart';
 
 class SignupPageController extends GetxController {
   final RestAPI restAPI = Get.find<RestAPI>();
+  final AppDatabase appDatabase = Get.find<AppDatabase>();
 
   final isPasswordVisible = true.obs;
   final isLoading = false.obs;
@@ -102,6 +103,23 @@ class SignupPageController extends GetxController {
           password: passwordController.text,
           userType: 4);
       final signupResponse = await restAPI.calllSignupApi(signupRequest);
+      var profileData = ProfileData(
+          id: signupResponse.signupData?.id,
+          title: signupResponse.signupData?.title,
+          firstName: signupResponse.signupData?.firstName,
+          lastName: signupResponse.signupData?.lastName,
+          mobileNo: signupResponse.signupData?.mobileNo,
+          email: signupResponse.signupData?.email,
+          gender: signupResponse.signupData?.gender,
+          profileImage: signupResponse.signupData?.profileImage,
+          role: signupResponse.signupData?.role,
+          token: signupResponse.signupData?.token);
+
+      await appDatabase.profileDao.insertProfile(profileData);
+      // final profile1 =
+      //     await appDatabase.profileDao.findProfileById(profileData.id!);
+      // final profile = await appDatabase.profileDao.findProfile();
+      // final xx = "";
     } on DioError catch (obj) {
       final res = (obj).response;
       if (kDebugMode) {
