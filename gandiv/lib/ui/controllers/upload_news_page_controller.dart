@@ -1,14 +1,19 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gandiv/models/create_news_request.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../constants/values/app_colors.dart';
+import '../../network/rest_api.dart';
 
 class UploadNewsPagePageController extends GetxController {
+  final RestAPI restAPI = Get.find<RestAPI>();
   final isPasswordVisible = true.obs;
   final isLoading = false.obs;
 
@@ -21,6 +26,7 @@ class UploadNewsPagePageController extends GetxController {
   final singleUserRoleValue = "Reporter".obs;
 
   ImagePicker imgpicker = ImagePicker();
+  List<String> imageList = <String>[].obs;
   final localImagePath = "".obs;
   final networkImagePath = "".obs;
   final headingCroppedImagepath = "".obs;
@@ -100,6 +106,32 @@ class UploadNewsPagePageController extends GetxController {
     }
   }
 
+  void executeSignupApi() async {
+    try {
+      CreateNewsRequest loginRequest = CreateNewsRequest(
+          heading: firstNameController.text,
+          subHeading: lastNameController.text,
+          newsContent: passwordController.text,
+          durationInMin: 0,
+          locationId: "5dded3bc-654d-464e-3fcf-08db7a5882e0",
+          categoryId: "65ecb2f9-31ee-44c3-d664-08db7a51f0c5",
+          languageId: 2,
+          status: "created");
+      final loginResponse = await restAPI.callCreateNewsApi(loginRequest);
+    } on DioError catch (obj) {
+      final res = (obj).response;
+      if (kDebugMode) {
+        print("Got error : ${res?.statusCode} -> ${res?.statusMessage}");
+      }
+      // FOR CUSTOM MESSAGE
+      // final errorMessage = NetworkExceptions.getDioException(obj);
+    } on Exception catch (exception) {
+      if (kDebugMode) {
+        print("Got error : $exception");
+      }
+    } finally {}
+  }
+
   void openImage(ImageSource imageSource, ImageType imageType) async {
     try {
       var pickedFile = await imgpicker.pickImage(source: imageSource);
@@ -154,8 +186,8 @@ class UploadNewsPagePageController extends GetxController {
 
     if (croppedfile != null) {
       imagefile = croppedfile;
-      headingCroppedImagepath.value = croppedfile.path;
-      //setState(() { });
+      // headingCroppedImagepath.value = croppedfile.path;
+      imageList.add(croppedfile.path);
     } else {
       print("Image is not cropped.");
     }

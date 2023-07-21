@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:gandiv/ui/controllers/dashboard_page_cotroller.dart';
@@ -38,11 +39,13 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
                     child: Column(
                       children: <Widget>[
                         headingWidget(),
-                        headingImage(context),
+                        //headingImage(context),
                         subHeadingWidget(),
-                        subheadingImage(context),
+                        //subheadingImage(context),
                         descriptionWidget(),
                         contentImage(context),
+                        corauselWidget(context)
+
                         //_userRoleContainer(),
                       ],
                     ),
@@ -429,6 +432,51 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
           ),
         ),
       ),
+    );
+  }
+
+  Padding corauselWidget(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: CarouselSlider(
+        options: CarouselOptions(
+            pauseAutoPlayOnTouch: true,
+            autoPlay: false,
+            height: MediaQuery.of(context).size.width * (3 / 4),
+            enlargeCenterPage: true),
+        items: controller.imageList.map((i) {
+          return Builder(
+            builder: (BuildContext context) {
+              return Image.file(
+                File(i),
+                fit: BoxFit.fill,
+                width: 100.0,
+                height: 100.0,
+              );
+            },
+          );
+        }).toList(),
+      ),
+
+      // child: Image.network(
+      //   controller.newsList[index].mediaList[0].url ??
+      //       'https://avatars.githubusercontent.com/u/1?v=4"',
+
+      //   height: MediaQuery.of(context).size.width * (3 / 4),
+      //   width: MediaQuery.of(context).size.width,
+      //   loadingBuilder: (BuildContext context, Widget child,
+      //       ImageChunkEvent? loadingProgress) {
+      //     if (loadingProgress == null) return child;
+      //     return Center(
+      //       child: CircularProgressIndicator(
+      //         value: loadingProgress.expectedTotalBytes != null
+      //             ? loadingProgress.cumulativeBytesLoaded /
+      //                 loadingProgress.expectedTotalBytes!
+      //             : null,
+      //       ),
+      //     );
+      //   },
+      // ),
     );
   }
 }
