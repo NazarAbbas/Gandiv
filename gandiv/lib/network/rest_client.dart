@@ -8,6 +8,7 @@ import 'package:gandiv/models/news_list_response.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
 
+import '../models/create_news_request.dart';
 import '../models/signup_request.dart';
 import '../models/signup_response.dart';
 import '../models/verify_response.dart';
@@ -21,8 +22,10 @@ class Apis {
   static const String aboutUs = '/Gandiv/aboutus';
   static const String ePaper = '/Gandiv/epaper';
   static const String newsList = '/news';
+
   static const String newsCategories = '/news/categories';
   static const String newsLocations = '/news/locations';
+  static const String createNews = '/news/create';
 }
 
 @RestApi(baseUrl: "http://devapi.gandivsamachar.com/api")
@@ -37,6 +40,10 @@ abstract class RestClient {
 
   @POST(Apis.signup)
   Future<LoginResponse> loginApi(@Body() LoginRequest loginRequest);
+
+  @POST(Apis.signup)
+  Future<LoginResponse> createNewsApi(
+      @Body() CreateNewsRequest createNewsRequest);
 
   @PUT(Apis.verify)
   Future<VerifyResponse> verifyApi(@Path("code") String code);
