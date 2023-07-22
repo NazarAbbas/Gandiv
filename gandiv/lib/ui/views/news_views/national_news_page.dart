@@ -43,6 +43,8 @@ class HomeNewsPageListRow extends GetView<NationalNewsPageController> {
   });
 
   Future<void> _pullRefresh() async {
+    controller.pageNo = 1;
+    controller.pageSize = 5;
     controller.newsList.clear();
     controller.onInit();
   }
@@ -79,6 +81,7 @@ class HomeNewsPageListRow extends GetView<NationalNewsPageController> {
                         color: AppColors.colorPrimary,
                         onRefresh: _pullRefresh,
                         child: ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
                           itemCount: controller.newsList.length,
                           controller: controller.controller,
                           itemBuilder: (context, index) {
@@ -94,7 +97,10 @@ class HomeNewsPageListRow extends GetView<NationalNewsPageController> {
                                 controller.setAudioPlaying(
                                     false, selectedPosition),
                                 Get.toNamed(Routes.newsDetailPage,
-                                    arguments: controller.newsList[index])
+                                        arguments: controller.newsList[index])
+                                    ?.then(
+                                  (value) => {controller.onInit()},
+                                )
                               },
                               child: rowWidget(index, context),
                             );

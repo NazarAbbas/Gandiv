@@ -43,7 +43,12 @@ class AllPages {
         page: () => const EPaperPage(),
         binding: ScreenBindings(),
       ),
-      GetPage(name: Routes.splashPage, page: () => const SplashPage()),
+      // GetPage(name: Routes.splashPage, page: () => const SplashPage()),
+
+      GetPage(
+          name: Routes.splashPage,
+          page: () => const SplashPage(),
+          binding: ScreenBindings()),
       GetPage(
           name: Routes.newsDetailPage,
           page: () => const NewsDetailPage(),

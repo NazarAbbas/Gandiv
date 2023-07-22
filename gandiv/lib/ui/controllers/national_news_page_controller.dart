@@ -13,7 +13,7 @@ class NationalNewsPageController extends FullLifeCycleController {
   final AppDatabase appDatabase = Get.find<AppDatabase>();
   ScrollController controller = ScrollController();
   int pageNo = 1;
-  int pageSize = 10;
+  int pageSize = 5;
   int totalCount = 0;
 
   List<NewsList> newsList = <NewsList>[].obs;
@@ -35,7 +35,7 @@ class NationalNewsPageController extends FullLifeCycleController {
         isLoadMoreItems.value = true;
         // await Future.delayed(const Duration(seconds: 2));
         pageNo = pageNo + 1;
-        pageSize = pageSize + 10;
+        pageSize = pageSize;
         getHomeNews();
       }
     });

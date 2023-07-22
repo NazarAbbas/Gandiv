@@ -1,7 +1,9 @@
 // ignore: file_names
 import 'package:dio/dio.dart';
 import 'package:gandiv/models/about_us_response.dart';
+import 'package:gandiv/models/categories_response.dart';
 import 'package:gandiv/models/e_paper.dart';
+import 'package:gandiv/models/locations_response.dart';
 import 'package:gandiv/models/login_request.dart';
 import 'package:gandiv/models/login_response.dart';
 import 'package:gandiv/models/news_list_response.dart';
@@ -99,9 +101,24 @@ class RestAPI {
       required String locationId,
       required int pageSize,
       required int pageNumber}) async {
-    final selectedLanguage = GetStorage().read(Constant.selectedLanguage);
+    final languageId = GetStorage().read(Constant.selectedLanguage);
     final client = RestClient(dio);
-    final response = await client.newsListApi();
+    final response = await client.newsListApi(
+        categoryId, locationId, languageId, pageSize, pageNumber);
+    return response;
+  }
+
+  // News Locations request
+  Future<LocationsResponse> calllNewsLocations() async {
+    final client = RestClient(dio);
+    final response = await client.newsLocationsApi();
+    return response;
+  }
+
+  // News Categories request
+  Future<CategoriesResponse> calllNewsCategories() async {
+    final client = RestClient(dio);
+    final response = await client.newsCategoryApi();
     return response;
   }
 }

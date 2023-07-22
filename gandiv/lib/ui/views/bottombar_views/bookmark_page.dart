@@ -1,6 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:gandiv/ui/controllers/home_news_page_controller.dart';
 import 'package:get/get.dart';
 import 'package:share/share.dart';
 import '../../../constants/utils.dart';
@@ -16,23 +15,54 @@ class BookmarkPage extends StatefulWidget {
   BookmarkPageListRow createState() => BookmarkPageListRow();
 }
 
-class BookmarkPageListRow extends State {
+class BookmarkPageListRow extends State<BookmarkPage>
+    with WidgetsBindingObserver {
   Future<void> _pullRefresh() async {
     controller.newsList.clear();
     controller.onInit();
   }
-
-  DashboardPageController dashboardPageController =
-      Get.find<DashboardPageController>();
-
-  BookmarkPageController controller = Get.find<BookmarkPageController>();
 
   @override
   void initState() {
     super.initState();
     controller.newsList.clear();
     controller.onInit();
+    // Add the observer.
+    WidgetsBinding.instance.addObserver(this);
   }
+
+  @override
+  void dispose() {
+    // Remove the observer
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    // These are the callbacks
+    switch (state) {
+      case AppLifecycleState.resumed:
+        final xx = "";
+        break;
+      case AppLifecycleState.inactive:
+        final xx = "";
+        break;
+      case AppLifecycleState.paused:
+        final xx = "";
+        break;
+      case AppLifecycleState.detached:
+        final xx = "";
+        break;
+    }
+  }
+
+  DashboardPageController dashboardPageController =
+      Get.find<DashboardPageController>();
+
+  BookmarkPageController controller = Get.find<BookmarkPageController>();
 
   @override
   Widget build(BuildContext context) {

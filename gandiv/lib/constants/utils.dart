@@ -4,7 +4,9 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
+import 'package:get_storage/get_storage.dart';
 import '../models/news_list_response.dart';
+import 'constant.dart';
 
 class Utils {
   Utils(this.context);
@@ -61,7 +63,12 @@ class Utils {
   }
 
   void startAudio(String content) async {
-    await ftts.setLanguage("en-US");
+    final languageId = GetStorage().read(Constant.selectedLanguage);
+    if (languageId == 1) {
+      await ftts.setLanguage("hi");
+    } else {
+      await ftts.setLanguage("en-US");
+    }
     await ftts.setSpeechRate(0.5); //speed of speech
     await ftts.setVolume(1.0); //volume of speech
     await ftts.setPitch(1); //pitc of sound

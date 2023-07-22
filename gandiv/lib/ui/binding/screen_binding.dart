@@ -3,6 +3,7 @@ import 'package:gandiv/ui/controllers/dashboard_page_cotroller.dart';
 import 'package:gandiv/ui/controllers/e_paper_controller.dart';
 import 'package:gandiv/ui/controllers/news_details_page_controller.dart';
 import 'package:gandiv/ui/controllers/profile_page_controller.dart';
+import 'package:gandiv/ui/controllers/splash_page_controller.dart';
 import 'package:gandiv/ui/controllers/upload_news_page_controller.dart';
 import 'package:get/instance_manager.dart';
 import '../../constants/utils.dart';
@@ -35,6 +36,7 @@ class ScreenBindings implements Bindings {
     Get.lazyPut(() => ProfilePageController());
     Get.lazyPut(() => EditProfilePageController());
     Get.lazyPut(() => UploadNewsPagePageController());
+    Get.lazyPut(() => SplashPageController());
     Get.lazyPut<BookmarkPageController>(() => BookmarkPageController(),
         fenix: false);
     Get.lazyPut<NewsDetailsPageController>(() => NewsDetailsPageController(),

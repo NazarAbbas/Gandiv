@@ -9,7 +9,7 @@ import 'package:get/route_manager.dart';
 import 'constants/dependency_injection/dependency_injection.dart';
 
 void main() async {
-  DependencyInjection.init();
+  await DependencyInjection.init();
   runApp(const MyApp());
 }
 

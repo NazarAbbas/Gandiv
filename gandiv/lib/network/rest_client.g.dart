@@ -192,12 +192,58 @@ class _RestClient implements RestClient {
   }
 
   @override
+  Future<CategoriesResponse> newsCategoryApi() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CategoriesResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/news/categories',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CategoriesResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<LocationsResponse> newsLocationsApi() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<LocationsResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/news/locations',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = LocationsResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<NewsListResponse> newsListApi([
-    categoryId = '',
-    locationId = '',
-    laguageId = '',
-    pageSize = 10,
-    pageNumber = 1,
+    categoryId,
+    locationId,
+    laguageId,
+    pageSize,
+    pageNumber,
   ]) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -207,6 +253,7 @@ class _RestClient implements RestClient {
       r'PageSize': pageSize,
       r'PageNumber': pageNumber,
     };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final Map<String, dynamic>? _data = null;
     final _result = await _dio
