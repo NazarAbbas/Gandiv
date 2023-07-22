@@ -39,12 +39,12 @@ class LocationsResponse {
 @entity
 class Locations {
   @primaryKey
-  String id;
-  String name;
+  String? id;
+  String? name;
 
   Locations({
-    required this.id,
-    required this.name,
+    this.id,
+    this.name,
   });
 
   factory Locations.fromRawJson(String str) =>

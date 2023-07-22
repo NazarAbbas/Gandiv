@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
+import 'package:gandiv/models/locations_response.dart';
 import 'package:gandiv/ui/controllers/dashboard_page_cotroller.dart';
 import 'package:gandiv/ui/controllers/upload_news_page_controller.dart';
 import 'package:get/get.dart';
+import 'package:getwidget/components/dropdown/gf_dropdown.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../constants/dialog_utils.dart';
 import '../../../constants/utils.dart';
@@ -15,6 +17,10 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
   UploadNewsPage({super.key});
   DashboardPageController dashboardPageController =
       Get.find<DashboardPageController>();
+
+  var locationId = "";
+
+  // String dropdownvalue = 'Please select location';
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +50,8 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
                         //subheadingImage(context),
                         descriptionWidget(),
                         contentImage(context),
-                        corauselWidget(context)
+                        //corauselWidget(context),
+                        locationDropDownWidget()
 
                         //_userRoleContainer(),
                       ],
@@ -208,62 +215,92 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
   Padding contentImage(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
-      child: GestureDetector(
-        onTap: () {
-          try {
-            DialogUtils.showThreeButtonCustomDialog(
-              context: context,
-              title: 'photo!'.tr,
-              message: 'message'.tr,
-              firstButtonText: 'camera'.tr,
-              secondButtonText: 'gallery'.tr,
-              thirdButtonText: 'cancel'.tr,
-              firstBtnFunction: () {
-                Navigator.of(context).pop();
-                controller.openImage(
-                    ImageSource.camera, ImageType.contentImage);
-              },
-              secondBtnFunction: () {
-                Navigator.of(context).pop();
-                controller.openImage(
-                    ImageSource.gallery, ImageType.contentImage);
-              },
-              thirdBtnFunction: () {
-                Navigator.of(context).pop();
-              },
-            );
-          } catch (e) {
-            print("error while picking file.");
-          }
-        },
-        child: controller.contentCroppedImagepath.isNotEmpty
-            ? Container(
-                width: double.infinity,
-                height: 200,
-                margin: const EdgeInsets.all(20),
-                child: Image.file(
-                  File(controller.contentCroppedImagepath.value),
-                  fit: BoxFit.fill,
-                  width: double.infinity,
-                  height: 200,
-                ),
-              )
-            : Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(color: AppColors.colorPrimary, spreadRadius: 1),
-                  ],
-                ),
-                width: double.infinity,
-                height: 200,
-                child: Center(
-                  child: Text(
-                    'Please upload heading image',
-                    style: TextStyle(color: AppColors.colorPrimary),
-                  ),
+      // child: GestureDetector(
+      //   onTap: () {
+      //     try {
+      //       DialogUtils.showThreeButtonCustomDialog(
+      //         context: context,
+      //         title: 'photo!'.tr,
+      //         message: 'message'.tr,
+      //         firstButtonText: 'camera'.tr,
+      //         secondButtonText: 'gallery'.tr,
+      //         thirdButtonText: 'cancel'.tr,
+      //         firstBtnFunction: () {
+      //           Navigator.of(context).pop();
+      //           controller.openImage(
+      //               ImageSource.camera, ImageType.contentImage);
+      //         },
+      //         secondBtnFunction: () {
+      //           Navigator.of(context).pop();
+      //           controller.openImage(
+      //               ImageSource.gallery, ImageType.contentImage);
+      //         },
+      //         thirdBtnFunction: () {
+      //           Navigator.of(context).pop();
+      //         },
+      //       );
+      //     } catch (e) {
+      //       print("error while picking file.");
+      //     }
+      //   },
+      child: Column(
+        children: [
+          Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(color: AppColors.colorPrimary, spreadRadius: 1),
+                ],
+              ),
+              width: double.infinity,
+              height: 200,
+              child: corauselWidget(context)),
+          GestureDetector(
+            onTap: () {
+              try {
+                DialogUtils.showThreeButtonCustomDialog(
+                  context: context,
+                  title: 'photo!'.tr,
+                  message: 'message'.tr,
+                  firstButtonText: 'camera'.tr,
+                  secondButtonText: 'gallery'.tr,
+                  thirdButtonText: 'cancel'.tr,
+                  firstBtnFunction: () {
+                    Navigator.of(context).pop();
+                    controller.openImage(
+                        ImageSource.camera, ImageType.contentImage);
+                  },
+                  secondBtnFunction: () {
+                    Navigator.of(context).pop();
+                    controller.openImage(
+                        ImageSource.gallery, ImageType.contentImage);
+                  },
+                  thirdBtnFunction: () {
+                    Navigator.of(context).pop();
+                  },
+                );
+              } catch (e) {
+                print("error while picking file.");
+              }
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(color: AppColors.colorPrimary, spreadRadius: 1),
+                ],
+              ),
+              width: double.infinity,
+              height: 35,
+              child: Center(
+                child: Text(
+                  'Upload image',
+                  style: TextStyle(color: AppColors.colorPrimary),
                 ),
               ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -449,34 +486,47 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
             builder: (BuildContext context) {
               return Image.file(
                 File(i),
-                fit: BoxFit.fill,
-                width: 100.0,
-                height: 100.0,
+                fit: BoxFit.cover,
+                width: MediaQuery.of(context).size.width,
               );
             },
           );
         }).toList(),
       ),
+    );
+  }
 
-      // child: Image.network(
-      //   controller.newsList[index].mediaList[0].url ??
-      //       'https://avatars.githubusercontent.com/u/1?v=4"',
-
-      //   height: MediaQuery.of(context).size.width * (3 / 4),
-      //   width: MediaQuery.of(context).size.width,
-      //   loadingBuilder: (BuildContext context, Widget child,
-      //       ImageChunkEvent? loadingProgress) {
-      //     if (loadingProgress == null) return child;
-      //     return Center(
-      //       child: CircularProgressIndicator(
-      //         value: loadingProgress.expectedTotalBytes != null
-      //             ? loadingProgress.cumulativeBytesLoaded /
-      //                 loadingProgress.expectedTotalBytes!
-      //             : null,
-      //       ),
-      //     );
-      //   },
-      // ),
+  Padding locationDropDownWidget() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+      child: SizedBox(
+        width: double.infinity,
+        child: DropdownButtonHideUnderline(
+          child: GFDropdown(
+            hint: const Text('Please select location'),
+            padding: const EdgeInsets.all(0),
+            borderRadius: BorderRadius.circular(5),
+            border: const BorderSide(color: Colors.black12, width: 1),
+            dropdownButtonColor: Colors.white,
+            value: controller.locationList.isEmpty == true
+                ? controller.dropdownvalue
+                : controller.locationList[0],
+            onChanged: (newValue) async {
+              locationId = (newValue! as Locations).id!;
+              await controller.appDatabase.locationsDao
+                  .findLocationsNameById(locationId);
+              controller.dropdownvalue.value = newValue! as Locations;
+              final cc = controller.dropdownvalue;
+            },
+            items: controller.locationList
+                .map((value) => DropdownMenuItem(
+                      value: value,
+                      child: Text(value.name!),
+                    ))
+                .toList(),
+          ),
+        ),
+      ),
     );
   }
 }

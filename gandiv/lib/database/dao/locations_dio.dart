@@ -9,6 +9,9 @@ abstract class LocationsDao {
   @Query('SELECT * FROM Locations WHERE id = :id')
   Future<Locations?> findLocationsById(String id);
 
+  @Query('SELECT name FROM Locations WHERE id = :id')
+  Future<Locations?> findLocationsNameById(String id);
+
   @Query('DELETE FROM Locations WHERE id = :id')
   Future<void> deleteLocationsById(String id);
 

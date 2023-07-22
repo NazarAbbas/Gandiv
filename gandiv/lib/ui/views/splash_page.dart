@@ -38,7 +38,7 @@ class _SplashPageState extends State<SplashPage> {
   //   'Item 4',
   //   'Item 5',
   // ];
-  // String dropdownvalue = 'Please select location';
+  String dropdownvalue = 'Please select location';
   @override
   void initState() {
     super.initState();
@@ -46,7 +46,6 @@ class _SplashPageState extends State<SplashPage> {
     selectedLanguage.write(Constant.selectedLanguage, 1);
     SplashPageController splashPageController =
         Get.find<SplashPageController>();
-    //splashPageController.onInit();
   }
 
   @override
@@ -58,7 +57,7 @@ class _SplashPageState extends State<SplashPage> {
     //     children: [
     //       Padding(
     //         padding: const EdgeInsets.all(10.0),
-    //         child: Container(
+    //         child: SizedBox(
     //           width: double.infinity,
     //           child: DropdownButtonHideUnderline(
     //             child: GFDropdown(
@@ -90,6 +89,8 @@ class _SplashPageState extends State<SplashPage> {
     //         ),
     //       ),
     //     ],
+    //   ),
+    // );
     return Image.asset(
       width: double.infinity,
       height: double.infinity,

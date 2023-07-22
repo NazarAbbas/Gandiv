@@ -5,11 +5,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gandiv/models/create_news_request.dart';
+import 'package:gandiv/models/locations_response.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../constants/values/app_colors.dart';
+import '../../database/app_database.dart';
 import '../../network/rest_api.dart';
 
 class UploadNewsPagePageController extends GetxController {
@@ -33,6 +35,20 @@ class UploadNewsPagePageController extends GetxController {
   final subHeadingCroppedImagepath = "".obs;
   final contentCroppedImagepath = "".obs;
   late File imagefile;
+  final AppDatabase appDatabase = Get.find<AppDatabase>();
+  List<Locations> locationList = <Locations>[].obs;
+  //Locations locations=Locations().obs
+
+  var dropdownvalue = Locations(id: "-1", name: 'Please select location').obs;
+
+  @override
+  void onInit() async {
+    super.onInit();
+    final xx = await appDatabase.locationsDao.findLocations();
+    xx.insert(0, Locations(id: "-1", name: 'Please select location'));
+    locationList.addAll(xx);
+    final xxxx = xx;
+  }
 
   void setPasswordVisible(bool isTrue) {
     isPasswordVisible.value = isTrue;

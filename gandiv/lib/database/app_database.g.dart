@@ -97,7 +97,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Categories` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Locations` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `Locations` (`id` TEXT, `name` TEXT, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -381,14 +381,22 @@ class _$LocationsDao extends LocationsDao {
   Future<List<Locations>> findLocations() async {
     return _queryAdapter.queryList('SELECT * FROM Locations',
         mapper: (Map<String, Object?> row) =>
-            Locations(id: row['id'] as String, name: row['name'] as String));
+            Locations(id: row['id'] as String?, name: row['name'] as String?));
   }
 
   @override
   Future<Locations?> findLocationsById(String id) async {
     return _queryAdapter.query('SELECT * FROM Locations WHERE id = ?1',
         mapper: (Map<String, Object?> row) =>
-            Locations(id: row['id'] as String, name: row['name'] as String),
+            Locations(id: row['id'] as String?, name: row['name'] as String?),
+        arguments: [id]);
+  }
+
+  @override
+  Future<Locations?> findLocationsNameById(String id) async {
+    return _queryAdapter.query('SELECT name FROM Locations WHERE id = ?1',
+        mapper: (Map<String, Object?> row) =>
+            Locations(id: row['id'] as String?, name: row['name'] as String?),
         arguments: [id]);
   }
 
