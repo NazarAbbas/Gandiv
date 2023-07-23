@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:gandiv/models/profile_db_model.dart';
 import 'package:gandiv/models/signup_request.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import '../../constants/constant.dart';
 import '../../database/app_database.dart';
 import '../../network/rest_api.dart';
 
@@ -116,6 +118,9 @@ class SignupPageController extends GetxController {
           token: signupResponse.signupData?.token);
 
       await appDatabase.profileDao.insertProfile(profileData);
+      final selectedLanguage = GetStorage();
+      selectedLanguage.write(Constant.token, signupResponse.signupData?.token);
+
       // final profile1 =
       //     await appDatabase.profileDao.findProfileById(profileData.id!);
       // final profile = await appDatabase.profileDao.findProfile();

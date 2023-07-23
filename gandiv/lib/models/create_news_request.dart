@@ -1,26 +1,17 @@
 import 'dart:convert';
-import 'dart:ffi';
+import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-@JsonSerializable()
 class CreateNewsRequest {
-  @JsonKey(name: 'heading')
-  final String heading;
-  @JsonKey(name: 'subHeading')
-  final String subHeading;
-  @JsonKey(name: 'newsContent')
-  final String newsContent;
-  @JsonKey(name: 'durationInMin')
-  final int durationInMin;
-  @JsonKey(name: 'locationId')
-  final String locationId;
-  @JsonKey(name: 'categoryId')
-  final String categoryId;
-  @JsonKey(name: 'languageId')
-  final int languageId;
-  @JsonKey(name: 'status')
-  final String status;
+  final String? heading;
+  final String? subHeading;
+  final String? newsContent;
+  final String? durationInMin;
+  final String? locationId;
+  final String? categoryId;
+  final String? languageId;
+  final String? status;
+  final List<http.MultipartFile>? multiPartFile;
 
   CreateNewsRequest({
     required this.heading,
@@ -31,6 +22,7 @@ class CreateNewsRequest {
     required this.categoryId,
     required this.languageId,
     required this.status,
+    required this.multiPartFile,
   });
 
   factory CreateNewsRequest.fromRawJson(String str) =>
@@ -48,6 +40,7 @@ class CreateNewsRequest {
         categoryId: json["categoryId"],
         languageId: json["languageId"],
         status: json["status"],
+        multiPartFile: json["multiPartFile"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -59,5 +52,6 @@ class CreateNewsRequest {
         "categoryId": categoryId,
         "languageId": languageId,
         "status": status,
+        "multiPartFile": multiPartFile,
       };
 }

@@ -84,7 +84,7 @@ class _RestClient implements RestClient {
     )
             .compose(
               _dio.options,
-              '/accounts/register',
+              '/accounts/login',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -94,26 +94,86 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<LoginResponse> createNewsApi(createNewsRequest) async {
+  Future<CreateNewsResponse> createNewsApi({
+    token,
+    heading,
+    subHeading,
+    newsContent,
+    locationId,
+    status,
+    languageId,
+    durationInMin,
+    categoryId,
+  }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(createNewsRequest.toJson());
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = FormData();
+    if (heading != null) {
+      _data.fields.add(MapEntry(
+        'Heading',
+        heading,
+      ));
+    }
+    if (subHeading != null) {
+      _data.fields.add(MapEntry(
+        'SubHeading',
+        subHeading,
+      ));
+    }
+    if (newsContent != null) {
+      _data.fields.add(MapEntry(
+        'newsContent',
+        newsContent,
+      ));
+    }
+    if (locationId != null) {
+      _data.fields.add(MapEntry(
+        'LocationId',
+        locationId,
+      ));
+    }
+    if (status != null) {
+      _data.fields.add(MapEntry(
+        'Status',
+        status,
+      ));
+    }
+    if (languageId != null) {
+      _data.fields.add(MapEntry(
+        'LanguageId',
+        languageId,
+      ));
+    }
+    if (durationInMin != null) {
+      _data.fields.add(MapEntry(
+        'DurationInMin',
+        durationInMin,
+      ));
+    }
+    if (categoryId != null) {
+      _data.fields.add(MapEntry(
+        'CategoryId',
+        categoryId,
+      ));
+    }
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<LoginResponse>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<CreateNewsResponse>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
+      contentType: 'multipart/form-data',
     )
             .compose(
               _dio.options,
-              '/accounts/register',
+              '/news/create',
               queryParameters: queryParameters,
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = LoginResponse.fromJson(_result.data!);
+    final value = CreateNewsResponse.fromJson(_result.data!);
     return value;
   }
 

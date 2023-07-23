@@ -18,6 +18,9 @@ class SplashPageController extends GetxController {
     super.onInit();
     final selectedLanguage = GetStorage();
     selectedLanguage.write(Constant.selectedLanguage, 1);
+    selectedLanguage.write(Constant.token,
+        "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODExYjg2Ny0zYzQ4LTRkZjYtMzY3My0wOGRiNzE3OWU0YzIiLCJlbWFpbCI6ImFkbWluQGdhbmRpdi5jb20iLCJhdWQiOlsiU3VwZXJBZG1pbiIsIkF1ZGllbmNlIl0sInJvbGUiOiJTdXBlckFkbWluIiwibmJmIjoxNjkwMTEyMjE5LCJleHAiOjE2OTAxMTU4MTksImlhdCI6MTY5MDExMjIxOSwiaXNzIjoiSXNzdWVyIn0.CFvO1iI-kyhRx3ptCc61tMG50lG8EN34PHmSlSCSXbUqhQPkSpZpx117Ny867PF_1AWd5ie8PwxjwS0_H4Sv0g");
+    final token = GetStorage().read(Constant.token);
     getLocationsApis();
   }
 

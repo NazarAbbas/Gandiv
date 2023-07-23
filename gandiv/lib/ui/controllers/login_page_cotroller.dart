@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gandiv/models/login_request.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
+import '../../constants/constant.dart';
 import '../../network/rest_api.dart';
 
 class LoginPageController extends GetxController {
@@ -76,6 +78,9 @@ class LoginPageController extends GetxController {
           username: emailOrPhoneController.text,
           password: passwordController.text);
       final loginResponse = await restAPI.calllLoginApi(loginRequest);
+
+      final selectedLanguage = GetStorage();
+      selectedLanguage.write(Constant.token, loginResponse.loginData.token);
     } on DioError catch (obj) {
       final res = (obj).response;
       if (kDebugMode) {

@@ -335,6 +335,22 @@ class _$CategoriesDao extends CategoriesDao {
   }
 
   @override
+  Future<Categories?> findCategoriessNameById(String id) async {
+    return _queryAdapter.query('SELECT * FROM Categories WHERE id = ?1',
+        mapper: (Map<String, Object?> row) =>
+            Categories(id: row['id'] as String, name: row['name'] as String),
+        arguments: [id]);
+  }
+
+  @override
+  Future<Categories?> findCategoriesIdByName(String name) async {
+    return _queryAdapter.query('SELECT * FROM Categories WHERE name = ?1',
+        mapper: (Map<String, Object?> row) =>
+            Categories(id: row['id'] as String, name: row['name'] as String),
+        arguments: [name]);
+  }
+
+  @override
   Future<void> deleteCategoriesById(String id) async {
     await _queryAdapter
         .queryNoReturn('DELETE FROM Categories WHERE id = ?1', arguments: [id]);
@@ -394,10 +410,18 @@ class _$LocationsDao extends LocationsDao {
 
   @override
   Future<Locations?> findLocationsNameById(String id) async {
-    return _queryAdapter.query('SELECT name FROM Locations WHERE id = ?1',
+    return _queryAdapter.query('SELECT * FROM Locations WHERE id = ?1',
         mapper: (Map<String, Object?> row) =>
             Locations(id: row['id'] as String?, name: row['name'] as String?),
         arguments: [id]);
+  }
+
+  @override
+  Future<Locations?> findLocationsIdByName(String name) async {
+    return _queryAdapter.query('SELECT * FROM Locations WHERE name = ?1',
+        mapper: (Map<String, Object?> row) =>
+            Locations(id: row['id'] as String?, name: row['name'] as String?),
+        arguments: [name]);
   }
 
   @override

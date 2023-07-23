@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
+import 'package:get/get.dart';
+
+import '../ui/controllers/dashboard_page_cotroller.dart';
 
 class DialogUtils {
-  static DialogUtils _instance = new DialogUtils.internal();
-
+  static final DialogUtils _instance = DialogUtils.internal();
+  static DashboardPageController dashboardPageController =
+      Get.find<DashboardPageController>();
   DialogUtils.internal();
 
   factory DialogUtils() => _instance;
@@ -24,11 +28,13 @@ class DialogUtils {
           return AlertDialog(
             title: Text(title),
             content: Container(
-              color: AppColors.white,
+              color: dashboardPageController.isDarkTheme.value == true
+                  ? AppColors.dartTheme
+                  : AppColors.white,
               height: 300,
               child: Column(
                 children: [
-                  Container(
+                  SizedBox(
                     height: 150,
                     child: Text(
                       message,
@@ -38,6 +44,16 @@ class DialogUtils {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            dashboardPageController.isDarkTheme.value == true
+                                ? AppColors.white
+                                : AppColors.colorPrimary,
+                        foregroundColor:
+                            dashboardPageController.isDarkTheme.value == true
+                                ? AppColors.black
+                                : AppColors.white,
+                      ),
                       onPressed: () {
                         firstBtnFunction.call();
                       },
@@ -47,6 +63,16 @@ class DialogUtils {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            dashboardPageController.isDarkTheme.value == true
+                                ? AppColors.white
+                                : AppColors.colorPrimary,
+                        foregroundColor:
+                            dashboardPageController.isDarkTheme.value == true
+                                ? AppColors.black
+                                : AppColors.white,
+                      ),
                       onPressed: () {
                         secondBtnFunction.call();
                       },
@@ -56,6 +82,16 @@ class DialogUtils {
                   SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              dashboardPageController.isDarkTheme.value == true
+                                  ? AppColors.white
+                                  : AppColors.colorPrimary,
+                          foregroundColor:
+                              dashboardPageController.isDarkTheme.value == true
+                                  ? AppColors.black
+                                  : AppColors.white,
+                        ),
                         onPressed: () {
                           thirdBtnFunction.call();
                         },
@@ -97,7 +133,9 @@ class DialogUtils {
           return AlertDialog(
             title: Text(title),
             content: Container(
-              color: AppColors.white,
+              color: dashboardPageController.isDarkTheme.value == true
+                  ? AppColors.dartTheme
+                  : AppColors.white,
               height: 200,
               child: Column(
                 children: [
@@ -111,6 +149,16 @@ class DialogUtils {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            dashboardPageController.isDarkTheme.value == true
+                                ? AppColors.white
+                                : AppColors.colorPrimary,
+                        foregroundColor:
+                            dashboardPageController.isDarkTheme.value == true
+                                ? AppColors.black
+                                : AppColors.white,
+                      ),
                       onPressed: () {
                         firstBtnFunction.call();
                       },
@@ -120,6 +168,16 @@ class DialogUtils {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            dashboardPageController.isDarkTheme.value == true
+                                ? AppColors.white
+                                : AppColors.colorPrimary,
+                        foregroundColor:
+                            dashboardPageController.isDarkTheme.value == true
+                                ? AppColors.black
+                                : AppColors.white,
+                      ),
                       onPressed: () {
                         secondBtnFunction.call();
                       },

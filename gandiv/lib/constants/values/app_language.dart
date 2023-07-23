@@ -55,6 +55,12 @@ class Languages extends Translations {
           'loading': 'लोड हो रहा है...',
           'no_news_available': 'कोई समाचार उपलब्ध नहीं है',
           'news_details': 'समाचार विवरण',
+          'please_select_location': 'कृपया स्थान चुनें',
+          'please_select_category': 'कृपया श्रेणी चुनें',
+          'please_select_heading': 'कृपया शीर्षक दर्ज करें',
+          'please_select_subheading': 'कृपया उपशीर्षक दर्ज करें',
+          'please_select_description': 'कृपया विवरण दर्ज करें',
+          'upload_image': 'तश्वीरें अपलोड करें',
         },
         'en_US': {
           'setting': 'SETTING',
@@ -108,6 +114,12 @@ class Languages extends Translations {
           'loading': 'Loading...',
           'no_news_available': 'No news avaiable',
           'news_details': 'News Details',
+          'please_select_location': 'Please select location',
+          'please_select_category': 'Please select category',
+          'please_select_heading': 'Please enter heading',
+          'please_select_subheading': 'Please enter sub heading',
+          'please_select_description': 'Please enter description',
+          'upload_image': 'Upload images',
         },
       };
 }

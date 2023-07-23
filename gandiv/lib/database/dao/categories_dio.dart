@@ -10,6 +10,12 @@ abstract class CategoriesDao {
   @Query('SELECT * FROM Categories WHERE id = :id')
   Future<Categories?> findCategoriesById(String id);
 
+  @Query('SELECT * FROM Categories WHERE id = :id')
+  Future<Categories?> findCategoriessNameById(String id);
+
+  @Query('SELECT * FROM Categories WHERE name = :name')
+  Future<Categories?> findCategoriesIdByName(String name);
+
   @Query('DELETE FROM Categories WHERE id = :id')
   Future<void> deleteCategoriesById(String id);
 

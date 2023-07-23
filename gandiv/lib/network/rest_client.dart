@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:gandiv/models/about_us_response.dart';
 import 'package:gandiv/models/categories_response.dart';
 import 'package:gandiv/models/e_paper.dart';
@@ -7,11 +8,13 @@ import 'package:gandiv/models/login_response.dart';
 import 'package:gandiv/models/news_list_response.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
-
+import 'package:http/http.dart' as http;
 import '../models/create_news_request.dart';
+import '../models/create_news_response.dart';
 import '../models/signup_request.dart';
 import '../models/signup_response.dart';
 import '../models/verify_response.dart';
+
 part 'rest_client.g.dart';
 
 class Apis {
@@ -38,12 +41,35 @@ abstract class RestClient {
   @POST(Apis.signup)
   Future<SignupResponse> signupApi(@Body() SignupRequest signupRequest);
 
-  @POST(Apis.signup)
+  @POST(Apis.login)
   Future<LoginResponse> loginApi(@Body() LoginRequest loginRequest);
 
-  @POST(Apis.signup)
-  Future<LoginResponse> createNewsApi(
-      @Body() CreateNewsRequest createNewsRequest);
+  @MultiPart()
+  @POST(Apis.createNews)
+  Future<CreateNewsResponse> createNewsApi(
+      {@required @Header('Authorization') String? token,
+      @required @Part(name: 'Heading') String? heading,
+      @required @Part(name: 'SubHeading') String? subHeading,
+      @required @Part(name: 'newsContent') String? newsContent,
+      @required @Part(name: 'LocationId') String? locationId,
+      @required @Part(name: 'Status') String? status,
+      @required @Part(name: 'LanguageId') String? languageId,
+      @required @Part(name: 'DurationInMin') String? durationInMin,
+      @required @Part(name: 'CategoryId') String? categoryId});
+
+  // @MultiPart()
+  // @POST(Apis.createNews)
+  // Future<CreateNewsResponse> createNewsApi(
+  //     {@required @Header('Authorization') String? token,
+  //     @required @Part(name: 'Heading') String? heading,
+  //     @required @Part(name: 'SubHeading') String? subHeading,
+  //     @required @Part(name: 'newsContent') String? newsContent,
+  //     @required @Part(name: 'LocationId') String? locationId,
+  //     @required @Part(name: 'Status') String? status,
+  //     @required @Part(name: 'LanguageId') String? languageId,
+  //     @required @Part(name: 'DurationInMin') String? durationInMin,
+  //     @required @Part(name: 'CategoryId') String? categoryId,
+  //     @required @Part(name: 'MediaFiles') List<http.MultipartFile>? mediaFiles});
 
   @PUT(Apis.verify)
   Future<VerifyResponse> verifyApi(@Path("code") String code);

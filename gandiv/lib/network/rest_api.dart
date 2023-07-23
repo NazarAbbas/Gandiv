@@ -14,9 +14,11 @@ import 'package:get_storage/get_storage.dart';
 import '../constants/constant.dart';
 
 import '../models/create_news_request.dart';
+import '../models/create_news_response.dart';
 import '../models/dashboard_screen_model.dart';
 import '../models/signup_request.dart';
 import '../models/signup_response.dart';
+import 'package:http/http.dart' as http;
 
 class RestAPI {
   Dio dio = Get.find<Dio>();
@@ -67,10 +69,21 @@ class RestAPI {
   }
 
   //POST create news request
-  Future<LoginResponse> callCreateNewsApi(
+  Future<CreateNewsResponse> callCreateNewsApi(
       CreateNewsRequest createNewsRequest) async {
     final client = RestClient(dio);
-    final response = await client.createNewsApi(createNewsRequest);
+    final token =
+        "Bearer ${GetStorage().read(Constant.token) ?? "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODExYjg2Ny0zYzQ4LTRkZjYtMzY3My0wOGRiNzE3OWU0YzIiLCJlbWFpbCI6ImFkbWluQGdhbmRpdi5jb20iLCJhdWQiOlsiU3VwZXJBZG1pbiIsIkF1ZGllbmNlIl0sInJvbGUiOiJTdXBlckFkbWluIiwibmJmIjoxNjkwMTEyMjE5LCJleHAiOjE2OTAxMTU4MTksImlhdCI6MTY5MDExMjIxOSwiaXNzIjoiSXNzdWVyIn0.CFvO1iI-kyhRx3ptCc61tMG50lG8EN34PHmSlSCSXbUqhQPkSpZpx117Ny867PF_1AWd5ie8PwxjwS0_H4Sv0g"}";
+    final response = await client.createNewsApi(
+        token: token,
+        heading: createNewsRequest.heading,
+        subHeading: createNewsRequest.subHeading,
+        newsContent: createNewsRequest.newsContent,
+        locationId: createNewsRequest.locationId,
+        languageId: createNewsRequest.languageId,
+        status: createNewsRequest.status,
+        durationInMin: createNewsRequest.durationInMin,
+        categoryId: createNewsRequest.categoryId);
     return response;
   }
 

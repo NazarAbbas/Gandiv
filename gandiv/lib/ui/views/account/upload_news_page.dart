@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
-import 'package:gandiv/models/locations_response.dart';
 import 'package:gandiv/ui/controllers/dashboard_page_cotroller.dart';
 import 'package:gandiv/ui/controllers/upload_news_page_controller.dart';
 import 'package:get/get.dart';
@@ -27,7 +26,7 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.colorPrimary,
-          title: Text('upload'.tr),
+          title: Text('upload_news'.tr),
         ),
         body: Form(
           key: controller.formGlobalKey,
@@ -45,15 +44,11 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
                     child: Column(
                       children: <Widget>[
                         headingWidget(),
-                        //headingImage(context),
                         subHeadingWidget(),
-                        //subheadingImage(context),
                         descriptionWidget(),
-                        contentImage(context),
-                        //corauselWidget(context),
+                        imagesWidget(context),
+                        categoriesDropDownWidget(),
                         locationDropDownWidget()
-
-                        //_userRoleContainer(),
                       ],
                     ),
                   ),
@@ -86,163 +81,9 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
         ));
   }
 
-  Padding headingImage(BuildContext context) {
+  Padding imagesWidget(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
-      child: GestureDetector(
-        onTap: () {
-          try {
-            DialogUtils.showThreeButtonCustomDialog(
-              context: context,
-              title: 'photo!'.tr,
-              message: 'message'.tr,
-              firstButtonText: 'camera'.tr,
-              secondButtonText: 'gallery'.tr,
-              thirdButtonText: 'cancel'.tr,
-              firstBtnFunction: () {
-                Navigator.of(context).pop();
-                controller.openImage(
-                    ImageSource.camera, ImageType.headingImage);
-              },
-              secondBtnFunction: () {
-                Navigator.of(context).pop();
-                controller.openImage(
-                    ImageSource.gallery, ImageType.headingImage);
-              },
-              thirdBtnFunction: () {
-                Navigator.of(context).pop();
-              },
-            );
-          } catch (e) {
-            print("error while picking file.");
-          }
-        },
-        child: controller.headingCroppedImagepath.isNotEmpty
-            ? Container(
-                width: double.infinity,
-                height: 200,
-                margin: const EdgeInsets.all(20),
-                child: Image.file(
-                  File(controller.headingCroppedImagepath.value),
-                  fit: BoxFit.fill,
-                  width: double.infinity,
-                  height: 200,
-                ),
-              )
-            : Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(color: AppColors.colorPrimary, spreadRadius: 1),
-                  ],
-                ),
-                width: double.infinity,
-                height: 200,
-                child: Center(
-                  child: Text(
-                    'Please upload heading image',
-                    style: TextStyle(color: AppColors.colorPrimary),
-                  ),
-                ),
-              ),
-      ),
-    );
-  }
-
-  Padding subheadingImage(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: GestureDetector(
-        onTap: () {
-          try {
-            DialogUtils.showThreeButtonCustomDialog(
-              context: context,
-              title: 'photo!'.tr,
-              message: 'message'.tr,
-              firstButtonText: 'camera'.tr,
-              secondButtonText: 'gallery'.tr,
-              thirdButtonText: 'cancel'.tr,
-              firstBtnFunction: () {
-                Navigator.of(context).pop();
-                controller.openImage(
-                    ImageSource.camera, ImageType.subHeadingImage);
-              },
-              secondBtnFunction: () {
-                Navigator.of(context).pop();
-                controller.openImage(
-                    ImageSource.gallery, ImageType.subHeadingImage);
-              },
-              thirdBtnFunction: () {
-                Navigator.of(context).pop();
-              },
-            );
-          } catch (e) {
-            print("error while picking file.");
-          }
-        },
-        child: controller.subHeadingCroppedImagepath.isNotEmpty
-            ? Container(
-                width: double.infinity,
-                height: 200,
-                margin: const EdgeInsets.all(20),
-                child: Image.file(
-                  File(controller.subHeadingCroppedImagepath.value),
-                  fit: BoxFit.fill,
-                  width: double.infinity,
-                  height: 200,
-                ),
-              )
-            : Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(color: AppColors.colorPrimary, spreadRadius: 1),
-                  ],
-                ),
-                width: double.infinity,
-                height: 200,
-                child: Center(
-                  child: Text(
-                    'Please upload heading image',
-                    style: TextStyle(color: AppColors.colorPrimary),
-                  ),
-                ),
-              ),
-      ),
-    );
-  }
-
-  Padding contentImage(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      // child: GestureDetector(
-      //   onTap: () {
-      //     try {
-      //       DialogUtils.showThreeButtonCustomDialog(
-      //         context: context,
-      //         title: 'photo!'.tr,
-      //         message: 'message'.tr,
-      //         firstButtonText: 'camera'.tr,
-      //         secondButtonText: 'gallery'.tr,
-      //         thirdButtonText: 'cancel'.tr,
-      //         firstBtnFunction: () {
-      //           Navigator.of(context).pop();
-      //           controller.openImage(
-      //               ImageSource.camera, ImageType.contentImage);
-      //         },
-      //         secondBtnFunction: () {
-      //           Navigator.of(context).pop();
-      //           controller.openImage(
-      //               ImageSource.gallery, ImageType.contentImage);
-      //         },
-      //         thirdBtnFunction: () {
-      //           Navigator.of(context).pop();
-      //         },
-      //       );
-      //     } catch (e) {
-      //       print("error while picking file.");
-      //     }
-      //   },
       child: Column(
         children: [
           Container(
@@ -294,7 +135,7 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
               height: 35,
               child: Center(
                 child: Text(
-                  'Upload image',
+                  'upload_image'.tr,
                   style: TextStyle(color: AppColors.colorPrimary),
                 ),
               ),
@@ -307,8 +148,8 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
 
   void uploadttonClick(BuildContext context) async {
     Utils(context).startLoading();
-    await Future.delayed(const Duration(seconds: 2));
-    controller.onUpload();
+    //await Future.delayed(const Duration(seconds: 2));
+    await controller.onUpload();
     // ignore: use_build_context_synchronously
     Utils(context).stopLoading();
     // Get.back();
@@ -322,11 +163,11 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
         textInputAction: TextInputAction.next,
         maxLines: 2,
         onChanged: (text) {
-          controller.isFirstNameValid();
+          controller.isHeadingValid();
         },
-        controller: controller.firstNameController,
+        controller: controller.headingController,
         validator: (firstName) {
-          return controller.isFirstNameValid();
+          return controller.isHeadingValid();
         },
         keyboardType: TextInputType.text,
         decoration: InputDecoration(
@@ -376,11 +217,11 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
         textInputAction: TextInputAction.next,
         maxLines: 3,
         onChanged: (text) {
-          controller.isLastNameValid();
+          controller.isSubHeadingValid();
         },
-        controller: controller.lastNameController,
+        controller: controller.subHeadingController,
         validator: (firstName) {
-          return controller.isLastNameValid();
+          return controller.isSubHeadingValid();
         },
         keyboardType: TextInputType.text,
         decoration: InputDecoration(
@@ -430,9 +271,9 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
         textInputAction: TextInputAction.done,
         maxLines: 5,
         keyboardType: TextInputType.text,
-        controller: controller.passwordController,
+        controller: controller.descriptionController,
         validator: (password) {
-          return controller.isPasswordValid();
+          return controller.isDescriptionValid();
         },
         enableSuggestions: false,
         decoration: InputDecoration(
@@ -503,25 +344,56 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
         width: double.infinity,
         child: DropdownButtonHideUnderline(
           child: GFDropdown(
-            hint: const Text('Please select location'),
+            hint: Text('please_select_location'.tr),
             padding: const EdgeInsets.all(0),
             borderRadius: BorderRadius.circular(5),
             border: const BorderSide(color: Colors.black12, width: 1),
             dropdownButtonColor: Colors.white,
-            value: controller.locationList.isEmpty == true
-                ? controller.dropdownvalue
-                : controller.locationList[0],
+            value: controller.locationDropdownValue.value,
             onChanged: (newValue) async {
-              locationId = (newValue! as Locations).id!;
-              await controller.appDatabase.locationsDao
-                  .findLocationsNameById(locationId);
-              controller.dropdownvalue.value = newValue! as Locations;
-              final cc = controller.dropdownvalue;
+              controller.locationDropdownValue.value = newValue!;
+              final selectedId = await controller.appDatabase.locationsDao
+                  .findLocationsIdByName(newValue);
+              controller.locationDropdownSelectedID =
+                  selectedId == null ? "" : selectedId.id!;
             },
             items: controller.locationList
                 .map((value) => DropdownMenuItem(
                       value: value,
-                      child: Text(value.name!),
+                      child: Text(value),
+                    ))
+                .toList(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding categoriesDropDownWidget() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+      child: SizedBox(
+        width: double.infinity,
+        child: DropdownButtonHideUnderline(
+          child: GFDropdown(
+            hint: Text('please_select_category'.tr),
+            padding: const EdgeInsets.all(0),
+            borderRadius: BorderRadius.circular(5),
+            border: const BorderSide(color: Colors.black12, width: 1),
+            dropdownButtonColor: Colors.white,
+            value: controller.categoriesDropdownValue.value,
+            onChanged: (newValue) async {
+              controller.categoriesDropdownValue.value = newValue!;
+              final selectedId = await controller.appDatabase.categoriesDao
+                  .findCategoriesIdByName(newValue);
+
+              controller.categoriesDropdownSelectedID =
+                  selectedId == null ? "" : selectedId.id;
+            },
+            items: controller.categoriesList
+                .map((value) => DropdownMenuItem(
+                      value: value,
+                      child: Text(value),
                     ))
                 .toList(),
           ),

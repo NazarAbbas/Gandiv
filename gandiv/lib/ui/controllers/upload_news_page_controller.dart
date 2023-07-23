@@ -1,11 +1,9 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:dio/dio.dart' as dioError;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gandiv/models/create_news_request.dart';
-import 'package:gandiv/models/locations_response.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -13,16 +11,17 @@ import 'package:image_picker/image_picker.dart';
 import '../../constants/values/app_colors.dart';
 import '../../database/app_database.dart';
 import '../../network/rest_api.dart';
+import 'package:path/path.dart';
+import 'package:http/http.dart' as http;
 
 class UploadNewsPagePageController extends GetxController {
   final RestAPI restAPI = Get.find<RestAPI>();
   final isPasswordVisible = true.obs;
   final isLoading = false.obs;
 
-  final firstNameController = TextEditingController();
-  final lastNameController = TextEditingController();
-  final emailOrPhoneController = TextEditingController();
-  final passwordController = TextEditingController();
+  final headingController = TextEditingController();
+  final subHeadingController = TextEditingController();
+  final descriptionController = TextEditingController();
 
   final formGlobalKey = GlobalKey<FormState>();
   final singleUserRoleValue = "Reporter".obs;
@@ -36,18 +35,26 @@ class UploadNewsPagePageController extends GetxController {
   final contentCroppedImagepath = "".obs;
   late File imagefile;
   final AppDatabase appDatabase = Get.find<AppDatabase>();
-  List<Locations> locationList = <Locations>[].obs;
-  //Locations locations=Locations().obs
 
-  var dropdownvalue = Locations(id: "-1", name: 'Please select location').obs;
+  List<String> locationList = <String>['please_select_location'.tr].obs;
+  var locationDropdownValue = 'please_select_location'.tr.obs;
+  String locationDropdownSelectedID = "";
+
+  List<String> categoriesList = <String>['please_select_category'.tr].obs;
+  var categoriesDropdownValue = 'please_select_category'.tr.obs;
+  String categoriesDropdownSelectedID = "";
 
   @override
   void onInit() async {
     super.onInit();
-    final xx = await appDatabase.locationsDao.findLocations();
-    xx.insert(0, Locations(id: "-1", name: 'Please select location'));
-    locationList.addAll(xx);
-    final xxxx = xx;
+    final locations = await appDatabase.locationsDao.findLocations();
+    for (var location in locations) {
+      locationList.add(location.name!);
+    }
+    final categories = await appDatabase.categoriesDao.findCategories();
+    for (var categorie in categories) {
+      categoriesList.add(categorie.name!);
+    }
   }
 
   void setPasswordVisible(bool isTrue) {
@@ -59,82 +66,73 @@ class UploadNewsPagePageController extends GetxController {
   }
 
   @override
-  void onClose() {
-    emailOrPhoneController.dispose();
-    passwordController.dispose();
-  }
+  void onClose() {}
 
-  String? isPasswordValid() {
-    if (passwordController.text.trim().isEmpty) {
-      return "Please enter password";
+  String? isDescriptionValid() {
+    if (descriptionController.text.trim().isEmpty) {
+      return 'please_select_description'.tr;
     }
     return null;
   }
 
-  String? isFirstNameValid() {
-    if (firstNameController.text.trim().isEmpty) {
-      return "Please enter name";
+  String? isHeadingValid() {
+    if (headingController.text.trim().isEmpty) {
+      return 'please_select_heading'.tr;
     }
     return null;
   }
 
-  String? isLastNameValid() {
-    if (lastNameController.text.trim().isEmpty) {
-      return "Please enter last name";
-    }
-    return null;
-  }
-
-  String? isEmailValid() {
-    if (emailOrPhoneController.text.trim().isEmpty) {
-      return "Please enter valid email OR phone number";
-    }
-    if (!emailOrPhoneController.text.trim().isEmail &&
-        !RegExp(r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$')
-            .hasMatch(emailOrPhoneController.text.trim())) {
-      return "Please enter valid email OR phone number";
+  String? isSubHeadingValid() {
+    if (subHeadingController.text.trim().isEmpty) {
+      return 'please_select_subheading'.tr;
     }
     return null;
   }
 
   Future<void> onUpload() async {
-    validateFields();
-    // emailOrPhoneController.text = "";
-    // passwordController.text = "";
-
-    // validateFields();
-
-    // if (isValid()) {
-    //   _status.value = RxStatus.loading();
-    //   try {
-    //     //Perform login logic here
-    //     _status.value = RxStatus.success();
-    //   } catch (e) {
-    //     e.printError();
-    //     _status.value = RxStatus.error(e.toString());
-    //   }
-    // }
+    await validateFields();
   }
 
-  void validateFields() {
+  Future<void> validateFields() async {
     if (formGlobalKey.currentState!.validate()) {
       formGlobalKey.currentState?.save();
+      await executeNewsUploadApi();
     }
   }
 
-  void executeSignupApi() async {
+  Future<void> executeNewsUploadApi() async {
     try {
-      CreateNewsRequest loginRequest = CreateNewsRequest(
-          heading: firstNameController.text,
-          subHeading: lastNameController.text,
-          newsContent: passwordController.text,
-          durationInMin: 0,
-          locationId: "5dded3bc-654d-464e-3fcf-08db7a5882e0",
-          categoryId: "65ecb2f9-31ee-44c3-d664-08db7a51f0c5",
-          languageId: 2,
-          status: "created");
-      final loginResponse = await restAPI.callCreateNewsApi(loginRequest);
-    } on DioError catch (obj) {
+      final List<http.MultipartFile> mediaFiles = <http.MultipartFile>[];
+
+      try {
+        for (int i = 0; i < imageList.length; i++) {
+          var path = imageList[i];
+          File imageFile = File(path);
+          var stream = http.ByteStream(imageFile.openRead());
+          var length = await imageFile.length();
+          var multipartFile = http.MultipartFile("pictures", stream, length,
+              filename: basename(imageFile.path));
+          mediaFiles.add(multipartFile);
+        }
+      } on Exception catch (exception) {
+        final message = exception;
+      }
+
+      final response = await restAPI.callCreateNewsApi(
+        CreateNewsRequest(
+            heading: headingController.text,
+            subHeading: subHeadingController.text,
+            newsContent: descriptionController.text,
+            durationInMin: 0.toString(),
+            locationId: locationDropdownSelectedID,
+            categoryId: categoriesDropdownSelectedID,
+            languageId: "2",
+            status: "Created",
+            multiPartFile: mediaFiles),
+      );
+
+      final res = response;
+    } on dioError.DioError catch (obj) {
       final res = (obj).response;
       if (kDebugMode) {
         print("Got error : ${res?.statusCode} -> ${res?.statusMessage}");
