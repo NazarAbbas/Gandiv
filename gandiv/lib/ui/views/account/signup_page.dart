@@ -3,6 +3,7 @@ import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:gandiv/ui/controllers/dashboard_page_cotroller.dart';
 import 'package:get/get.dart';
 
+import '../../../constants/dialog_utils.dart';
 import '../../../constants/utils.dart';
 import '../../../constants/values/app_images.dart';
 import '../../controllers/signup_page_cotroller.dart';
@@ -76,11 +77,29 @@ class SignupPage extends GetView<SignupPageController> {
   void loginButtonClick(BuildContext context) async {
     Utils(context).startLoading();
     // await Future.delayed(const Duration(seconds: 2));
-    await controller.onSignup();
+    final response = await controller.onSignup();
     // ignore: use_build_context_synchronously
     Utils(context).stopLoading();
     //  Get.back();
     //  Get.back();
+
+    if (response != null && response.status != 200) {
+      // ignore: use_build_context_synchronously
+      DialogUtils.showSingleButtonCustomDialog(
+        context: context,
+        title: 'ERROR',
+        message: response?.message,
+        firstButtonText: 'OK',
+        firstBtnFunction: () {
+          Navigator.of(context).pop();
+        },
+      );
+    } else if (response != null && response.status == 200) {
+      {
+        Get.back();
+        Get.back();
+      }
+    }
   }
 
   Image topImageWidget() {
@@ -271,11 +290,11 @@ class SignupPage extends GetView<SignupPageController> {
       child: TextFormField(
         textInputAction: TextInputAction.next,
         onChanged: (text) {
-          controller.isEmailValid();
+          controller.isValidEmail();
         },
         controller: controller.emailController,
         validator: (emailOrMobileNumer) {
-          return controller.isEmailValid();
+          return controller.isValidEmail();
         },
         keyboardType: TextInputType.emailAddress,
         decoration: InputDecoration(

@@ -65,6 +65,7 @@ class RestAPI {
   Future<LoginResponse> calllLoginApi(LoginRequest loginRequest) async {
     final client = RestClient(dio);
     final response = await client.loginApi(loginRequest);
+    final finalResponse = response;
     return response;
   }
 

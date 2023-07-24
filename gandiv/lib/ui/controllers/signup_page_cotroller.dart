@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../constants/constant.dart';
 import '../../database/app_database.dart';
+import '../../models/signup_response.dart';
 import '../../network/rest_api.dart';
 
 class SignupPageController extends GetxController {
@@ -63,40 +64,48 @@ class SignupPageController extends GetxController {
     return null;
   }
 
-  String? isEmailValid() {
-    if (emailController.text.trim().isEmpty) {
-      return "Please enter valid email OR phone number";
-    }
-    if (!emailController.text.trim().isEmail &&
-        !RegExp(r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$')
-            .hasMatch(emailController.text.trim())) {
-      return "Please enter valid email OR phone number";
+  String? isValidEmail() {
+    if (emailController.text.trim().isEmpty ||
+        !emailController.text.trim().isEmail) {
+      return "Please enter valid email";
     }
     return null;
   }
 
+  // String? isEmailValid() {
+  //   if (emailController.text.trim().isEmpty) {
+  //     return "Please enter valid email OR phone number";
+  //   }
+  //   if (!emailController.text.trim().isEmail &&
+  //       !RegExp(r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$')
+  //           .hasMatch(emailController.text.trim())) {
+  //     return "Please enter valid email OR phone number";
+  //   }
+  //   return null;
+  // }
+
   String? isValidPhoneNumber() {
-    if (phoneNumberController.text.trim().length != 10) {
+    if (phoneNumberController.text.trim().length != 10 &&
+        phoneNumberController.text.trim().isNotEmpty) {
       return "Please enter valid phone number";
     }
     return null;
   }
 
-  Future<void> onSignup() async {
-    await validateFields();
-    // emailOrPhoneController.text = "";
-    // passwordController.text = "";
-    // validateFields();
+  Future<SignupResponse?> onSignup() async {
+    return await validateFields();
   }
 
-  Future<void> validateFields() async {
+  Future<SignupResponse?> validateFields() async {
     if (formGlobalKey.currentState!.validate()) {
       formGlobalKey.currentState?.save();
-      await executeSignupApi();
+      return await executeSignupApi();
     }
+    return null;
   }
 
-  Future<void> executeSignupApi() async {
+  Future<SignupResponse?> executeSignupApi() async {
+    SignupResponse? signupResponse = SignupResponse();
     try {
       SignupRequest signupRequest = SignupRequest(
           firstname: firstNameController.text,
@@ -121,15 +130,20 @@ class SignupPageController extends GetxController {
       final selectedLanguage = GetStorage();
       selectedLanguage.write(Constant.token, signupResponse.signupData?.token);
 
+      return signupResponse;
+
       // final profile1 =
       //     await appDatabase.profileDao.findProfileById(profileData.id!);
       // final profile = await appDatabase.profileDao.findProfile();
       // final xx = "";
     } on DioError catch (obj) {
       final res = (obj).response;
-      if (kDebugMode) {
-        print("Got error : ${res?.statusCode} -> ${res?.statusMessage}");
-      }
+      signupResponse ??= SignupResponse();
+      signupResponse.message = res?.data['message'];
+      signupResponse.status = res?.data['status'];
+      signupResponse.signupData = res?.data['data'];
+      return signupResponse;
+
       // FOR CUSTOM MESSAGE
       // final errorMessage = NetworkExceptions.getDioException(obj);
     } on Exception catch (exception) {

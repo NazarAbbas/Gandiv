@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gandiv/models/login_request.dart';
+import 'package:gandiv/models/login_response.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -13,7 +14,7 @@ class LoginPageController extends GetxController {
   final isPasswordVisible = true.obs;
   final isLoading = false.obs;
 
-  final emailOrPhoneController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   final formGlobalKey = GlobalKey<FormState>();
@@ -24,7 +25,7 @@ class LoginPageController extends GetxController {
 
   @override
   void onClose() {
-    emailOrPhoneController.dispose();
+    emailController.dispose();
     passwordController.dispose();
   }
 
@@ -35,63 +36,61 @@ class LoginPageController extends GetxController {
     return null;
   }
 
-  String? isEmailValid() {
-    if (emailOrPhoneController.text.trim().isEmpty) {
-      return "Please enter valid email OR phone number";
+  String? isValidEmail() {
+    if (emailController.text.trim().isEmpty ||
+        !emailController.text.trim().isEmail) {
+      return "Please enter valid email";
     }
-    if (!emailOrPhoneController.text.trim().isEmail &&
-        !RegExp(r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$')
-            .hasMatch(emailOrPhoneController.text.trim())) {
-      return "Please enter valid email OR phone number";
+    return null;
+    // final bool emailValid = RegExp(
+    //         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+    //     .hasMatch(emailController.text);
+  }
+
+  // String? isEmailValid() {
+  //   if (emailOrPhoneController.text.trim().isEmpty) {
+  //     return "Please enter valid email OR phone number";
+  //   }
+  //   if (!emailOrPhoneController.text.trim().isEmail &&
+  //       !RegExp(r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$')
+  //           .hasMatch(emailOrPhoneController.text.trim())) {
+  //     return "Please enter valid email OR phone number";
+  //   }
+  //   return null;
+  // }
+
+  Future<LoginResponse?> onLogin() async {
+    return await validateFields();
+  }
+
+  Future<LoginResponse?> validateFields() async {
+    if (formGlobalKey.currentState!.validate()) {
+      formGlobalKey.currentState?.save();
+      return await executeLoginApi();
     }
     return null;
   }
 
-  Future<void> onLogin() async {
-    // validateFields();
-    // emailOrPhoneController.text = "";
-    // passwordController.text = "";
-    validateFields();
-
-    // if (isValid()) {
-    //   _status.value = RxStatus.loading();
-    //   try {
-    //     //Perform login logic here
-    //     _status.value = RxStatus.success();
-    //   } catch (e) {
-    //     e.printError();
-    //     _status.value = RxStatus.error(e.toString());
-    //   }
-    // }
-  }
-
-  void validateFields() {
-    if (formGlobalKey.currentState!.validate()) {
-      formGlobalKey.currentState?.save();
-      executeSignupApi();
-    }
-  }
-
-  void executeSignupApi() async {
+  Future<LoginResponse?> executeLoginApi() async {
+    LoginResponse? loginResponse = LoginResponse();
     try {
       LoginRequest loginRequest = LoginRequest(
-          username: emailOrPhoneController.text,
-          password: passwordController.text);
-      final loginResponse = await restAPI.calllLoginApi(loginRequest);
-
+          username: emailController.text, password: passwordController.text);
+      loginResponse = await restAPI.calllLoginApi(loginRequest);
       final selectedLanguage = GetStorage();
-      selectedLanguage.write(Constant.token, loginResponse.loginData.token);
+      selectedLanguage.write(Constant.token, loginResponse.loginData?.token);
+      return loginResponse;
     } on DioError catch (obj) {
       final res = (obj).response;
-      if (kDebugMode) {
-        print("Got error : ${res?.statusCode} -> ${res?.statusMessage}");
-      }
+      loginResponse ??= LoginResponse();
+      loginResponse.message = res?.data['message'];
+      loginResponse.status = res?.data['status'];
+      loginResponse.loginData = res?.data['data'];
+      return loginResponse;
       // FOR CUSTOM MESSAGE
       // final errorMessage = NetworkExceptions.getDioException(obj);
     } on Exception catch (exception) {
-      if (kDebugMode) {
-        print("Got error : $exception");
-      }
+      return loginResponse;
     } finally {}
   }
 }

@@ -190,4 +190,55 @@ class DialogUtils {
           );
         });
   }
+
+  static void showSingleButtonCustomDialog(
+      {required BuildContext context,
+      required String title,
+      required String? message,
+      required String firstButtonText,
+      required Function firstBtnFunction}) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: Text(title),
+            content: Container(
+              color: dashboardPageController.isDarkTheme.value == true
+                  ? AppColors.dartTheme
+                  : AppColors.white,
+              height: 150,
+              child: Column(
+                children: [
+                  Container(
+                    height: 80,
+                    child: Text(
+                      message ?? "",
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            dashboardPageController.isDarkTheme.value == true
+                                ? AppColors.white
+                                : AppColors.colorPrimary,
+                        foregroundColor:
+                            dashboardPageController.isDarkTheme.value == true
+                                ? AppColors.black
+                                : AppColors.white,
+                      ),
+                      onPressed: () {
+                        firstBtnFunction.call();
+                      },
+                      child: Text(firstButtonText),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
 }

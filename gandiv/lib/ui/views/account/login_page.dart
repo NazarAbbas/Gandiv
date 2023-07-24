@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:gandiv/constants/dialog_utils.dart';
+import 'package:gandiv/constants/utils.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:gandiv/ui/controllers/dashboard_page_cotroller.dart';
 import 'package:gandiv/ui/controllers/login_page_cotroller.dart';
 import 'package:get/get.dart';
 
-import '../../../constants/dialog_utils.dart';
 import '../../../constants/values/app_images.dart';
 import '../../../route_management/routes.dart';
 
@@ -37,7 +38,7 @@ class LoginPage extends GetView<LoginPageController> {
                 child: Column(
                   children: <Widget>[
                     topImageWidget(),
-                    mobileNumberWidget(),
+                    emailWidget(),
                     passwordWidget(),
                     Padding(
                       padding:
@@ -92,69 +93,27 @@ class LoginPage extends GetView<LoginPageController> {
   }
 
   void loginButtonClick(BuildContext context) async {
-    // Utils(context).showDiaolg(
-    //     'title', 'message', 'hello', 'hi', okButtonPress, cancelButtonPress);
-    // await Future.delayed(const Duration(seconds: 2));
-    // controller.onLogin();
+    Utils(context).startLoading();
+    final response = await controller.onLogin();
     // ignore: use_build_context_synchronously
-    // Utils(context).stopLoading();
-
-    DialogUtils.showThreeButtonCustomDialog(
-      context: context,
-      title: "Photo!",
-      message: "message",
-      firstButtonText: "CAMERA",
-      secondButtonText: "GALLERY",
-      thirdButtonText: "CANCEL",
-      firstBtnFunction: () {
-        Navigator.of(context).pop();
-      },
-      secondBtnFunction: () {
-        Navigator.of(context).pop();
-      },
-      thirdBtnFunction: () {
-        Navigator.of(context).pop();
-      },
-    );
-
-    // showCustomDialog(context);
-  }
-
-  void showCustomDialog(BuildContext context) {
-    showGeneralDialog(
-      context: context,
-      barrierLabel: "Barrier",
-      barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.5),
-      transitionDuration: Duration(milliseconds: 700),
-      pageBuilder: (_, __, ___) {
-        return Center(
-          child: Container(
-            height: 240,
-            child: SizedBox.expand(child: FlutterLogo()),
-            margin: EdgeInsets.symmetric(horizontal: 20),
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(40)),
-          ),
-        );
-      },
-      transitionBuilder: (_, anim, __, child) {
-        Tween<Offset> tween;
-        if (anim.status == AnimationStatus.reverse) {
-          tween = Tween(begin: Offset(-1, 0), end: Offset.zero);
-        } else {
-          tween = Tween(begin: Offset(1, 0), end: Offset.zero);
-        }
-
-        return SlideTransition(
-          position: tween.animate(anim),
-          child: FadeTransition(
-            opacity: anim,
-            child: child,
-          ),
-        );
-      },
-    );
+    Utils(context).stopLoading();
+    // ignore: use_build_context_synchronously
+    if (response != null && response.status != 200) {
+      // ignore: use_build_context_synchronously
+      DialogUtils.showSingleButtonCustomDialog(
+        context: context,
+        title: 'ERROR',
+        message: response?.message,
+        firstButtonText: 'OK',
+        firstBtnFunction: () {
+          Navigator.of(context).pop();
+        },
+      );
+    } else if (response != null && response.status == 200) {
+      {
+        Get.back();
+      }
+    }
   }
 
   Future updateProfilePic(BuildContext context) {
@@ -255,16 +214,16 @@ class LoginPage extends GetView<LoginPageController> {
     );
   }
 
-  Padding mobileNumberWidget() {
+  Padding emailWidget() {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 80),
       child: TextFormField(
         onChanged: (text) {
-          controller.isEmailValid();
+          controller.isValidEmail();
         },
-        controller: controller.emailOrPhoneController,
+        controller: controller.emailController,
         validator: (emailOrMobileNumer) {
-          return controller.isEmailValid();
+          return controller.isValidEmail();
         },
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
@@ -282,8 +241,8 @@ class LoginPage extends GetView<LoginPageController> {
                   color: dashboardPageController.isDarkTheme.value == true
                       ? Colors.white
                       : AppColors.colorPrimary)),
-          labelText: 'mobileNumber'.tr,
-          hintText: 'mobileNumber'.tr,
+          labelText: 'email'.tr,
+          hintText: 'email'.tr,
           hintStyle: TextStyle(
               color: dashboardPageController.isDarkTheme.value == true
                   ? Colors.white

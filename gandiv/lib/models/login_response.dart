@@ -5,16 +5,16 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 @JsonSerializable()
 class LoginResponse {
   @JsonKey(name: 'status')
-  final int status;
+  int? status;
   @JsonKey(name: 'message')
-  final String message;
+  String? message;
   @JsonKey(name: 'data')
-  final LoginData loginData;
+  LoginData? loginData;
 
   LoginResponse({
-    required this.status,
-    required this.message,
-    required this.loginData,
+    this.status,
+    this.message,
+    this.loginData,
   });
 
   factory LoginResponse.fromRawJson(String str) =>
@@ -31,7 +31,7 @@ class LoginResponse {
   Map<String, dynamic> toJson() => {
         "status": status,
         "message": message,
-        "data": loginData.toJson(),
+        "data": loginData?.toJson(),
       };
 }
 
