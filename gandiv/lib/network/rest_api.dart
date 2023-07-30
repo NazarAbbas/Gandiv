@@ -74,7 +74,8 @@ class RestAPI {
       CreateNewsRequest createNewsRequest) async {
     final client = RestClient(dio);
     final token =
-        "Bearer ${GetStorage().read(Constant.token) ?? "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODExYjg2Ny0zYzQ4LTRkZjYtMzY3My0wOGRiNzE3OWU0YzIiLCJlbWFpbCI6ImFkbWluQGdhbmRpdi5jb20iLCJhdWQiOlsiU3VwZXJBZG1pbiIsIkF1ZGllbmNlIl0sInJvbGUiOiJTdXBlckFkbWluIiwibmJmIjoxNjkwMTEyMjE5LCJleHAiOjE2OTAxMTU4MTksImlhdCI6MTY5MDExMjIxOSwiaXNzIjoiSXNzdWVyIn0.CFvO1iI-kyhRx3ptCc61tMG50lG8EN34PHmSlSCSXbUqhQPkSpZpx117Ny867PF_1AWd5ie8PwxjwS0_H4Sv0g"}";
+        "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODExYjg2Ny0zYzQ4LTRkZjYtMzY3My0wOGRiNzE3OWU0YzIiLCJlbWFpbCI6ImFkbWluQGdhbmRpdi5jb20iLCJhdWQiOlsiU3VwZXJBZG1pbiIsIkF1ZGllbmNlIl0sInJvbGUiOiJTdXBlckFkbWluIiwibmJmIjoxNjkwMzA0MDA4LCJleHAiOjE2OTAzMDc2MDgsImlhdCI6MTY5MDMwNDAwOCwiaXNzIjoiSXNzdWVyIn0.CEmNDBEhkqNGGMY4ujQrsVT60yb8prJyZ_5yZRP-IrPN8gg-kWdmQqdWroB6XKV5Czon2i2shlG24rQGyYlOFg";
+    // "Bearer ${GetStorage().read(Constant.token) ?? "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODExYjg2Ny0zYzQ4LTRkZjYtMzY3My0wOGRiNzE3OWU0YzIiLCJlbWFpbCI6ImFkbWluQGdhbmRpdi5jb20iLCJhdWQiOlsiU3VwZXJBZG1pbiIsIkF1ZGllbmNlIl0sInJvbGUiOiJTdXBlckFkbWluIiwibmJmIjoxNjkwMTEyMjE5LCJleHAiOjE2OTAxMTU4MTksImlhdCI6MTY5MDExMjIxOSwiaXNzIjoiSXNzdWVyIn0.CFvO1iI-kyhRx3ptCc61tMG50lG8EN34PHmSlSCSXbUqhQPkSpZpx117Ny867PF_1AWd5ie8PwxjwS0_H4Sv0g"}";
     final response = await client.createNewsApi(
         token: token,
         heading: createNewsRequest.heading,

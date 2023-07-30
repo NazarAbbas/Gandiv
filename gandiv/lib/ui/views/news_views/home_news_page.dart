@@ -14,7 +14,6 @@ class HomeNewsPage extends StatefulWidget {
   const HomeNewsPage({super.key});
 
   //int selectedPosition = 0;
-
   // Widget build(BuildContext context) {
   // //   return SafeArea(
   // //     child: Scaffold(
@@ -52,7 +51,6 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
   @override
   void initState() {
     super.initState();
-    //controller.newsList.clear();
     controller.onInit();
   }
 

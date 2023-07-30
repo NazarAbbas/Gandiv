@@ -200,8 +200,7 @@ class DrawerSettings extends GetView<DashboardPageController> {
                   Get.updateLocale(const Locale('hi', 'IN'));
                   controller.selectLanguage(value.toString());
                   closeNavigationDrawer();
-                  final selectedLanguage = GetStorage();
-                  selectedLanguage.write(Constant.selectedLanguage, 1);
+                  GetStorage().write(Constant.selectedLanguage, 1);
                 },
               ),
               RadioListTile(
@@ -221,8 +220,7 @@ class DrawerSettings extends GetView<DashboardPageController> {
                   Get.updateLocale(const Locale('en', 'US'));
                   controller.selectLanguage(value.toString());
                   closeNavigationDrawer();
-                  final selectedLanguage = GetStorage();
-                  selectedLanguage.write(Constant.selectedLanguage, 2);
+                  GetStorage().write(Constant.selectedLanguage, 2);
                 },
               )
             ],
@@ -254,6 +252,7 @@ class DrawerSettings extends GetView<DashboardPageController> {
                     : AppColors.black,
                 groupValue: controller.singleLocationValue.value,
                 onChanged: (value) {
+                  GetStorage().write(Constant.selectedLocation, 'Varanasi');
                   controller.selectLocation(value.toString());
                   closeNavigationDrawer();
                 },
@@ -272,6 +271,7 @@ class DrawerSettings extends GetView<DashboardPageController> {
                     : AppColors.black,
                 groupValue: controller.singleLocationValue.value,
                 onChanged: (value) {
+                  GetStorage().write(Constant.selectedLocation, 'Agra');
                   controller.selectLocation(value.toString());
                   closeNavigationDrawer();
                 },

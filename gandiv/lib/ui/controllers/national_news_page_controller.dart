@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:gandiv/constants/utils.dart';
 import 'package:gandiv/models/news_list_db_model.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import '../../constants/constant.dart';
 import '../../database/app_database.dart';
 import '../../models/news_list_response.dart';
 import '../../network/rest_api.dart';
@@ -19,12 +21,38 @@ class NationalNewsPageController extends FullLifeCycleController {
   List<NewsList> newsList = <NewsList>[].obs;
   var isDataLoading = false.obs;
   var isLoadMoreItems = false.obs;
+  var locationId = '';
+  var categoryId = '';
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
     isDataLoading.value = true;
-    getHomeNews();
+
+    if (newsList.isNotEmpty) {
+      for (int i = 0; i < newsList.length; i++) {
+        final bookMarkNews =
+            await appDatabase.newsListDao.findNewsById(newsList[i].id!);
+        if (bookMarkNews != null) {
+          newsList[i].isBookmark = true;
+        } else {
+          newsList[i].isBookmark = false;
+        }
+        isDataLoading.value = false;
+        isLoadMoreItems.value = false;
+      }
+    } else {
+      // final location = await appDatabase.locationsDao
+      //     .findLocationsIdByName(GetStorage().read(Constant.selectedLocation));
+      // final category =
+      //     await appDatabase.categoriesDao.findCategoriesIdByName('National');
+      // locationId = location!.id!;
+      // categoryId = category!.id!;
+      pageNo = 1;
+      pageSize = 5;
+      newsList.clear();
+      await getHomeNews();
+    }
   }
 
   @override
@@ -104,8 +132,8 @@ class NationalNewsPageController extends FullLifeCycleController {
   Future<void> getHomeNews() async {
     try {
       final response = await restAPI.callNewsListApi(
-          categoryId: '',
-          locationId: '',
+          categoryId: categoryId,
+          locationId: locationId,
           pageNumber: pageNo,
           pageSize: pageSize);
       totalCount = response.newsListData.totalCount!;
@@ -114,6 +142,8 @@ class NationalNewsPageController extends FullLifeCycleController {
             .findNewsById(response.newsListData.newsList[i].id!);
         if (bookMarkNews != null) {
           response.newsListData.newsList[i].isBookmark = true;
+        } else {
+          response.newsListData.newsList[i].isBookmark = false;
         }
       }
       newsList.addAll(response.newsListData.newsList);

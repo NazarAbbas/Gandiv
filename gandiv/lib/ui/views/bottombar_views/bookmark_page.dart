@@ -15,8 +15,7 @@ class BookmarkPage extends StatefulWidget {
   BookmarkPageListRow createState() => BookmarkPageListRow();
 }
 
-class BookmarkPageListRow extends State<BookmarkPage>
-    with WidgetsBindingObserver {
+class BookmarkPageListRow extends State<BookmarkPage> {
   Future<void> _pullRefresh() async {
     controller.newsList.clear();
     controller.onInit();
@@ -25,38 +24,7 @@ class BookmarkPageListRow extends State<BookmarkPage>
   @override
   void initState() {
     super.initState();
-    controller.newsList.clear();
     controller.onInit();
-    // Add the observer.
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void dispose() {
-    // Remove the observer
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-
-    // These are the callbacks
-    switch (state) {
-      case AppLifecycleState.resumed:
-        final xx = "";
-        break;
-      case AppLifecycleState.inactive:
-        final xx = "";
-        break;
-      case AppLifecycleState.paused:
-        final xx = "";
-        break;
-      case AppLifecycleState.detached:
-        final xx = "";
-        break;
-    }
   }
 
   DashboardPageController dashboardPageController =
@@ -66,62 +34,70 @@ class BookmarkPageListRow extends State<BookmarkPage>
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => controller.isDataLoading.value
-        ? Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: AppColors.transparent,
-            child: const Center(child: CircularProgressIndicator()),
-          )
-        : Column(
-            children: [
-              Expanded(
-                child: controller.newsList.isEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Container(
-                          width: double.infinity,
-                          height: double.infinity,
-                          color: AppColors.lightGray,
-                          child: Center(
-                            child: Text('no_news_available'.tr,
-                                style: TextStyle(
-                                    color: AppColors.colorPrimary,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20)),
-                          ),
-                        ),
-                      )
-                    : RefreshIndicator(
-                        color: AppColors.colorPrimary,
-                        onRefresh: _pullRefresh,
-                        child: ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemCount: controller.newsList.length,
-                          controller: controller.controller,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                                onTap: () => {
-                                      Utils(context).stopAudio(controller
-                                                  .newsList[selectedPosition]
-                                                  .newsContent ==
-                                              null
-                                          ? ""
-                                          : controller
-                                              .newsList[selectedPosition]
-                                              .newsContent!),
-                                      controller.setAudioPlaying(
-                                          false, selectedPosition),
-                                      Get.toNamed(Routes.newsDetailPage,
-                                          arguments: controller.newsList[index])
-                                    },
-                                child: rowWidget(index, context));
-                          },
-                        ),
+    return Obx(() => SafeArea(
+          child: Scaffold(
+            body: controller.isDataLoading.value
+                ? Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: AppColors.transparent,
+                    child: const Center(child: CircularProgressIndicator()),
+                  )
+                : Column(
+                    children: [
+                      Expanded(
+                        child: controller.newsList.isEmpty
+                            ? Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Container(
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  color: AppColors.lightGray,
+                                  child: Center(
+                                    child: Text('no_news_available'.tr,
+                                        style: TextStyle(
+                                            color: AppColors.colorPrimary,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20)),
+                                  ),
+                                ),
+                              )
+                            : RefreshIndicator(
+                                color: AppColors.colorPrimary,
+                                onRefresh: _pullRefresh,
+                                child: ListView.builder(
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  itemCount: controller.newsList.length,
+                                  controller: controller.controller,
+                                  itemBuilder: (context, index) {
+                                    return GestureDetector(
+                                        onTap: () => {
+                                              Utils(context).stopAudio(controller
+                                                          .newsList[
+                                                              selectedPosition]
+                                                          .newsContent ==
+                                                      null
+                                                  ? ""
+                                                  : controller
+                                                      .newsList[
+                                                          selectedPosition]
+                                                      .newsContent!),
+                                              controller.setAudioPlaying(
+                                                  false, selectedPosition),
+                                              Get.toNamed(Routes.newsDetailPage,
+                                                  arguments: controller
+                                                      .newsList[index])
+                                            },
+                                        child: rowWidget(index, context));
+                                  },
+                                ),
+                              ),
                       ),
-              ),
-            ],
-          ));
+                    ],
+                  ),
+          ),
+        ));
   }
 
   int selectedPosition = 0;
@@ -219,26 +195,6 @@ class BookmarkPageListRow extends State<BookmarkPage>
                     );
                   }).toList(),
                 ),
-
-                // child: Image.network(
-                //   controller.newsList[index].mediaList[0].url ??
-                //       'https://avatars.githubusercontent.com/u/1?v=4"',
-
-                //   height: MediaQuery.of(context).size.width * (3 / 4),
-                //   width: MediaQuery.of(context).size.width,
-                //   loadingBuilder: (BuildContext context, Widget child,
-                //       ImageChunkEvent? loadingProgress) {
-                //     if (loadingProgress == null) return child;
-                //     return Center(
-                //       child: CircularProgressIndicator(
-                //         value: loadingProgress.expectedTotalBytes != null
-                //             ? loadingProgress.cumulativeBytesLoaded /
-                //                 loadingProgress.expectedTotalBytes!
-                //             : null,
-                //       ),
-                //     );
-                //   },
-                // ),
               ),
             ),
             Padding(
@@ -303,25 +259,24 @@ class BookmarkPageListRow extends State<BookmarkPage>
                       height: 30,
                     ),
                   ),
-                  // Padding(
-                  //   padding: const EdgeInsets.only(left: 10),
-                  //   child: GestureDetector(
-                  //     onTap: () async {
-
-                  //         controller.removeBookmark(index);
-                  //     },
-                  //     child: Image.asset(
-                  //       color: dashboardPageController.isDarkTheme.value == true
-                  //           ? AppColors.white
-                  //           : AppColors.colorPrimary,
-                  //       controller.newsList[index].isBookmark == true
-                  //           ? AppImages.highLightBookmark
-                  //           : AppImages.bookmark,
-                  //       width: 25,
-                  //       height: 25,
-                  //     ),
-                  //   ),
-                  // ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: GestureDetector(
+                      onTap: () async {
+                        controller.removeBookmark(index);
+                      },
+                      child: Image.asset(
+                        color: dashboardPageController.isDarkTheme.value == true
+                            ? AppColors.white
+                            : AppColors.colorPrimary,
+                        controller.newsList[index].isBookmark == true
+                            ? AppImages.highLightBookmark
+                            : AppImages.bookmark,
+                        width: 25,
+                        height: 25,
+                      ),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(left: 10),
                     child: GestureDetector(

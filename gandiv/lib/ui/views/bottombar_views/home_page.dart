@@ -3,7 +3,6 @@ import 'package:gandiv/ui/controllers/dashboard_page_cotroller.dart';
 import 'package:gandiv/ui/controllers/home_page_contoller.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import '../news_views/home_news_page.dart';
 import '../news_views/international_news_page.dart';
 import '../news_views/national_news_page.dart';
@@ -48,6 +47,8 @@ class HomePage extends GetView<HomePageController> {
         bottom: PreferredSize(
           preferredSize: const Size(0.0, 0.0),
           child: TabBar(
+            isScrollable: false,
+            labelPadding: const EdgeInsets.symmetric(horizontal: 10.0),
             controller: controller.tabController,
             indicatorColor: dashboardScreenController.isDarkTheme.value == true
                 ? AppColors.white
@@ -66,7 +67,6 @@ class HomePage extends GetView<HomePageController> {
                         : AppColors.colorPrimary,
                     width: 2.0),
                 insets: const EdgeInsets.symmetric(horizontal: 16.0)),
-            isScrollable: false,
             tabs: <Tab>[
               Tab(text: 'home'.tr),
               Tab(text: 'state'.tr),

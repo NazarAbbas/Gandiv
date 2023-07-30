@@ -13,10 +13,18 @@ class BookmarkPageController extends FullLifeCycleController {
   ScrollController controller = ScrollController();
   var isDataLoading = false.obs;
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
+    isDataLoading.value = true;
     newsList.clear;
-    getBookmarkNews();
+    await getBookmarkNews();
+    isDataLoading.value = false;
+  }
+
+  @override
+  void onReady() {
+    // TODO: implement onReady
+    super.onReady();
   }
 
   void setAudioPlaying(bool istrue, int index) {
@@ -32,6 +40,9 @@ class BookmarkPageController extends FullLifeCycleController {
     try {
       final newsListDao = appDatabase.newsListDao;
       await newsListDao.deleteNewsById(newsList[index].id!);
+      getBookmarkNews();
+      //final bookMarkNews = await appDatabase.newsListDao.findAllNews();
+      //final xx = "";
     } on Exception catch (exception) {
       if (kDebugMode) {
         print(exception);
@@ -43,26 +54,27 @@ class BookmarkPageController extends FullLifeCycleController {
     isDataLoading.value = true;
     try {
       final bookmarkNews = await appDatabase.newsListDao.findAllNews();
-      for (int i = 0; i < bookmarkNews.length; i++) {
-        // final xx =
-        //     Utils.convertJsonListToMediaList(bookmarkNews[i].imageListDb);
-        // final mediaList = MediaList(imageList: xx);
-        final news = NewsList(
-            id: bookmarkNews[i].id,
-            heading: bookmarkNews[i].heading,
-            subHeading: bookmarkNews[i].subHeading,
-            newsContent: bookmarkNews[i].newsContent,
-            category: bookmarkNews[i].category,
-            location: bookmarkNews[i].location,
-            language: bookmarkNews[i].language,
-            mediaList: MediaList(
-                imageList: Utils.convertJsonListToImageList(
-                    bookmarkNews[i].imageListDb)),
-            publishedOn: bookmarkNews[i].publishedOn,
-            publishedBy: bookmarkNews[i].publishedBy,
-            isBookmark: bookmarkNews[i].isBookmark,
-            isAudioPlaying: bookmarkNews[i].isAudioPlaying);
-        newsList.add(news);
+      if (bookmarkNews.isNotEmpty) {
+        for (int i = 0; i < bookmarkNews.length; i++) {
+          final news = NewsList(
+              id: bookmarkNews[i].id,
+              heading: bookmarkNews[i].heading,
+              subHeading: bookmarkNews[i].subHeading,
+              newsContent: bookmarkNews[i].newsContent,
+              category: bookmarkNews[i].category,
+              location: bookmarkNews[i].location,
+              language: bookmarkNews[i].language,
+              mediaList: MediaList(
+                  imageList: Utils.convertJsonListToImageList(
+                      bookmarkNews[i].imageListDb)),
+              publishedOn: bookmarkNews[i].publishedOn,
+              publishedBy: bookmarkNews[i].publishedBy,
+              isBookmark: bookmarkNews[i].isBookmark,
+              isAudioPlaying: bookmarkNews[i].isAudioPlaying);
+          newsList.add(news);
+        }
+      } else {
+        newsList.clear();
       }
     } on DioError catch (obj) {
       final res = (obj).response;

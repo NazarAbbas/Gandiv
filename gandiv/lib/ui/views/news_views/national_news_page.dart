@@ -10,37 +10,44 @@ import '../../../constants/values/app_images.dart';
 import '../../../route_management/routes.dart';
 import '../../controllers/national_news_page_controller.dart';
 
-class NationalNewsPage extends StatelessWidget {
+class NationalNewsPage extends StatefulWidget {
   const NationalNewsPage({super.key});
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   return SafeArea(
+  //     child: Scaffold(
+  //       body: NationalNewsPageListRow(),
+  //       // body: Obx(
+  //       //   () => controller.isDataLoading.value || controller.newsList.isEmpty
+  //       //       ? Container(
+  //       //           width: double.infinity,
+  //       //           height: double.infinity,
+  //       //           color: AppColors.transparent,
+  //       //           child: const Center(child: CircularProgressIndicator()))
+  //       //       : HomeNewsPageListRow(),
+  //       // ),
+  //     ),
+  //   );
+  // }
   @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: HomeNewsPageListRow(),
-        // body: Obx(
-        //   () => controller.isDataLoading.value || controller.newsList.isEmpty
-        //       ? Container(
-        //           width: double.infinity,
-        //           height: double.infinity,
-        //           color: AppColors.transparent,
-        //           child: const Center(child: CircularProgressIndicator()))
-        //       : HomeNewsPageListRow(),
-        // ),
-      ),
-    );
-  }
+  NationalNewsPageListRow createState() => NationalNewsPageListRow();
 }
 
 //class
 
 // ignore: must_be_immutable
-class HomeNewsPageListRow extends GetView<NationalNewsPageController> {
+class NationalNewsPageListRow extends State<NationalNewsPage> {
   DashboardPageController dashboardPageController =
       Get.find<DashboardPageController>();
-  HomeNewsPageListRow({
-    super.key,
-  });
+  NationalNewsPageController controller =
+      Get.find<NationalNewsPageController>();
+  @override
+  void initState() {
+    super.initState();
+    //controller.newsList.clear();
+    controller.onInit();
+  }
 
   Future<void> _pullRefresh() async {
     controller.pageNo = 1;
@@ -51,84 +58,91 @@ class HomeNewsPageListRow extends GetView<NationalNewsPageController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => controller.isDataLoading.value
-        ? Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: AppColors.transparent,
-            child: const Center(child: CircularProgressIndicator()),
-          )
-        : Column(
-            children: [
-              Expanded(
-                child: controller.newsList.isEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Container(
-                          width: double.infinity,
-                          height: double.infinity,
-                          color: AppColors.lightGray,
-                          child: Center(
-                            child: Text('no_news_available'.tr,
-                                style: TextStyle(
-                                    color: AppColors.colorPrimary,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20)),
-                          ),
-                        ),
-                      )
-                    : RefreshIndicator(
-                        color: AppColors.colorPrimary,
-                        onRefresh: _pullRefresh,
-                        child: ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemCount: controller.newsList.length,
-                          controller: controller.controller,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () => {
-                                Utils(context).stopAudio(controller
-                                            .newsList[selectedPosition]
-                                            .newsContent ==
-                                        null
-                                    ? ""
-                                    : controller.newsList[selectedPosition]
-                                        .newsContent!),
-                                controller.setAudioPlaying(
-                                    false, selectedPosition),
-                                Get.toNamed(Routes.newsDetailPage,
-                                        arguments: controller.newsList[index])
-                                    ?.then(
-                                  (value) => {controller.onInit()},
-                                )
-                              },
-                              child: rowWidget(index, context),
-                            );
-                          },
-                        ),
-                      ),
-              ),
-              // ignore: unrelated_type_equality_checks
-              if (controller.isLoadMoreItems.value == true)
-                Padding(
-                  padding: const EdgeInsets.only(top: 20, bottom: 40),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Text('loading'.tr,
-                            style: TextStyle(
+    return Obx(() => SafeArea(
+          child: Scaffold(
+            body: controller.isDataLoading.value
+                ? Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: AppColors.transparent,
+                    child: const Center(child: CircularProgressIndicator()),
+                  )
+                : Column(
+                    children: [
+                      Expanded(
+                        child: controller.newsList.isEmpty
+                            ? Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Container(
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  color: AppColors.lightGray,
+                                  child: Center(
+                                    child: Text('no_news_available'.tr,
+                                        style: TextStyle(
+                                            color: AppColors.colorPrimary,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20)),
+                                  ),
+                                ),
+                              )
+                            : RefreshIndicator(
                                 color: AppColors.colorPrimary,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16)),
-                        CircularProgressIndicator(
-                          color: AppColors.colorPrimary,
-                        ),
-                      ],
-                    ),
+                                onRefresh: _pullRefresh,
+                                child: ListView.builder(
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  itemCount: controller.newsList.length,
+                                  controller: controller.controller,
+                                  itemBuilder: (context, index) {
+                                    return GestureDetector(
+                                      onTap: () => {
+                                        Utils(context).stopAudio(controller
+                                                    .newsList[selectedPosition]
+                                                    .newsContent ==
+                                                null
+                                            ? ""
+                                            : controller
+                                                .newsList[selectedPosition]
+                                                .newsContent!),
+                                        controller.setAudioPlaying(
+                                            false, selectedPosition),
+                                        Get.toNamed(Routes.newsDetailPage,
+                                                arguments:
+                                                    controller.newsList[index])
+                                            ?.then(
+                                          (value) => {controller.onInit()},
+                                        )
+                                      },
+                                      child: rowWidget(index, context),
+                                    );
+                                  },
+                                ),
+                              ),
+                      ),
+                      // ignore: unrelated_type_equality_checks
+                      if (controller.isLoadMoreItems.value == true)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20, bottom: 40),
+                          child: Center(
+                            child: Column(
+                              children: [
+                                Text('loading'.tr,
+                                    style: TextStyle(
+                                        color: AppColors.colorPrimary,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16)),
+                                CircularProgressIndicator(
+                                  color: AppColors.colorPrimary,
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                    ],
                   ),
-                )
-            ],
-          ));
+          ),
+        ));
   }
 
   int selectedPosition = 0;

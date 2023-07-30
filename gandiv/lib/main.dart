@@ -6,10 +6,12 @@ import 'package:gandiv/ui/binding/screen_binding.dart';
 import 'package:gandiv/constants/values/app_language.dart';
 import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
+import 'package:get_storage/get_storage.dart';
 import 'constants/dependency_injection/dependency_injection.dart';
 
 void main() async {
   await DependencyInjection.init();
+  await GetStorage.init();
   runApp(const MyApp());
 }
 

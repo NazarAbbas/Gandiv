@@ -42,8 +42,9 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    final selectedLanguage = GetStorage();
-    selectedLanguage.write(Constant.selectedLanguage, 1);
+    GetStorage().write(Constant.selectedLanguage, 1);
+    GetStorage().write(Constant.selectedLocation, 'Varanasi');
+    //final xx = GetStorage().read(Constant.selectedLocation);
     SplashPageController splashPageController =
         Get.find<SplashPageController>();
   }
