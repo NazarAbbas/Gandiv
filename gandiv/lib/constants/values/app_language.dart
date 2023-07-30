@@ -61,6 +61,7 @@ class Languages extends Translations {
           'please_select_subheading': 'कृपया उपशीर्षक दर्ज करें',
           'please_select_description': 'कृपया विवरण दर्ज करें',
           'upload_image': 'तश्वीरें अपलोड करें',
+          'in_minutes': 'मिनट पढ़े',
         },
         'en_US': {
           'setting': 'SETTING',
@@ -120,6 +121,7 @@ class Languages extends Translations {
           'please_select_subheading': 'Please enter sub heading',
           'please_select_description': 'Please enter description',
           'upload_image': 'Upload images',
+          'in_minutes': 'mins read',
         },
       };
 }

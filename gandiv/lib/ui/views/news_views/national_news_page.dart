@@ -90,7 +90,8 @@ class NationalNewsPageListRow extends State<NationalNewsPage> {
                                 color: AppColors.colorPrimary,
                                 onRefresh: _pullRefresh,
                                 child: ListView.builder(
-                                  key: const PageStorageKey(0),
+                                  key: const PageStorageKey(
+                                      'national_news_page'),
                                   physics:
                                       const AlwaysScrollableScrollPhysics(),
                                   itemCount: controller.newsList.length,
@@ -279,7 +280,9 @@ class NationalNewsPageListRow extends State<NationalNewsPage> {
                   ),
                   Center(
                     child: Text(
-                      '5 mins read',
+                      controller.newsList[index].durationInMin == null
+                          ? "0 ${'in_minutes'.tr}"
+                          : "${controller.newsList[index].durationInMin!} ${'in_minutes'.tr}",
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(

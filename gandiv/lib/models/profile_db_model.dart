@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:floor/floor.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 
 @entity
 class ProfileData {

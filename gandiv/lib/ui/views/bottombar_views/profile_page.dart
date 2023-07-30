@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:gandiv/ui/controllers/dashboard_page_cotroller.dart';
@@ -59,7 +60,9 @@ class ProfilePage extends GetView<ProfilePageController> {
                                 },
                               );
                             } catch (e) {
-                              print("error while picking file.");
+                              if (kDebugMode) {
+                                print("error while picking file.");
+                              }
                             }
                           },
                           child: controller.networkImagePath.isEmpty
@@ -213,7 +216,9 @@ class ProfilePage extends GetView<ProfilePageController> {
             },
           );
         } catch (e) {
-          print("error while picking file.");
+          if (kDebugMode) {
+            print("error while picking file.");
+          }
         }
       },
       child: Container(

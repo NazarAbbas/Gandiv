@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:gandiv/ui/controllers/dashboard_page_cotroller.dart';
@@ -121,7 +122,9 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
                   },
                 );
               } catch (e) {
-                print("error while picking file.");
+                if (kDebugMode) {
+                  print("error while picking file.");
+                }
               }
             },
             child: Container(

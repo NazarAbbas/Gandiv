@@ -10,6 +10,7 @@ import '../../constants/utils.dart';
 import '../../database/app_database.dart';
 import '../controllers/about_us_page_controller.dart';
 import '../controllers/edit_profile_page_controller.dart';
+import '../controllers/location_page_controller.dart';
 import '../controllers/national_news_page_controller.dart';
 import '../controllers/home_news_page_controller.dart';
 import '../controllers/home_page_contoller.dart';
@@ -36,6 +37,7 @@ class ScreenBindings implements Bindings {
     Get.lazyPut(() => ProfilePageController());
     Get.lazyPut(() => EditProfilePageController());
     Get.lazyPut(() => UploadNewsPagePageController());
+    Get.lazyPut(() => LocationPageController());
     Get.lazyPut(() => SplashPageController());
     Get.lazyPut<BookmarkPageController>(() => BookmarkPageController(),
         fenix: false);

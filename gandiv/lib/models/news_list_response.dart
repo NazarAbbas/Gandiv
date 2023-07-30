@@ -104,6 +104,8 @@ class NewsList {
   bool? isBookmark;
   @JsonKey(name: 'isAudioPlaying')
   bool? isAudioPlaying;
+  @JsonKey(name: 'durationInMin')
+  final int? durationInMin;
 
   NewsList({
     this.id,
@@ -118,6 +120,7 @@ class NewsList {
     this.publishedBy,
     this.isBookmark,
     this.isAudioPlaying,
+    this.durationInMin,
   });
 
   factory NewsList.fromRawJson(String str) =>
@@ -138,6 +141,7 @@ class NewsList {
         publishedBy: json["publishedBy"],
         isBookmark: json["isBookmark"],
         isAudioPlaying: json["isAudioPlaying"],
+        durationInMin: json["durationInMin"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -153,6 +157,7 @@ class NewsList {
         "publishedBy": publishedBy,
         "isBookmark": isBookmark,
         "isAudioPlaying": isAudioPlaying,
+        "durationInMin": durationInMin
       };
 }
 

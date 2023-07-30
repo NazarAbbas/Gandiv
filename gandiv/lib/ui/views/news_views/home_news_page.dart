@@ -89,7 +89,7 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
                               color: AppColors.colorPrimary,
                               onRefresh: _pullRefresh,
                               child: ListView.builder(
-                                key: const PageStorageKey(0),
+                                key: const PageStorageKey('home_news_page'),
                                 physics: const AlwaysScrollableScrollPhysics(),
                                 itemCount: controller.newsList.length,
                                 controller: controller.controller,
@@ -272,13 +272,15 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
                           ? AppColors.white
                           : AppColors.black,
                       AppImages.clock,
-                      height: 20,
-                      width: 20,
+                      height: 25,
+                      width: 25,
                     ),
                   ),
                   Center(
                     child: Text(
-                      '5 mins read',
+                      controller.newsList[index].durationInMin == null
+                          ? "0 ${'in_minutes'.tr}"
+                          : "${controller.newsList[index].durationInMin!} ${'in_minutes'.tr}",
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -369,11 +371,5 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
         ),
       ),
     );
-  }
-
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    throw UnimplementedError();
   }
 }

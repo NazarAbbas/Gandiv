@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
@@ -14,11 +15,6 @@ class ProfilePageController extends GetxController {
   final networkImagePath = "".obs;
   final croppedImagepath = "".obs;
   late File imagefile;
-
-  @override
-  void onInit() {
-    super.onInit();
-  }
 
   @override
   void onReady() {
@@ -40,10 +36,14 @@ class ProfilePageController extends GetxController {
         imagefile = File(localImagePath.value);
         cropImage();
       } else {
-        print("No image is selected.");
+        if (kDebugMode) {
+          print("No image is selected.");
+        }
       }
     } catch (e) {
-      print("error while picking file.");
+      if (kDebugMode) {
+        print("error while picking file.");
+      }
     }
   }
 
@@ -56,10 +56,14 @@ class ProfilePageController extends GetxController {
         imagefile = File(localImagePath.value);
         cropImage();
       } else {
-        print("No image is selected.");
+        if (kDebugMode) {
+          print("No image is selected.");
+        }
       }
     } catch (e) {
-      print("error while picking file.");
+      if (kDebugMode) {
+        print("error while picking file.");
+      }
     }
   }
 
@@ -88,7 +92,9 @@ class ProfilePageController extends GetxController {
       croppedImagepath.value = croppedfile.path;
       //setState(() { });
     } else {
-      print("Image is not cropped.");
+      if (kDebugMode) {
+        print("Image is not cropped.");
+      }
     }
   }
 }
