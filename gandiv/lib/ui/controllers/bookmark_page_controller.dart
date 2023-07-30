@@ -9,6 +9,7 @@ import '../../models/news_list_response.dart';
 
 class BookmarkPageController extends FullLifeCycleController {
   final AppDatabase appDatabase = Get.find<AppDatabase>();
+
   List<NewsList> newsList = <NewsList>[].obs;
   ScrollController controller = ScrollController();
   var isDataLoading = false.obs;
@@ -16,7 +17,7 @@ class BookmarkPageController extends FullLifeCycleController {
   void onInit() async {
     super.onInit();
     isDataLoading.value = true;
-    newsList.clear;
+    newsList.clear();
     await getBookmarkNews();
     isDataLoading.value = false;
   }

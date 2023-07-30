@@ -2,6 +2,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:gandiv/constants/constant.dart';
+import 'package:gandiv/models/news_list_response.dart';
 import 'package:gandiv/network/rest_api.dart';
 import 'package:get/get.dart';
 
@@ -12,6 +13,7 @@ class DependencyInjection {
     // Get.put<GetConnect>(GetConnect()); //initializing GetConnect
     Get.put<Dio>(Dio()); //initializing Dio
     Get.put<RestAPI>(RestAPI()); //initializing REST API class
+    //Get.put<NewsList>(NewsList());
 
     WidgetsFlutterBinding.ensureInitialized();
     await Get.putAsync<AppDatabase>(permanent: true, () async {

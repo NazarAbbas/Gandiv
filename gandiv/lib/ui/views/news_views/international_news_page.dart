@@ -90,6 +90,7 @@ class InterNationalNewsPageListRow extends State<InterNationalNewsPage> {
                                 color: AppColors.colorPrimary,
                                 onRefresh: _pullRefresh,
                                 child: ListView.builder(
+                                  key: const PageStorageKey(0),
                                   physics:
                                       const AlwaysScrollableScrollPhysics(),
                                   itemCount: controller.newsList.length,

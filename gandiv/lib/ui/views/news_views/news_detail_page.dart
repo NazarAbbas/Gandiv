@@ -149,80 +149,103 @@ class NewsDetailPageColumn extends State<NewsDetailPage> {
 
   Obx columnWidget(int index, BuildContext context) {
     return Obx(
-      () => SingleChildScrollView(
-        child: Card(
-          color: dashboardPageController.isDarkTheme.value == true
-              ? AppColors.dartTheme
-              : AppColors.white,
-          elevation: 8.0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    controller.newsList.value!.heading!,
-                    style: const TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
+      () => Expanded(
+        child: SingleChildScrollView(
+          child: Card(
+            color: dashboardPageController.isDarkTheme.value == true
+                ? AppColors.dartTheme
+                : AppColors.white,
+            elevation: 8.0,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      controller.newsList.value.heading!,
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    controller.newsList.value!.newsContent!,
-                    style: TextStyle(
-                      color: dashboardPageController.isDarkTheme.value == true
-                          ? AppColors.white
-                          : AppColors.black,
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.normal,
+                Visibility(
+                  visible: controller.newsList.value.subHeading == null
+                      ? false
+                      : true,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        controller.newsList.value.subHeading == null
+                            ? ""
+                            : controller.newsList.value.subHeading!,
+                        style: const TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: CarouselSlider(
-                  options: CarouselOptions(
-                      pauseAutoPlayOnTouch: true,
-                      autoPlay: false,
-                      height: MediaQuery.of(context).size.width * (3 / 4),
-                      enlargeCenterPage: true),
-                  items:
-                      controller.newsList.value!.mediaList!.imageList!.map((i) {
-                    return Builder(
-                      builder: (BuildContext context) {
-                        return Image.network(
-                          fit: BoxFit.cover,
-                          i.url!,
-                          width: MediaQuery.of(context).size.width,
-                          loadingBuilder: (BuildContext context, Widget child,
-                              ImageChunkEvent? loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                              child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes !=
-                                        null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
-                                    : null,
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    );
-                  }).toList(),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: CarouselSlider(
+                    options: CarouselOptions(
+                        pauseAutoPlayOnTouch: true,
+                        autoPlay: false,
+                        height: MediaQuery.of(context).size.width * (3 / 4),
+                        enlargeCenterPage: true),
+                    items: controller.newsList.value.mediaList!.imageList!
+                        .map((i) {
+                      return Builder(
+                        builder: (BuildContext context) {
+                          return Image.network(
+                            fit: BoxFit.cover,
+                            i.url!,
+                            width: MediaQuery.of(context).size.width,
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    }).toList(),
+                  ),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      controller.newsList.value!.newsContent!,
+                      style: TextStyle(
+                        color: dashboardPageController.isDarkTheme.value == true
+                            ? AppColors.white
+                            : AppColors.black,
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

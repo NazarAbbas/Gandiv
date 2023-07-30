@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 
@@ -11,7 +12,7 @@ class CreateNewsRequest {
   final String? categoryId;
   final String? languageId;
   final String? status;
-  final List<http.MultipartFile>? multiPartFile;
+  final List<File>? multiPartFile;
 
   CreateNewsRequest({
     required this.heading,

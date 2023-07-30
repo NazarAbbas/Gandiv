@@ -104,6 +104,7 @@ class _RestClient implements RestClient {
     languageId,
     durationInMin,
     categoryId,
+    multiPartFile,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -158,6 +159,14 @@ class _RestClient implements RestClient {
         'CategoryId',
         categoryId,
       ));
+    }
+    if (multiPartFile != null) {
+      _data.files.addAll(multiPartFile.map((i) => MapEntry(
+          'MediaFiles',
+          MultipartFile.fromFileSync(
+            i.path,
+            filename: i.path.split(Platform.pathSeparator).last,
+          ))));
     }
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<CreateNewsResponse>(Options(

@@ -74,7 +74,7 @@ class RestAPI {
       CreateNewsRequest createNewsRequest) async {
     final client = RestClient(dio);
     final token =
-        "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODExYjg2Ny0zYzQ4LTRkZjYtMzY3My0wOGRiNzE3OWU0YzIiLCJlbWFpbCI6ImFkbWluQGdhbmRpdi5jb20iLCJhdWQiOlsiU3VwZXJBZG1pbiIsIkF1ZGllbmNlIl0sInJvbGUiOiJTdXBlckFkbWluIiwibmJmIjoxNjkwMzA0MDA4LCJleHAiOjE2OTAzMDc2MDgsImlhdCI6MTY5MDMwNDAwOCwiaXNzIjoiSXNzdWVyIn0.CEmNDBEhkqNGGMY4ujQrsVT60yb8prJyZ_5yZRP-IrPN8gg-kWdmQqdWroB6XKV5Czon2i2shlG24rQGyYlOFg";
+        "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODExYjg2Ny0zYzQ4LTRkZjYtMzY3My0wOGRiNzE3OWU0YzIiLCJlbWFpbCI6ImFkbWluQGdhbmRpdi5jb20iLCJhdWQiOlsiU3VwZXJBZG1pbiIsIkF1ZGllbmNlIl0sInJvbGUiOiJTdXBlckFkbWluIiwibmJmIjoxNjkwNjk5NjI2LCJleHAiOjE2OTA3MDMyMjYsImlhdCI6MTY5MDY5OTYyNiwiaXNzIjoiSXNzdWVyIn0.4csl0DWf8poWn-fzNVv6KJz6Z-3C1GOjaUYFEJ5coQgTUeSSNIxRW4aOyuNwVIKv1293TrJ8Zg-Jle5FzaCOsQ";
     // "Bearer ${GetStorage().read(Constant.token) ?? "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODExYjg2Ny0zYzQ4LTRkZjYtMzY3My0wOGRiNzE3OWU0YzIiLCJlbWFpbCI6ImFkbWluQGdhbmRpdi5jb20iLCJhdWQiOlsiU3VwZXJBZG1pbiIsIkF1ZGllbmNlIl0sInJvbGUiOiJTdXBlckFkbWluIiwibmJmIjoxNjkwMTEyMjE5LCJleHAiOjE2OTAxMTU4MTksImlhdCI6MTY5MDExMjIxOSwiaXNzIjoiSXNzdWVyIn0.CFvO1iI-kyhRx3ptCc61tMG50lG8EN34PHmSlSCSXbUqhQPkSpZpx117Ny867PF_1AWd5ie8PwxjwS0_H4Sv0g"}";
     final response = await client.createNewsApi(
         token: token,
@@ -85,7 +85,8 @@ class RestAPI {
         languageId: createNewsRequest.languageId,
         status: createNewsRequest.status,
         durationInMin: createNewsRequest.durationInMin,
-        categoryId: createNewsRequest.categoryId);
+        categoryId: createNewsRequest.categoryId,
+        multiPartFile: createNewsRequest.multiPartFile);
     return response;
   }
 
@@ -126,8 +127,8 @@ class RestAPI {
       {required String categoryId,
       required String locationId,
       required int pageSize,
-      required int pageNumber}) async {
-    final languageId = GetStorage().read(Constant.selectedLanguage);
+      required int pageNumber,
+      required int languageId}) async {
     final client = RestClient(dio);
     final response = await client.newsListApi(
         categoryId, locationId, languageId, pageSize, pageNumber);

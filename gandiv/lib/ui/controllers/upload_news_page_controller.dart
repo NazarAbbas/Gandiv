@@ -102,17 +102,19 @@ class UploadNewsPagePageController extends GetxController {
 
   Future<void> executeNewsUploadApi() async {
     try {
-      final List<http.MultipartFile> mediaFiles = <http.MultipartFile>[];
+      final List<File> mediaFiles = <File>[];
 
       try {
         for (int i = 0; i < imageList.length; i++) {
           var path = imageList[i];
           File imageFile = File(path);
+
           var stream = http.ByteStream(imageFile.openRead());
           var length = await imageFile.length();
           var multipartFile = http.MultipartFile("pictures", stream, length,
               filename: basename(imageFile.path));
-          mediaFiles.add(multipartFile);
+
+          // mediaFiles.add(multipartFile);
         }
       } on Exception catch (exception) {
         final message = exception;

@@ -45,7 +45,7 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
     controller.pageNo = 1;
     controller.pageSize = 5;
     controller.newsList.clear();
-    controller.getHomeNews();
+    controller.onInit();
   }
 
   @override
@@ -89,6 +89,7 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
                               color: AppColors.colorPrimary,
                               onRefresh: _pullRefresh,
                               child: ListView.builder(
+                                key: const PageStorageKey(0),
                                 physics: const AlwaysScrollableScrollPhysics(),
                                 itemCount: controller.newsList.length,
                                 controller: controller.controller,

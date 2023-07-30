@@ -25,6 +25,7 @@ class InterNationalNewsPageController extends FullLifeCycleController {
   var isLoadMoreItems = false.obs;
   var locationId = '';
   var categoryId = '';
+  int languageId = 0;
 
   @override
   void onInit() async {
@@ -45,11 +46,13 @@ class InterNationalNewsPageController extends FullLifeCycleController {
         isLoadMoreItems.value = false;
       }
     } else {
-      //     .findLocationsIdByName(GetStorage().read(Constant.selectedLocation));
-      // final category =
-      //     await appDatabase.categoriesDao.findCategoriesIdByName('International');
-      // locationId = location!.id!;
-      // categoryId = category!.id!;
+      final location = await appDatabase.locationsDao
+          .findLocationsIdByName(GetStorage().read(Constant.selectedLocation));
+      final category = await appDatabase.categoriesDao
+          .findCategoriesIdByName('International');
+      locationId = location!.id!;
+      categoryId = category!.id!;
+      languageId = GetStorage().read(Constant.selectedLanguage);
       pageNo = 1;
       pageSize = 5;
       newsList.clear();
@@ -61,7 +64,8 @@ class InterNationalNewsPageController extends FullLifeCycleController {
   void onReady() {
     super.onReady();
     controller.addListener(() {
-      if (controller.position.maxScrollExtent == controller.position.pixels) {
+      if (controller.position.maxScrollExtent == controller.position.pixels &&
+          totalCount > newsList.length) {
         isLoadMoreItems.value = true;
         // await Future.delayed(const Duration(seconds: 2));
         pageNo = pageNo + 1;
@@ -136,6 +140,7 @@ class InterNationalNewsPageController extends FullLifeCycleController {
       final response = await restAPI.callNewsListApi(
           categoryId: categoryId,
           locationId: locationId,
+          languageId: languageId,
           pageNumber: pageNo,
           pageSize: pageSize);
       totalCount = response.newsListData.totalCount!;

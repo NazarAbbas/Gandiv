@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:gandiv/models/about_us_response.dart';
 import 'package:gandiv/models/categories_response.dart';
@@ -55,7 +57,8 @@ abstract class RestClient {
       @required @Part(name: 'Status') String? status,
       @required @Part(name: 'LanguageId') String? languageId,
       @required @Part(name: 'DurationInMin') String? durationInMin,
-      @required @Part(name: 'CategoryId') String? categoryId});
+      @required @Part(name: 'CategoryId') String? categoryId,
+      @required @Part(name: 'MediaFiles') List<File>? multiPartFile});
 
   // @MultiPart()
   // @POST(Apis.createNews)

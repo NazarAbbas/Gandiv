@@ -85,6 +85,7 @@ class StateNewsPageListRow extends State<StateNewsPage> {
                                 color: AppColors.colorPrimary,
                                 onRefresh: _pullRefresh,
                                 child: ListView.builder(
+                                  key: const PageStorageKey(0),
                                   physics:
                                       const AlwaysScrollableScrollPhysics(),
                                   itemCount: controller.newsList.length,
