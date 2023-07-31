@@ -337,6 +337,7 @@ class _RestClient implements RestClient {
     laguageId,
     pageSize,
     pageNumber,
+    searchText,
   ]) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -345,6 +346,7 @@ class _RestClient implements RestClient {
       r'LanguageId': laguageId,
       r'PageSize': pageSize,
       r'PageNumber': pageNumber,
+      r'SearchText': searchText,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};

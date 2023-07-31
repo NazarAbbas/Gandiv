@@ -38,31 +38,31 @@ class SearchPageController extends GetxController {
   void onInit() async {
     super.onInit();
     speechToText = SpeechToText();
-    if (newsList.isNotEmpty) {
-      for (int i = 0; i < newsList.length; i++) {
-        final bookMarkNews =
-            await appDatabase.newsListDao.findNewsById(newsList[i].id!);
-        if (bookMarkNews != null) {
-          newsList[i].isBookmark = true;
-        } else {
-          newsList[i].isBookmark = false;
-        }
-        isDataLoading.value = false;
-        isLoadMoreItems.value = false;
-      }
-    } else {
-      final location = await appDatabase.locationsDao
-          .findLocationsIdByName(GetStorage().read(Constant.selectedLocation));
-      final category = await appDatabase.categoriesDao
-          .findCategoriesIdByName('International');
-      locationId = location!.id!;
-      categoryId = category!.id!;
-      languageId = GetStorage().read(Constant.selectedLanguage);
-      pageNo = 1;
-      pageSize = 5;
-      newsList.clear();
-      await callSearchApi();
-    }
+    // if (newsList.isNotEmpty) {
+    //   for (int i = 0; i < newsList.length; i++) {
+    //     final bookMarkNews =
+    //         await appDatabase.newsListDao.findNewsById(newsList[i].id!);
+    //     if (bookMarkNews != null) {
+    //       newsList[i].isBookmark = true;
+    //     } else {
+    //       newsList[i].isBookmark = false;
+    //     }
+    //     isDataLoading.value = false;
+    //     isLoadMoreItems.value = false;
+    //   }
+    // } else {
+    //   final location = await appDatabase.locationsDao
+    //       .findLocationsIdByName(GetStorage().read(Constant.selectedLocation));
+    //   final category = await appDatabase.categoriesDao
+    //       .findCategoriesIdByName('International');
+    //   locationId = location!.id!;
+    //   categoryId = category!.id!;
+    //   languageId = GetStorage().read(Constant.selectedLanguage);
+    //   pageNo = 1;
+    //   pageSize = 5;
+    //   newsList.clear();
+    //   await callSearchApi();
+    // }
   }
 
   @override
@@ -141,14 +141,14 @@ class SearchPageController extends GetxController {
   }
 
   Future<void> callSearchApi() async {
-    final xx = await "";
     try {
       final response = await restAPI.callNewsListApi(
-          categoryId: categoryId,
-          locationId: locationId,
+          categoryId: '',
+          locationId: '',
           languageId: languageId,
           pageNumber: pageNo,
-          pageSize: pageSize);
+          pageSize: pageSize,
+          searchText: searchController.text);
       totalCount = response.newsListData.totalCount!;
       for (int i = 0; i < response.newsListData.newsList.length; i++) {
         final bookMarkNews = await appDatabase.newsListDao

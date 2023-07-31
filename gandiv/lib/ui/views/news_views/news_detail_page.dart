@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gandiv/models/news_list_response.dart';
 import 'package:gandiv/ui/controllers/news_details_page_controller.dart';
 import 'package:get/get.dart';
+import 'package:share/share.dart';
 import '../../../constants/utils.dart';
 import '../../../constants/values/app_colors.dart';
 import '../../../constants/values/app_images.dart';
@@ -123,7 +124,7 @@ class NewsDetailPageColumn extends State<NewsDetailPage> {
                         : AppColors.black,
                   ),
                   onPressed: () {
-                    Get.toNamed(Routes.notificationPage);
+                    Share.share('check out my website https://example.com');
                   },
                 ),
                 // Positioned(

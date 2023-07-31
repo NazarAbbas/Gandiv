@@ -125,10 +125,11 @@ class RestAPI {
       required String locationId,
       required int pageSize,
       required int pageNumber,
-      required int languageId}) async {
+      required int languageId,
+      required String searchText}) async {
     final client = RestClient(dio);
     final response = await client.newsListApi(
-        categoryId, locationId, languageId, pageSize, pageNumber);
+        categoryId, locationId, languageId, pageSize, pageNumber, searchText);
     return response;
   }
 

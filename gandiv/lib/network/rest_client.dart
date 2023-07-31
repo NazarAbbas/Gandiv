@@ -99,5 +99,6 @@ abstract class RestClient {
       @Query("LocationId") String? locationId,
       @Query("LanguageId") int? laguageId,
       @Query("PageSize") int? pageSize,
-      @Query("PageNumber") int? pageNumber]);
+      @Query("PageNumber") int? pageNumber,
+      @Query("SearchText") String? searchText]);
 }

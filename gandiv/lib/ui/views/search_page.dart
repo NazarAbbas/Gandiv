@@ -71,6 +71,7 @@ class SearchPagePageListRow extends State<SearchPage> {
                   focusNode: controller.focusNode.value,
                   textInputAction: TextInputAction.search,
                   onSubmitted: (value) {
+                    controller.newsList.clear();
                     controller.callSearchApi();
                   },
                   controller: controller.searchController,
@@ -155,6 +156,24 @@ class SearchPagePageListRow extends State<SearchPage> {
                 },
               ),
             ),
+            if (controller.isLoadMoreItems.value == true)
+              Padding(
+                padding: const EdgeInsets.only(top: 20, bottom: 40),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Text('loading'.tr,
+                          style: TextStyle(
+                              color: AppColors.colorPrimary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16)),
+                      CircularProgressIndicator(
+                        color: AppColors.colorPrimary,
+                      ),
+                    ],
+                  ),
+                ),
+              )
           ],
         ),
       ),
@@ -344,7 +363,8 @@ class SearchPagePageListRow extends State<SearchPage> {
                   padding: const EdgeInsets.only(left: 10),
                   child: GestureDetector(
                     onTap: () {
-                      Share.share('check out my website https://example.com');
+                      Share.share(
+                          "${controller.newsList[index].heading}\n${controller.newsList[index].subHeading}\n${controller.newsList[index].newsContent}");
                     },
                     child: Image.asset(
                       color: dashboardPageController.isDarkTheme.value == true

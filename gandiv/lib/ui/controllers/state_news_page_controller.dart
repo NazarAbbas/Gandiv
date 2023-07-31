@@ -139,7 +139,8 @@ class StateNewsPageController extends FullLifeCycleController
           locationId: locationId,
           languageId: languageId,
           pageNumber: pageNo,
-          pageSize: pageSize);
+          pageSize: pageSize,
+          searchText: '');
       totalCount = response.newsListData.totalCount!;
       for (int i = 0; i < response.newsListData.newsList.length; i++) {
         final bookMarkNews = await appDatabase.newsListDao
