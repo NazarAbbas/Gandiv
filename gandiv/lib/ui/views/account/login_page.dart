@@ -61,27 +61,50 @@ class LoginPage extends GetView<LoginPageController> {
                       ),
                     ),
                     Padding(
-                        padding: const EdgeInsets.only(top: 40),
-                        child: GestureDetector(
-                          onTap: () {
-                            Get.toNamed(Routes.signupPage);
-                          },
-                          child: RichText(
-                            text: TextSpan(
-                              style: const TextStyle(
-                                fontSize: 16.0,
-                                color: Colors.blue,
-                              ),
-                              children: <TextSpan>[
-                                TextSpan(text: 'new_user'.tr),
-                                TextSpan(
-                                    text: 'create_account'.tr,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold)),
-                              ],
+                      padding: const EdgeInsets.only(top: 20),
+                      child: GestureDetector(
+                        onTap: () {
+                          Get.toNamed(Routes.forgotPasswordPage);
+                        },
+                        child: RichText(
+                          text: TextSpan(
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.blue,
                             ),
+                            children: <TextSpan>[
+                              TextSpan(
+                                  text: 'forgot_password'.tr,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
+                            ],
                           ),
-                        )),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 30),
+                      child: GestureDetector(
+                        onTap: () {
+                          Get.toNamed(Routes.signupPage);
+                        },
+                        child: RichText(
+                          text: TextSpan(
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.blue,
+                            ),
+                            children: <TextSpan>[
+                              TextSpan(text: 'new_user'.tr),
+                              TextSpan(
+                                  text: 'create_account'.tr,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -103,7 +126,7 @@ class LoginPage extends GetView<LoginPageController> {
       DialogUtils.showSingleButtonCustomDialog(
         context: context,
         title: 'ERROR',
-        message: response?.message,
+        message: response.message,
         firstButtonText: 'OK',
         firstBtnFunction: () {
           Navigator.of(context).pop();

@@ -24,7 +24,7 @@ class SignupPageController extends GetxController {
   final passwordController = TextEditingController();
 
   final formGlobalKey = GlobalKey<FormState>();
-  final singleUserRoleValue = "Reporter".obs;
+  final singleUserRoleValue = "4".obs;
 
   void setPasswordVisible(bool isTrue) {
     isPasswordVisible.value = isTrue;
@@ -72,18 +72,6 @@ class SignupPageController extends GetxController {
     return null;
   }
 
-  // String? isEmailValid() {
-  //   if (emailController.text.trim().isEmpty) {
-  //     return "Please enter valid email OR phone number";
-  //   }
-  //   if (!emailController.text.trim().isEmail &&
-  //       !RegExp(r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$')
-  //           .hasMatch(emailController.text.trim())) {
-  //     return "Please enter valid email OR phone number";
-  //   }
-  //   return null;
-  // }
-
   String? isValidPhoneNumber() {
     if (phoneNumberController.text.trim().length != 10 &&
         phoneNumberController.text.trim().isNotEmpty) {
@@ -111,8 +99,9 @@ class SignupPageController extends GetxController {
           firstname: firstNameController.text,
           lastname: lastNameController.text,
           email: emailController.text,
+          mobileNo: phoneNumberController.text,
           password: passwordController.text,
-          userType: 4);
+          userType: singleUserRoleValue.value);
       final signupResponse = await restAPI.calllSignupApi(signupRequest);
       var profileData = ProfileData(
           id: signupResponse.signupData?.id,
@@ -126,9 +115,10 @@ class SignupPageController extends GetxController {
           role: signupResponse.signupData?.role,
           token: signupResponse.signupData?.token);
 
+      await appDatabase.profileDao.deleteProfile();
       await appDatabase.profileDao.insertProfile(profileData);
-      final selectedLanguage = GetStorage();
-      selectedLanguage.write(Constant.token, signupResponse.signupData?.token);
+      await GetStorage()
+          .write(Constant.token, signupResponse.signupData?.token);
 
       return signupResponse;
 
@@ -138,7 +128,7 @@ class SignupPageController extends GetxController {
       // final xx = "";
     } on DioError catch (obj) {
       final res = (obj).response;
-      signupResponse ??= SignupResponse();
+      signupResponse = SignupResponse();
       signupResponse.message = res?.data['message'];
       signupResponse.status = res?.data['status'];
       signupResponse.signupData = res?.data['data'];

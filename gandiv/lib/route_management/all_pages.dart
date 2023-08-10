@@ -1,6 +1,7 @@
 import 'package:gandiv/route_management/routes.dart';
 import 'package:gandiv/ui/binding/screen_binding.dart';
 import 'package:gandiv/ui/views/account/edit_profile_page.dart';
+import 'package:gandiv/ui/views/account/forgot_password_page.dart';
 import 'package:gandiv/ui/views/account/signup_page.dart';
 import 'package:gandiv/ui/views/account/upload_news_page.dart';
 import 'package:gandiv/ui/views/bottombar_views/profile_page.dart';
@@ -76,6 +77,11 @@ class AllPages {
       GetPage(
         name: Routes.uploadNewsPage,
         page: () => UploadNewsPage(),
+        binding: ScreenBindings(),
+      ),
+      GetPage(
+        name: Routes.forgotPasswordPage,
+        page: () => ForgotPasswordPage(),
         binding: ScreenBindings(),
       )
     ];

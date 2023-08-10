@@ -4,10 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:gandiv/models/about_us_response.dart';
 import 'package:gandiv/models/categories_response.dart';
 import 'package:gandiv/models/e_paper.dart';
+import 'package:gandiv/models/forgot_password_response.dart';
 import 'package:gandiv/models/locations_response.dart';
 import 'package:gandiv/models/login_request.dart';
 import 'package:gandiv/models/login_response.dart';
 import 'package:gandiv/models/news_list_response.dart';
+import 'package:gandiv/models/update_profile_request.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
@@ -15,6 +17,7 @@ import '../models/create_news_request.dart';
 import '../models/create_news_response.dart';
 import '../models/signup_request.dart';
 import '../models/signup_response.dart';
+import '../models/update_profile_response.dart';
 import '../models/verify_response.dart';
 
 part 'rest_client.g.dart';
@@ -31,6 +34,7 @@ class Apis {
   static const String newsCategories = '/news/categories';
   static const String newsLocations = '/news/locations';
   static const String createNews = '/news/create';
+  static const String updateProfile = '/users/update';
 }
 
 @RestApi(baseUrl: "http://devapi.gandivsamachar.com/api")
@@ -59,6 +63,11 @@ abstract class RestClient {
       @required @Part(name: 'DurationInMin') String? durationInMin,
       @required @Part(name: 'CategoryId') String? categoryId,
       @required @Part(name: 'MediaFiles') List<File>? multiPartFile});
+
+  @PUT(Apis.updateProfile)
+  Future<UpdateProfilleResponse> updateProfileApi(
+      @Header('Authorization') String? token,
+      @Body() UpdateProfileRequest updateProfileRequest);
 
   // @MultiPart()
   // @POST(Apis.createNews)
@@ -101,4 +110,9 @@ abstract class RestClient {
       @Query("PageSize") int? pageSize,
       @Query("PageNumber") int? pageNumber,
       @Query("SearchText") String? searchText]);
+
+  @PUT(Apis.forgotPassword)
+  Future<ForgotPasswordResponse> forgotPassword([
+    @Query("username") String? username,
+  ]);
 }

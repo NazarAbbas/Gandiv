@@ -13,9 +13,18 @@ import 'drawer_account.dart';
 import 'drawer_e_paper.dart';
 import 'drawer_support.dart';
 
+class DashboardPage extends StatefulWidget {
+  const DashboardPage({super.key});
+
+  @override
+  DashboardPageState createState() => DashboardPageState();
+}
+
 // ignore: must_be_immutable
-class DashboardPage extends GetView<DashboardPageController> {
-  DashboardPage({super.key});
+typedef MyCallback = void Function();
+
+class DashboardPageState extends State<DashboardPage> {
+  DashboardPageController controller = Get.find<DashboardPageController>();
 
   //New
   final List<Widget> _bottomBarWidgets = <Widget>[
@@ -24,6 +33,18 @@ class DashboardPage extends GetView<DashboardPageController> {
     const LocationPage(),
     ProfilePage()
   ];
+
+  void myCallbackFunction() {
+    controller.setTabbarIndex(0);
+    HomePageState homeView = HomePageState();
+    homeView.refreshPage();
+    //Get.toNamed(Routes.dashboardScreen);
+    //controller.setTabbarIndex(0);
+    //(context as Element).reassemble();
+    // setState(() {});
+    // You can perform any action based on the callback data here
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(
@@ -41,10 +62,12 @@ class DashboardPage extends GetView<DashboardPageController> {
               child: SingleChildScrollView(
                 child: Column(
                   children: <Widget>[
-                    DrawerSettings(context: context),
+                    DrawerSettings(
+                        context: context, callback: myCallbackFunction),
                     DrawerEPaper(context: context),
                     DrawerSupport(context: context),
-                    DrawerAccount(context: context),
+                    DrawerAccount(
+                        context: context, callback: myCallbackFunction),
                   ],
                 ),
               ),

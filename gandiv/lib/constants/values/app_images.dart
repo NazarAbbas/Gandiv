@@ -25,4 +25,5 @@ class AppImages {
   static String aboutUs = 'assets/images/info.png';
   static String loginLogout = 'assets/images/login_logout.png';
   static String sideArrow = 'assets/images/side_arrow.png';
+  static String profileImage = 'assets/images/profile.png';
 }

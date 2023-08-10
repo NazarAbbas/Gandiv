@@ -6,10 +6,13 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../controllers/dashboard_page_cotroller.dart';
 import '../../../constants/values/app_images.dart';
+import 'dashboard_page.dart';
 
 class DrawerSettings extends GetView<DashboardPageController> {
-  const DrawerSettings({super.key, required this.context});
+  const DrawerSettings(
+      {super.key, required this.context, required MyCallback this.callback});
   final BuildContext context;
+  final MyCallback callback;
   final bool isDarkTheme = false;
   @override
   Widget build(BuildContext context) {
@@ -197,6 +200,7 @@ class DrawerSettings extends GetView<DashboardPageController> {
                     : AppColors.black,
                 groupValue: controller.singleLanguageValue.value,
                 onChanged: (value) {
+                  callback();
                   Get.updateLocale(const Locale('hi', 'IN'));
                   controller.selectLanguage(value.toString());
                   closeNavigationDrawer();
@@ -217,6 +221,7 @@ class DrawerSettings extends GetView<DashboardPageController> {
                     : AppColors.black,
                 groupValue: controller.singleLanguageValue.value,
                 onChanged: (value) {
+                  callback();
                   Get.updateLocale(const Locale('en', 'US'));
                   controller.selectLanguage(value.toString());
                   closeNavigationDrawer();

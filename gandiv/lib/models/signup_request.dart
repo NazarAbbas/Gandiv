@@ -10,15 +10,18 @@ class SignupRequest {
   final String lastname;
   @JsonKey(name: 'email')
   final String email;
+  @JsonKey(name: 'mobileNo')
+  final String mobileNo;
   @JsonKey(name: 'password')
   final String password;
   @JsonKey(name: 'userType')
-  int userType;
+  String userType;
 
   SignupRequest({
     required this.firstname,
     required this.lastname,
     required this.email,
+    required this.mobileNo,
     required this.password,
     required this.userType,
   });
@@ -32,6 +35,7 @@ class SignupRequest {
         firstname: json["firstname"],
         lastname: json["lastname"],
         email: json["email"],
+        mobileNo: json["mobileNo"],
         password: json["password"],
         userType: json["userType"],
       );
@@ -40,6 +44,7 @@ class SignupRequest {
         "firstname": firstname,
         "lastname": lastname,
         "email": email,
+        "mobileNo": mobileNo,
         "password": password,
         "userType": userType,
       };

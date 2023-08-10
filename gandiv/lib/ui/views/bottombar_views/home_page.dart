@@ -8,23 +8,46 @@ import '../news_views/international_news_page.dart';
 import '../news_views/national_news_page.dart';
 import '../news_views/state_news_page.dart';
 
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  HomePageState createState() => HomePageState();
+}
+
 // ignore: must_be_immutable
-class HomePage extends GetView<HomePageController> {
-  HomePage({super.key});
+class HomePageState extends State<HomePage> {
+  //HomePageState({super.key});
   DashboardPageController dashboardScreenController =
       Get.find<DashboardPageController>();
-//  List<Tab> myTabs = <Tab>[
-//     Tab(text: 'home'.tr),
-//     Tab(text: 'state'.tr),
-//     Tab(text: 'national'.tr),
-//     Tab(text: 'international'.tr),
-//   ];
+
+  HomePageController controller = Get.find<HomePageController>();
+
   final List<Widget> _bottomBarWidgets = <Widget>[
     const HomeNewsPage(),
     const StateNewsPage(),
     const NationalNewsPage(),
     const InterNationalNewsPage()
   ];
+
+  void refreshPage() async {
+    HomeNewsPageListRow().controller.newsList.clear();
+    final index = controller.tabController.index;
+    if (index == 0) {
+      final xxxx = HomeNewsPageListRow().refreshPage();
+    } else {
+      controller.onInit();
+    }
+    controller.onInit();
+
+    // setState(() {});
+    // final index = controller.tabController.index;
+    // if (index == 0) {
+    //   final xxxx = HomeNewsPageListRow().refreshPage();
+    // }
+
+    //xxxx.refreshPage();
+  }
 
   @override
   Widget build(BuildContext context) {

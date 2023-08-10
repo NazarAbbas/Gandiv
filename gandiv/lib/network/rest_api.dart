@@ -3,19 +3,24 @@ import 'package:dio/dio.dart';
 import 'package:gandiv/models/about_us_response.dart';
 import 'package:gandiv/models/categories_response.dart';
 import 'package:gandiv/models/e_paper.dart';
+import 'package:gandiv/models/forgot_password_response.dart';
 import 'package:gandiv/models/locations_response.dart';
 import 'package:gandiv/models/login_request.dart';
 import 'package:gandiv/models/login_response.dart';
 import 'package:gandiv/models/news_list_response.dart';
+import 'package:gandiv/models/update_profile_request.dart';
 import 'package:gandiv/models/verify_response.dart';
 import 'package:gandiv/network/rest_client.dart';
 import 'package:get/get.dart';
 
+import '../constants/constant.dart';
 import '../models/create_news_request.dart';
 import '../models/create_news_response.dart';
 import '../models/signup_request.dart';
 import '../models/signup_response.dart';
 import 'package:http/http.dart' as http;
+
+import '../models/update_profile_response.dart';
 
 class RestAPI {
   Dio dio = Get.find<Dio>();
@@ -51,7 +56,16 @@ class RestAPI {
     return response;
   }
 
-  //POST signup request
+  //PUT request example
+  Future<UpdateProfilleResponse> callUpdateProfileApi(
+      UpdateProfileRequest updateProfileRequest) async {
+    final client = RestClient(dio);
+    final response = await client.updateProfileApi(
+        Constant.hardCodeToken, updateProfileRequest);
+    return response;
+  }
+
+  //POST Update Profile request
   Future<SignupResponse> calllSignupApi(SignupRequest signupRequest) async {
     final client = RestClient(dio);
     final response = await client.signupApi(signupRequest);
@@ -70,8 +84,7 @@ class RestAPI {
   Future<CreateNewsResponse> callCreateNewsApi(
       CreateNewsRequest createNewsRequest) async {
     final client = RestClient(dio);
-    final token =
-        "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODExYjg2Ny0zYzQ4LTRkZjYtMzY3My0wOGRiNzE3OWU0YzIiLCJlbWFpbCI6ImFkbWluQGdhbmRpdi5jb20iLCJhdWQiOlsiU3VwZXJBZG1pbiIsIkF1ZGllbmNlIl0sInJvbGUiOiJTdXBlckFkbWluIiwibmJmIjoxNjkwNjk5NjI2LCJleHAiOjE2OTA3MDMyMjYsImlhdCI6MTY5MDY5OTYyNiwiaXNzIjoiSXNzdWVyIn0.4csl0DWf8poWn-fzNVv6KJz6Z-3C1GOjaUYFEJ5coQgTUeSSNIxRW4aOyuNwVIKv1293TrJ8Zg-Jle5FzaCOsQ";
+    final token = Constant.hardCodeToken;
     // "Bearer ${GetStorage().read(Constant.token) ?? "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODExYjg2Ny0zYzQ4LTRkZjYtMzY3My0wOGRiNzE3OWU0YzIiLCJlbWFpbCI6ImFkbWluQGdhbmRpdi5jb20iLCJhdWQiOlsiU3VwZXJBZG1pbiIsIkF1ZGllbmNlIl0sInJvbGUiOiJTdXBlckFkbWluIiwibmJmIjoxNjkwMTEyMjE5LCJleHAiOjE2OTAxMTU4MTksImlhdCI6MTY5MDExMjIxOSwiaXNzIjoiSXNzdWVyIn0.CFvO1iI-kyhRx3ptCc61tMG50lG8EN34PHmSlSCSXbUqhQPkSpZpx117Ny867PF_1AWd5ie8PwxjwS0_H4Sv0g"}";
     final response = await client.createNewsApi(
         token: token,
@@ -130,6 +143,14 @@ class RestAPI {
     final client = RestClient(dio);
     final response = await client.newsListApi(
         categoryId, locationId, languageId, pageSize, pageNumber, searchText);
+    return response;
+  }
+
+  Future<ForgotPasswordResponse> callForgotPassswordApi({
+    required String userName,
+  }) async {
+    final client = RestClient(dio);
+    final response = await client.forgotPassword(userName);
     return response;
   }
 

@@ -7,12 +7,15 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../../constants/constant.dart';
+import '../../database/app_database.dart';
+import '../../models/profile_db_model.dart';
 import '../../network/rest_api.dart';
 
 class LoginPageController extends GetxController {
   final RestAPI restAPI = Get.find<RestAPI>();
   final isPasswordVisible = true.obs;
   final isLoading = false.obs;
+  final AppDatabase appDatabase = Get.find<AppDatabase>();
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -77,8 +80,21 @@ class LoginPageController extends GetxController {
       LoginRequest loginRequest = LoginRequest(
           username: emailController.text, password: passwordController.text);
       loginResponse = await restAPI.calllLoginApi(loginRequest);
-      final selectedLanguage = GetStorage();
-      selectedLanguage.write(Constant.token, loginResponse.loginData?.token);
+      GetStorage().write(Constant.token, loginResponse.loginData?.token);
+      var profileData = ProfileData(
+          id: loginResponse.loginData?.id,
+          title: loginResponse.loginData?.title,
+          firstName: loginResponse.loginData?.firstName,
+          lastName: loginResponse.loginData?.lastName,
+          mobileNo: loginResponse.loginData?.mobileNo,
+          email: loginResponse.loginData?.email,
+          gender: loginResponse.loginData?.gender,
+          profileImage: loginResponse.loginData?.profileImage,
+          role: loginResponse.loginData?.role,
+          token: loginResponse.loginData?.token);
+      await appDatabase.profileDao.deleteProfile();
+      await appDatabase.profileDao.insertProfile(profileData);
+      await GetStorage().write(Constant.token, loginResponse.loginData?.token);
       return loginResponse;
     } on DioError catch (obj) {
       final res = (obj).response;

@@ -22,12 +22,6 @@ class BookmarkPageController extends FullLifeCycleController {
     isDataLoading.value = false;
   }
 
-  @override
-  void onReady() {
-    // TODO: implement onReady
-    super.onReady();
-  }
-
   void setAudioPlaying(bool istrue, int index) {
     newsList[index].isAudioPlaying = istrue;
     newsList[index] = newsList[index]; // <- Just assign
@@ -42,6 +36,7 @@ class BookmarkPageController extends FullLifeCycleController {
       final newsListDao = appDatabase.newsListDao;
       await newsListDao.deleteNewsById(newsList[index].id!);
       getBookmarkNews();
+      newsList.clear();
       //final bookMarkNews = await appDatabase.newsListDao.findAllNews();
       //final xx = "";
     } on Exception catch (exception) {
@@ -73,6 +68,7 @@ class BookmarkPageController extends FullLifeCycleController {
               isBookmark: bookmarkNews[i].isBookmark,
               isAudioPlaying: bookmarkNews[i].isAudioPlaying);
           newsList.add(news);
+          removeDuplicates(newsList);
         }
       } else {
         newsList.clear();
@@ -91,5 +87,15 @@ class BookmarkPageController extends FullLifeCycleController {
     } finally {
       isDataLoading.value = false;
     }
+  }
+
+  List<T> removeDuplicates<T>(List<T> list) {
+    // Convert the list to a Set to remove duplicates
+    Set<T> set = Set<T>.from(list);
+
+    // Convert the Set back to a List
+    List<T> uniqueList = set.toList();
+
+    return uniqueList;
   }
 }

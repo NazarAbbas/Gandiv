@@ -1,8 +1,13 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:gandiv/ui/controllers/dashboard_page_cotroller.dart';
 import 'package:gandiv/ui/controllers/edit_profile_page_controller.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../constants/dialog_utils.dart';
 import '../../../constants/utils.dart';
 import '../../../constants/values/app_images.dart';
 
@@ -33,11 +38,11 @@ class EditProfilePage extends GetView<EditProfilePageController> {
                 padding: const EdgeInsets.only(top: 20),
                 child: Column(
                   children: <Widget>[
-                    topImageWidget(),
+                    topImageWidget(context),
                     firstNameWidget(),
                     lastNameWidget(),
                     mobileNumberWidget(),
-                    passwordWidget(),
+                    emailWidget(),
                     //_userRoleContainer(),
                     Padding(
                       padding:
@@ -71,21 +76,120 @@ class EditProfilePage extends GetView<EditProfilePageController> {
 
   void loginButtonClick(BuildContext context) async {
     Utils(context).startLoading();
-    await Future.delayed(const Duration(seconds: 2));
-    controller.onSignup();
+    //final response = await Future.delayed(const Duration(seconds: 2));
+    final response = await controller.executeUpdateProfile();
     // ignore: use_build_context_synchronously
     Utils(context).stopLoading();
-    Get.back();
-    Get.back();
+    if (response == null || response.status != 200) {
+      // ignore: use_build_context_synchronously
+      DialogUtils.showSingleButtonCustomDialog(
+        context: context,
+        title: 'ERROR',
+        message: response?.message,
+        firstButtonText: 'OK',
+        firstBtnFunction: () {
+          Navigator.of(context).pop();
+        },
+      );
+    } else if (response != null && response.status == 200) {
+      {
+        Get.back();
+        Get.back();
+      }
+      // Get.back();
+      //Get.back();
+    }
   }
 
-  Image topImageWidget() {
-    return Image.asset(
-      AppImages.appLogo,
-      fit: BoxFit.contain,
-      color: dashboardPageController.isDarkTheme.value == true
-          ? AppColors.white
-          : AppColors.black,
+  Stack topImageWidget(BuildContext context) {
+    return Stack(
+      children: [
+        Center(
+          child: GestureDetector(
+            onTap: () {
+              try {
+                DialogUtils.showThreeButtonCustomDialog(
+                  context: context,
+                  title: 'photo!'.tr,
+                  message: 'message'.tr,
+                  firstButtonText: 'camera'.tr,
+                  secondButtonText: 'gallery'.tr,
+                  thirdButtonText: 'cancel'.tr,
+                  firstBtnFunction: () {
+                    Navigator.of(context).pop();
+                    controller.openImage(ImageSource.camera);
+                  },
+                  secondBtnFunction: () {
+                    Navigator.of(context).pop();
+                    controller.openImage(ImageSource.gallery);
+                  },
+                  thirdBtnFunction: () {
+                    Navigator.of(context).pop();
+                  },
+                );
+              } catch (e) {
+                if (kDebugMode) {
+                  print("error while picking file.");
+                }
+              }
+            },
+            child: controller.croppedImagepath.isNotEmpty
+                ? Container(
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.all(20),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(100.0),
+                      child: Image.file(
+                        File(controller.croppedImagepath.value),
+                        fit: BoxFit.fill,
+                        width: 150.0,
+                        height: 150.0,
+                      ),
+                    ),
+                  )
+                : controller.networkImagePath.isEmpty
+                    ? Container(
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.all(20),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100.0),
+                          child: Image.asset(
+                            AppImages.accountPersonIcon,
+                            fit: BoxFit.fill,
+                            width: 150,
+                            height: 150,
+                          ),
+                        ),
+                      )
+                    : Container(
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.all(20),
+                        width: 150,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              image: NetworkImage(
+                                  controller.networkImagePath.value),
+                              fit: BoxFit.fill),
+                        ),
+                      ),
+          ),
+        ),
+        SizedBox(
+          height: 110,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 30, top: 120),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Icon(
+                Icons.edit,
+                color: AppColors.colorPrimary,
+              ),
+            ),
+          ),
+        )
+      ],
     );
   }
 
@@ -96,7 +200,7 @@ class EditProfilePage extends GetView<EditProfilePageController> {
         onChanged: (text) {
           controller.isFirstNameValid();
         },
-        controller: controller.firstNameController,
+        controller: controller.firstNameController.value,
         validator: (firstName) {
           return controller.isFirstNameValid();
         },
@@ -148,7 +252,7 @@ class EditProfilePage extends GetView<EditProfilePageController> {
         onChanged: (text) {
           controller.isLastNameValid();
         },
-        controller: controller.lastNameController,
+        controller: controller.lastNameController.value,
         validator: (firstName) {
           return controller.isLastNameValid();
         },
@@ -193,16 +297,14 @@ class EditProfilePage extends GetView<EditProfilePageController> {
     );
   }
 
-  Padding passwordWidget() {
+  Padding emailWidget() {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
       child: TextFormField(
-        controller: controller.passwordController,
+        controller: controller.emailController.value,
         validator: (password) {
-          return controller.isPasswordValid();
+          return controller.isEmailValid();
         },
-        obscureText: controller.isPasswordVisible.value,
-        obscuringCharacter: "*",
         enableSuggestions: false,
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
@@ -219,8 +321,8 @@ class EditProfilePage extends GetView<EditProfilePageController> {
                   color: dashboardPageController.isDarkTheme.value == true
                       ? Colors.white
                       : AppColors.colorPrimary)),
-          labelText: 'password'.tr,
-          hintText: 'password'.tr,
+          labelText: 'email'.tr,
+          hintText: 'email'.tr,
           hintStyle: TextStyle(
               color: dashboardPageController.isDarkTheme.value == true
                   ? Colors.white
@@ -229,25 +331,10 @@ class EditProfilePage extends GetView<EditProfilePageController> {
               color: dashboardPageController.isDarkTheme.value == true
                   ? Colors.white
                   : AppColors.colorPrimary),
-          prefixIcon: Icon(Icons.password,
+          prefixIcon: Icon(Icons.email,
               color: dashboardPageController.isDarkTheme.value == true
                   ? Colors.white
                   : AppColors.colorPrimary),
-          suffixIcon: IconButton(
-            icon: Icon(
-                // Based on passwordVisible state choose the icon
-                // ignore: dead_code
-                controller.isPasswordVisible.value
-                    ? Icons.visibility_off
-                    : Icons.visibility,
-                color: dashboardPageController.isDarkTheme.value == true
-                    ? Colors.white
-                    : AppColors.colorPrimary),
-            onPressed: () {
-              controller
-                  .setPasswordVisible(!controller.isPasswordVisible.value);
-            },
-          ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
                 width: 1,
@@ -265,11 +352,11 @@ class EditProfilePage extends GetView<EditProfilePageController> {
       padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
       child: TextFormField(
         onChanged: (text) {
-          controller.isEmailValid();
+          controller.isValidPhoneNumber();
         },
-        controller: controller.emailOrPhoneController,
+        controller: controller.phoneController.value,
         validator: (emailOrMobileNumer) {
-          return controller.isEmailValid();
+          return controller.isValidPhoneNumber();
         },
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
@@ -311,50 +398,4 @@ class EditProfilePage extends GetView<EditProfilePageController> {
       ),
     );
   }
-
-  // Obx _userRoleContainer() {
-  //   return Obx(
-  //     () => Padding(
-  //       padding: const EdgeInsets.only(top: 10),
-  //       child: Column(
-  //         children: [
-  //           RadioListTile(
-  //             dense: true,
-  //             visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
-  //             title: Text('reporter'.tr),
-  //             selectedTileColor:
-  //                 dashboardPageController.isDarkTheme.value == true
-  //                     ? AppColors.white
-  //                     : AppColors.black,
-  //             value: "Reporter",
-  //             activeColor: dashboardPageController.isDarkTheme.value == true
-  //                 ? AppColors.white
-  //                 : AppColors.black,
-  //             groupValue: controller.singleUserRoleValue.value,
-  //             onChanged: (value) {
-  //               controller.setUserRole(value.toString());
-  //             },
-  //           ),
-  //           RadioListTile(
-  //             dense: true,
-  //             visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
-  //             title: Text('user'.tr),
-  //             selectedTileColor:
-  //                 dashboardPageController.isDarkTheme.value == true
-  //                     ? AppColors.white
-  //                     : AppColors.black,
-  //             value: "User",
-  //             activeColor: dashboardPageController.isDarkTheme.value == true
-  //                 ? AppColors.white
-  //                 : AppColors.black,
-  //             groupValue: controller.singleUserRoleValue.value,
-  //             onChanged: (value) {
-  //               controller.setUserRole(value.toString());
-  //             },
-  //           )
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 }

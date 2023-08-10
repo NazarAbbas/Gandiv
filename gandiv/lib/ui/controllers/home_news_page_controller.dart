@@ -44,6 +44,7 @@ class HomeNewsPageController extends FullLifeCycleController {
         isLoadMoreItems.value = false;
       }
     } else {
+      if (controller.hasClients) controller.jumpTo(0);
       languageId = GetStorage().read(Constant.selectedLanguage);
       pageNo = 1;
       pageSize = 5;

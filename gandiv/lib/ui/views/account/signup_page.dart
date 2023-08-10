@@ -404,30 +404,30 @@ class SignupPage extends GetView<SignupPageController> {
                   dashboardPageController.isDarkTheme.value == true
                       ? AppColors.white
                       : AppColors.black,
-              value: "Reporter",
+              value: "4",
               activeColor: dashboardPageController.isDarkTheme.value == true
                   ? AppColors.white
                   : AppColors.black,
               groupValue: controller.singleUserRoleValue.value,
               onChanged: (value) {
-                controller.setUserRole(value.toString());
+                controller.setUserRole(4.toString());
               },
             ),
             RadioListTile(
               dense: true,
               visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
-              title: Text('user'.tr),
+              title: Text('reader'.tr),
               selectedTileColor:
                   dashboardPageController.isDarkTheme.value == true
                       ? AppColors.white
                       : AppColors.black,
-              value: "User",
+              value: "3",
               activeColor: dashboardPageController.isDarkTheme.value == true
                   ? AppColors.white
                   : AppColors.black,
               groupValue: controller.singleUserRoleValue.value,
               onChanged: (value) {
-                controller.setUserRole(value.toString());
+                controller.setUserRole(3.toString());
               },
             )
           ],

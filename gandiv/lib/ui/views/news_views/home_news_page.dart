@@ -40,6 +40,10 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
       Get.find<DashboardPageController>();
   HomeNewsPageController controller = Get.find<HomeNewsPageController>();
   final AppDatabase appDatabase = Get.find<AppDatabase>();
+  void refreshPage() async {
+    controller.newsList.clear();
+    controller.onInit();
+  }
 
   Future<void> _pullRefresh() async {
     controller.pageNo = 1;

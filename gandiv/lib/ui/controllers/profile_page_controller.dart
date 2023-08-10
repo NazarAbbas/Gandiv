@@ -1,25 +1,59 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gandiv/constants/values/app_images.dart';
+import 'package:gandiv/models/profile_db_model.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-
 import '../../constants/values/app_colors.dart';
+import '../../database/app_database.dart';
 
 class ProfilePageController extends GetxController {
   ImagePicker imgpicker = ImagePicker();
   final localImagePath = "".obs;
   final networkImagePath = "".obs;
   final croppedImagepath = "".obs;
+  final mobileNumber = "".obs;
+  final email = "".obs;
+  late RxBool isLogin = false.obs;
   late File imagefile;
+  final AppDatabase appDatabase = Get.find<AppDatabase>();
+  late List<ProfileData> profile;
+
+  @override
+  void onInit() async {
+    super.onInit();
+    await appDatabase.profileDao.findProfile();
+    profile = await appDatabase.profileDao.findProfile();
+    if (profile.isNotEmpty) {
+      isLogin.value = true;
+      final mobileNo = profile[0].mobileNo;
+      final emailData = profile[0].email;
+      if (mobileNo == null || mobileNo.isEmpty) {
+        mobileNumber.value = "+91 XXXXXXXXXX";
+      } else {
+        mobileNumber.value = "+91 $mobileNo";
+      }
+      if (emailData!.isEmpty) {
+        email.value = 'xxx@gmail.com';
+      } else {
+        email.value = emailData;
+      }
+
+      final profileImage = profile[0].profileImage;
+      networkImagePath.value = profileImage ?? AppImages.notification;
+    } else {
+      isLogin.value = false;
+      mobileNumber.value = "+91 XXXXXXXXXX";
+      email.value = 'XXXXX@gmail.com';
+    }
+  }
 
   @override
   void onReady() {
     super.onReady();
-    networkImagePath.value = 'https://googleflutter.com/sample_image.jpg';
+    // networkImagePath.value = AppImages.notification,;
   }
 
   @override

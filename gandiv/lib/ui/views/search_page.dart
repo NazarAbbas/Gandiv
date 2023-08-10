@@ -5,6 +5,7 @@ import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:get/get.dart';
 import 'package:share/share.dart';
 
+import '../../constants/dialog_utils.dart';
 import '../../constants/utils.dart';
 import '../../constants/values/app_images.dart';
 import '../../database/app_database.dart';
@@ -70,9 +71,26 @@ class SearchPagePageListRow extends State<SearchPage> {
                 child: TextField(
                   focusNode: controller.focusNode.value,
                   textInputAction: TextInputAction.search,
+                  onChanged: (content) {
+                    if (controller.searchController.text.isEmpty) {
+                      setState(() {});
+                    }
+                  },
                   onSubmitted: (value) {
-                    controller.newsList.clear();
-                    controller.callSearchApi();
+                    if (controller.searchController.text.isNotEmpty) {
+                      controller.newsList.clear();
+                      controller.callSearchApi();
+                    } else {
+                      DialogUtils.showSingleButtonCustomDialog(
+                        context: context,
+                        title: 'search'.tr,
+                        message: 'please_enter_valid_search_key'.tr,
+                        firstButtonText: 'OK',
+                        firstBtnFunction: () {
+                          Navigator.of(context).pop();
+                        },
+                      );
+                    }
                   },
                   controller: controller.searchController,
                   decoration: InputDecoration(
@@ -129,32 +147,70 @@ class SearchPagePageListRow extends State<SearchPage> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                key: const PageStorageKey('home_news_page'),
-                physics: const AlwaysScrollableScrollPhysics(),
-                itemCount: controller.newsList.length,
-                controller: controller.controller,
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () => {
-                      Utils(context).stopAudio(controller
-                                  .newsList[selectedPosition].newsContent ==
-                              null
-                          ? ""
-                          : controller.newsList[selectedPosition].newsContent!),
-                      controller.setAudioPlaying(false, selectedPosition),
-                      Get.toNamed(Routes.newsDetailPage,
-                              arguments: controller.newsList[index])
-                          ?.then(
-                        (value) => {controller.onInit()},
-                      )
-                    },
-                    child: rowWidget(index, context),
-                  );
-                },
-              ),
+              child: (controller.newsList.isEmpty &&
+                      controller.searchController.text.isNotEmpty)
+                  ? Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        color: AppColors.lightGray,
+                        child: Center(
+                          child: Text('no_news_available'.tr,
+                              style: TextStyle(
+                                  color: AppColors.colorPrimary,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20)),
+                        ),
+                      ),
+                    )
+                  : controller.searchController.text.isEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.all(50),
+                          child: Container(
+                            width: double.infinity,
+                            height: double.infinity,
+                            color: AppColors.lightGray,
+                            child: Center(
+                              child: Text(
+                                  textAlign: TextAlign.center,
+                                  'search_messgae'.tr,
+                                  style: TextStyle(
+                                      color: AppColors.colorPrimary,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20)),
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          key: const PageStorageKey('home_news_page'),
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: controller.newsList.length,
+                          controller: controller.controller,
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () => {
+                                Utils(context).stopAudio(controller
+                                            .newsList[selectedPosition]
+                                            .newsContent ==
+                                        null
+                                    ? ""
+                                    : controller.newsList[selectedPosition]
+                                        .newsContent!),
+                                controller.setAudioPlaying(
+                                    false, selectedPosition),
+                                Get.toNamed(Routes.newsDetailPage,
+                                        arguments: controller.newsList[index])
+                                    ?.then(
+                                  (value) => {controller.onInit()},
+                                )
+                              },
+                              child: rowWidget(index, context),
+                            );
+                          },
+                        ),
             ),
             if (controller.isLoadMoreItems.value == true)
               Padding(

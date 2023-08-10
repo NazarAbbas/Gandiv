@@ -14,7 +14,7 @@ import '../../network/rest_api.dart';
 
 class SearchPageController extends GetxController {
   var isListening = false.obs;
-  var speechTextHint = 'search here...'.obs;
+  var speechTextHint = 'search_here'.tr.obs;
   var confidence = 1.0.obs;
   late SpeechToText speechToText;
   final searchController = TextEditingController();
@@ -37,32 +37,35 @@ class SearchPageController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
+    isDataLoading.value = true;
     speechToText = SpeechToText();
-    // if (newsList.isNotEmpty) {
-    //   for (int i = 0; i < newsList.length; i++) {
-    //     final bookMarkNews =
-    //         await appDatabase.newsListDao.findNewsById(newsList[i].id!);
-    //     if (bookMarkNews != null) {
-    //       newsList[i].isBookmark = true;
-    //     } else {
-    //       newsList[i].isBookmark = false;
-    //     }
-    //     isDataLoading.value = false;
-    //     isLoadMoreItems.value = false;
-    //   }
-    // } else {
-    //   final location = await appDatabase.locationsDao
-    //       .findLocationsIdByName(GetStorage().read(Constant.selectedLocation));
-    //   final category = await appDatabase.categoriesDao
-    //       .findCategoriesIdByName('International');
-    //   locationId = location!.id!;
-    //   categoryId = category!.id!;
-    //   languageId = GetStorage().read(Constant.selectedLanguage);
-    //   pageNo = 1;
-    //   pageSize = 5;
-    //   newsList.clear();
-    //   await callSearchApi();
-    // }
+    if (newsList.isNotEmpty) {
+      for (int i = 0; i < newsList.length; i++) {
+        final bookMarkNews =
+            await appDatabase.newsListDao.findNewsById(newsList[i].id!);
+        if (bookMarkNews != null) {
+          newsList[i].isBookmark = true;
+          newsList[i] = newsList[i];
+        } else {
+          newsList[i].isBookmark = false;
+          newsList[i] = newsList[i];
+        }
+        isDataLoading.value = false;
+        isLoadMoreItems.value = false;
+      }
+    } else {
+      // final location = await appDatabase.locationsDao
+      //     .findLocationsIdByName(GetStorage().read(Constant.selectedLocation));
+      // final category = await appDatabase.categoriesDao
+      //     .findCategoriesIdByName('International');
+      // locationId = location!.id!;
+      // categoryId = category!.id!;
+      // languageId = GetStorage().read(Constant.selectedLanguage);
+      // pageNo = 1;
+      // pageSize = 5;
+      // newsList.clear();
+      // await callSearchApi();
+    }
   }
 
   @override

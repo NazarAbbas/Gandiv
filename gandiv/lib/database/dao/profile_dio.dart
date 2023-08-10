@@ -13,6 +13,12 @@ abstract class ProfileDao {
   @Query('DELETE FROM ProfileData WHERE id = :id')
   Future<void> deleteProfileById(String id);
 
+  @Query('DELETE FROM ProfileData')
+  Future<void> deleteProfile();
+
   @insert
   Future<void> insertProfile(ProfileData profileData);
+
+  @update
+  Future<int> updateProfile(List<ProfileData> profileData);
 }

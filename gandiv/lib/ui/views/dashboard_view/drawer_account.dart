@@ -4,10 +4,13 @@ import 'package:get/get.dart';
 import '../../../route_management/routes.dart';
 import '../../controllers/dashboard_page_cotroller.dart';
 import '../../../constants/values/app_images.dart';
+import 'dashboard_page.dart';
 
 class DrawerAccount extends GetView<DashboardPageController> {
-  const DrawerAccount({super.key, required this.context});
+  const DrawerAccount(
+      {super.key, required this.context, required MyCallback this.callback});
   final BuildContext context;
+  final MyCallback callback;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -30,7 +33,10 @@ class DrawerAccount extends GetView<DashboardPageController> {
           onTap: () {
             // Navigator.pop(context);
             Get.back();
-            Get.toNamed(Routes.loginScreen);
+
+            Get.toNamed(Routes.loginScreen)?.then(
+              (value) => {callback()},
+            );
           },
           child: Column(
             children: <Widget>[

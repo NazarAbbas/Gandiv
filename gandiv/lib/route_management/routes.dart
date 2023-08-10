@@ -11,4 +11,5 @@ class Routes {
   static String profilePage = '/PROFILE_PAGE';
   static String editProfilePage = '/EDIT_PROFILE_PAGE';
   static String uploadNewsPage = '/UPLOAD_NEWS_PAGE';
+  static String forgotPasswordPage = '/FORGOT_PASSWORD_PAGE';
 }

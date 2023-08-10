@@ -244,6 +244,22 @@ class _$ProfileDao extends ProfileDao {
                   'profileImage': item.profileImage,
                   'role': item.role,
                   'token': item.token
+                }),
+        _profileDataUpdateAdapter = UpdateAdapter(
+            database,
+            'ProfileData',
+            ['id'],
+            (ProfileData item) => <String, Object?>{
+                  'id': item.id,
+                  'title': item.title,
+                  'firstName': item.firstName,
+                  'lastName': item.lastName,
+                  'mobileNo': item.mobileNo,
+                  'email': item.email,
+                  'gender': item.gender,
+                  'profileImage': item.profileImage,
+                  'role': item.role,
+                  'token': item.token
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -253,6 +269,8 @@ class _$ProfileDao extends ProfileDao {
   final QueryAdapter _queryAdapter;
 
   final InsertionAdapter<ProfileData> _profileDataInsertionAdapter;
+
+  final UpdateAdapter<ProfileData> _profileDataUpdateAdapter;
 
   @override
   Future<List<ProfileData>> findProfile() async {
@@ -294,8 +312,19 @@ class _$ProfileDao extends ProfileDao {
   }
 
   @override
+  Future<void> deleteProfile() async {
+    await _queryAdapter.queryNoReturn('DELETE FROM ProfileData');
+  }
+
+  @override
   Future<void> insertProfile(ProfileData profileData) async {
     await _profileDataInsertionAdapter.insert(
+        profileData, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<int> updateProfile(List<ProfileData> profileData) {
+    return _profileDataUpdateAdapter.updateListAndReturnChangedRows(
         profileData, OnConflictStrategy.abort);
   }
 }
