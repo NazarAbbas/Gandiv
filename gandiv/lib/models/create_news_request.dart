@@ -1,28 +1,27 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
 
 class CreateNewsRequest {
-  final String? heading;
-  final String? subHeading;
-  final String? newsContent;
-  final String? durationInMin;
-  final String? locationId;
-  final String? categoryId;
-  final String? languageId;
-  final String? status;
-  final List<File>? multiPartFile;
+  String? heading;
+  String? subHeading;
+  String? newsContent;
+  String? durationInMin;
+  String? locationId;
+  List<String>? categoryIdsList;
+  String? languageId;
+  String? status;
+  List<File>? files;
 
   CreateNewsRequest({
-    required this.heading,
-    required this.subHeading,
-    required this.newsContent,
-    required this.durationInMin,
-    required this.locationId,
-    required this.categoryId,
-    required this.languageId,
-    required this.status,
-    required this.multiPartFile,
+    this.heading,
+    this.subHeading,
+    this.newsContent,
+    this.durationInMin,
+    this.locationId,
+    this.categoryIdsList,
+    this.languageId,
+    this.status,
+    this.files,
   });
 
   factory CreateNewsRequest.fromRawJson(String str) =>
@@ -37,10 +36,10 @@ class CreateNewsRequest {
         newsContent: json["newsContent"],
         durationInMin: json["durationInMin"],
         locationId: json["locationId"],
-        categoryId: json["categoryId"],
+        categoryIdsList: json["categoryId"],
         languageId: json["languageId"],
         status: json["status"],
-        multiPartFile: json["multiPartFile"],
+        files: json["files"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -49,9 +48,9 @@ class CreateNewsRequest {
         "newsContent": newsContent,
         "durationInMin": durationInMin,
         "locationId": locationId,
-        "categoryId": categoryId,
+        "categoryId": categoryIdsList,
         "languageId": languageId,
         "status": status,
-        "multiPartFile": multiPartFile,
+        "files": files,
       };
 }

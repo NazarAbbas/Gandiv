@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
+import 'package:gandiv/ui/controllers/comman_controller.dart';
 import 'package:gandiv/ui/views/dashboard_view/drawer_settings.dart';
 import 'package:get/get.dart';
 import '../../../route_management/routes.dart';
@@ -25,6 +26,7 @@ typedef MyCallback = void Function();
 
 class DashboardPageState extends State<DashboardPage> {
   DashboardPageController controller = Get.find<DashboardPageController>();
+  CommanController commanController = Get.find<CommanController>();
 
   //New
   final List<Widget> _bottomBarWidgets = <Widget>[
@@ -66,8 +68,11 @@ class DashboardPageState extends State<DashboardPage> {
                         context: context, callback: myCallbackFunction),
                     DrawerEPaper(context: context),
                     DrawerSupport(context: context),
-                    DrawerAccount(
-                        context: context, callback: myCallbackFunction),
+                    Visibility(
+                      visible: commanController.isNotLogedIn.value,
+                      child: DrawerAccount(
+                          context: context, callback: myCallbackFunction),
+                    ),
                   ],
                 ),
               ),

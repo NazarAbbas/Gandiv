@@ -33,7 +33,6 @@ class DrawerAccount extends GetView<DashboardPageController> {
           onTap: () {
             // Navigator.pop(context);
             Get.back();
-
             Get.toNamed(Routes.loginScreen)?.then(
               (value) => {callback()},
             );

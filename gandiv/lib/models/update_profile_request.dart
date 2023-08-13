@@ -1,28 +1,26 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 class UpdateProfileRequest {
-  @JsonKey(name: 'id')
-  String? id;
-  @JsonKey(name: 'userType')
-  String? userType;
-  @JsonKey(name: 'firstname')
+  @JsonKey(name: 'Firstname')
   String? firstName;
-  @JsonKey(name: 'lastName')
+  @JsonKey(name: 'LastName')
   String? lastName;
-  @JsonKey(name: 'email')
+  @JsonKey(name: 'Email')
   String? email;
-  @JsonKey(name: 'file')
-  String? file;
+  @JsonKey(name: 'MobileNo')
+  String? mobileNo;
+  @JsonKey(name: 'File')
+  File? file;
 
   UpdateProfileRequest({
-    required this.id,
-    required this.userType,
-    required this.firstName,
-    required this.lastName,
-    required this.email,
-    required this.file,
+    this.firstName,
+    this.lastName,
+    this.email,
+    this.file,
+    this.mobileNo,
   });
 
   factory UpdateProfileRequest.fromRawJson(String str) =>
@@ -32,20 +30,18 @@ class UpdateProfileRequest {
 
   factory UpdateProfileRequest.fromJson(Map<String, dynamic> json) =>
       UpdateProfileRequest(
-        id: json["id"],
-        userType: json["userType"],
-        firstName: json["firstName"],
-        lastName: json["lastName"],
-        email: json["email"],
-        file: json["file"],
+        firstName: json["Firstname"],
+        lastName: json["LastName"],
+        email: json["Email"],
+        mobileNo: json["MobileNo"],
+        file: json["File"],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "userType": userType,
         "firstName": firstName,
         "lastName": lastName,
         "email": email,
+        "MobileNo": mobileNo,
         "file": file,
       };
 }

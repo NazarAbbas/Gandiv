@@ -9,6 +9,7 @@ import 'package:gandiv/models/locations_response.dart';
 import 'package:gandiv/models/login_request.dart';
 import 'package:gandiv/models/login_response.dart';
 import 'package:gandiv/models/news_list_response.dart';
+import 'package:gandiv/models/profile_response.dart';
 import 'package:gandiv/models/update_profile_request.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
@@ -34,7 +35,8 @@ class Apis {
   static const String newsCategories = '/news/categories';
   static const String newsLocations = '/news/locations';
   static const String createNews = '/news/create';
-  static const String updateProfile = '/users/update';
+  static const String updateProfile = '/users/profile';
+  static const String getProfile = '/users/profile';
 }
 
 @RestApi(baseUrl: "http://devapi.gandivsamachar.com/api")
@@ -56,18 +58,27 @@ abstract class RestClient {
       {@required @Header('Authorization') String? token,
       @required @Part(name: 'Heading') String? heading,
       @required @Part(name: 'SubHeading') String? subHeading,
-      @required @Part(name: 'newsContent') String? newsContent,
+      @required @Part(name: 'NewsContent') String? newsContent,
       @required @Part(name: 'LocationId') String? locationId,
       @required @Part(name: 'Status') String? status,
       @required @Part(name: 'LanguageId') String? languageId,
       @required @Part(name: 'DurationInMin') String? durationInMin,
-      @required @Part(name: 'CategoryId') String? categoryId,
-      @required @Part(name: 'MediaFiles') List<File>? multiPartFile});
+      @required @Part(name: 'CategoryIds') List<String>? categoryId,
+      @required @Part(name: 'MediaFiles') List<File>? files});
 
+  @MultiPart()
   @PUT(Apis.updateProfile)
   Future<UpdateProfilleResponse> updateProfileApi(
-      @Header('Authorization') String? token,
-      @Body() UpdateProfileRequest updateProfileRequest);
+      {@required @Header('Authorization') String? token,
+      @required @Part(name: 'FirstName') String? firstName,
+      @required @Part(name: 'LastName') String? lastName,
+      @required @Part(name: 'MobileNo') String? mobileNo,
+      @required @Part(name: 'File') File? file});
+
+  // @PUT(Apis.updateProfile)
+  // Future<UpdateProfilleResponse> updateProfileApi(
+  //     @Header('Authorization') String? token,
+  //     @Body() UpdateProfileRequest updateProfileRequest);
 
   // @MultiPart()
   // @POST(Apis.createNews)
@@ -85,6 +96,9 @@ abstract class RestClient {
 
   @PUT(Apis.verify)
   Future<VerifyResponse> verifyApi(@Path("code") String code);
+
+  @GET(Apis.getProfile)
+  Future<ProfileResponse> profileApi(@Header('Authorization') String? token);
 
   @PUT(Apis.forgotPassword)
   Future<VerifyResponse> forgotPasswordApi(

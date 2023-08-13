@@ -1,18 +1,16 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gandiv/models/update_profile_request.dart';
+import 'package:gandiv/route_management/routes.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-
+import '../../constants/dialog_utils.dart';
+import '../../constants/utils.dart';
 import '../../constants/values/app_colors.dart';
 import '../../database/app_database.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
-
-import '../../models/signup_response.dart';
-import '../../models/update_profile_response.dart';
 import '../../network/rest_api.dart';
 
 class EditProfilePageController extends GetxController {
@@ -38,13 +36,67 @@ class EditProfilePageController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    final profile = await appDatabase.profileDao.findProfile();
-    if (profile.isNotEmpty) {
-      firstNameController.value.text = profile[0].firstName!;
-      lastNameController.value.text = profile[0].lastName!;
-      emailController.value.text = profile[0].email!;
-      phoneController.value.text = profile[0].mobileNo ?? "";
-      //networkImagePath.value = profile[0].profileImage!;
+    isLoading.value = true;
+    getProfile();
+  }
+
+  Future<void> getProfile() async {
+    try {
+      //final profile = await appDatabase.profileDao.findProfile();
+      final profileResponse = await restAPI.callProfileApi();
+      firstNameController.value.text = profileResponse.data!.firstName ?? "";
+      lastNameController.value.text = profileResponse.data!.lastName ?? "";
+      emailController.value.text = profileResponse.data!.email ?? "";
+      phoneController.value.text = profileResponse.data!.mobileNo ?? "";
+      networkImagePath.value = profileResponse.data?.profileImage ?? "";
+    } on DioException catch (obj) {
+      final res = (obj).response;
+      if (kDebugMode) {
+        print("Got error : ${res?.statusCode} -> ${res?.statusMessage}");
+      }
+      if (res?.statusCode == 401) {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'unauthorized_title'.tr,
+          message: 'unauthorized_message'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+            //Get.toNamed(Routes.loginScreen);
+            Navigator.of(Get.context!).pushNamedAndRemoveUntil(
+                Routes.loginScreen, (Route<dynamic> route) => false);
+          },
+        );
+      } else {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message: res != null ? res.statusMessage : 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+            // Navigator.of(Get.context!).pushNamedAndRemoveUntil(
+            //     Routes.loginScreen, (Route<dynamic> route) => false);
+          },
+        );
+      }
+      // FOR CUSTOM MESSAGE
+      // final errorMessage = NetworkExceptions.getDioException(obj);
+    } on Exception catch (exception) {
+      if (kDebugMode) {
+        print("Got error : $exception");
+      }
+      DialogUtils.showSingleButtonCustomDialog(
+        context: Get.context!,
+        title: 'error'.tr,
+        message: 'something_went_wrong'.tr,
+        firstButtonText: 'ok'.tr,
+        firstBtnFunction: () {
+          Navigator.of(Get.context!).pop();
+        },
+      );
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -153,68 +205,89 @@ class EditProfilePageController extends GetxController {
     }
   }
 
-  Future<UpdateProfilleResponse?> executeUpdateProfile() async {
-    return await validateFields();
+  Future<void> executeUpdateProfile() async {
+    await validateFields();
   }
 
-  Future<UpdateProfilleResponse?> validateFields() async {
+  Future<void> validateFields() async {
     if (formGlobalKey.currentState!.validate()) {
       formGlobalKey.currentState?.save();
-      return await executeUpdateProfileApi();
+      await executeUpdateProfileApi();
     }
-    return null;
+    //Get.back();
+    //return null;
   }
 
-  Future<UpdateProfilleResponse?> executeUpdateProfileApi() async {
-    UpdateProfilleResponse? updateProfilleResponse = UpdateProfilleResponse();
+  Future<void> executeUpdateProfileApi() async {
     try {
-      final profile = await appDatabase.profileDao.findProfile();
-      UpdateProfileRequest updateProfileRequest = UpdateProfileRequest(
-          id: profile[0].id,
-          userType: 4.toString(),
-          firstName: firstNameController.value.text,
-          lastName: lastNameController.value.text,
-          email: emailController.value.text,
-          file: croppedImagepath.value);
-      updateProfilleResponse =
+      Utils(Get.context!).startLoading();
+      UpdateProfileRequest updateProfileRequest = UpdateProfileRequest();
+      updateProfileRequest.firstName = firstNameController.value.text;
+      updateProfileRequest.lastName = lastNameController.value.text;
+      updateProfileRequest.email = emailController.value.text;
+      updateProfileRequest.mobileNo = phoneController.value.text;
+      if (croppedImagepath.value.isNotEmpty) {
+        updateProfileRequest.file = File(croppedImagepath.value);
+      }
+      final editProfileResponse =
           await restAPI.callUpdateProfileApi(updateProfileRequest);
-
-      // var profileData = ProfileData(
-      //     id: signupResponse.signupData?.id,
-      //     title: signupResponse.signupData?.title,
-      //     firstName: signupResponse.signupData?.firstName,
-      //     lastName: signupResponse.signupData?.lastName,
-      //     mobileNo: signupResponse.signupData?.mobileNo,
-      //     email: signupResponse.signupData?.email,
-      //     gender: signupResponse.signupData?.gender,
-      //     profileImage: signupResponse.signupData?.profileImage,
-      //     role: signupResponse.signupData?.role,
-      //     token: signupResponse.signupData?.token);
-
-      // await appDatabase.profileDao.deleteProfile();
-      // await appDatabase.profileDao.insertProfile(profileData);
-      // await GetStorage()
-      //     .write(Constant.token, signupResponse.signupData?.token);
-
-      return updateProfilleResponse;
-
-      // final profile1 =
-      //     await appDatabase.profileDao.findProfileById(profileData.id!);
-      // final profile = await appDatabase.profileDao.findProfile();
-      // final xx = "";
+      if (editProfileResponse.status == 200) {
+        Utils(Get.context!).stopLoading();
+      } else {
+        Utils(Get.context!).stopLoading();
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message: editProfileResponse.message,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      }
     } on DioException catch (obj) {
+      Utils(Get.context!).stopLoading();
       final res = (obj).response;
-      // final errorMessage = NetworkExceptions.getDioException(obj);
-      updateProfilleResponse = UpdateProfilleResponse();
-      updateProfilleResponse.message = res?.data['message'];
-      updateProfilleResponse.status = res?.data['status'];
-      updateProfilleResponse.signupData = res?.data['data'];
-      return updateProfilleResponse;
+      if (res?.statusCode == 401) {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'unauthorized_title'.tr,
+          message: 'unauthorized_message'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } else {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message: res != null ? res.statusMessage : 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      }
+      //return updateProfilleResponse;
     } on Exception catch (exception) {
+      Utils(Get.context!).stopLoading();
       if (kDebugMode) {
         print("Got error : $exception");
       }
+      try {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message: 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } on Exception catch (exception) {
+        final message = exception.toString();
+      }
     } finally {}
-    return null;
   }
 }

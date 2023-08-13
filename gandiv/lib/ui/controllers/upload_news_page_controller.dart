@@ -1,12 +1,16 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart' as dioError;
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gandiv/constants/dialog_utils.dart';
+import 'package:gandiv/constants/utils.dart';
 import 'package:gandiv/models/create_news_request.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
 
 import '../../constants/values/app_colors.dart';
 import '../../database/app_database.dart';
@@ -28,6 +32,8 @@ class UploadNewsPagePageController extends GetxController {
 
   ImagePicker imgpicker = ImagePicker();
   List<String> imageList = <String>[].obs;
+  List<MultiSelectItem<String>> multiSelectCategoriesList =
+      <MultiSelectItem<String>>[].obs;
   final localImagePath = "".obs;
   final networkImagePath = "".obs;
   final headingCroppedImagepath = "".obs;
@@ -38,11 +44,13 @@ class UploadNewsPagePageController extends GetxController {
 
   List<String> locationList = <String>['please_select_location'.tr].obs;
   var locationDropdownValue = 'please_select_location'.tr.obs;
+
+  List<String> categoriesList = <String>[];
   String locationDropdownSelectedID = "";
 
-  List<String> categoriesList = <String>['please_select_category'.tr].obs;
-  var categoriesDropdownValue = 'please_select_category'.tr.obs;
-  String categoriesDropdownSelectedID = "";
+  // List<String> categoriesList = <String>['please_select_category'.tr].obs;
+  // var categoriesDropdownValue = 'please_select_category'.tr.obs;
+  List<String> categoriesDropdownSelectedID = <String>[];
 
   @override
   void onInit() async {
@@ -55,6 +63,9 @@ class UploadNewsPagePageController extends GetxController {
     for (var categorie in categories) {
       categoriesList.add(categorie.name!);
     }
+    multiSelectCategoriesList = categoriesList
+        .map((category) => MultiSelectItem<String>(category, category))
+        .toList();
   }
 
   void setPasswordVisible(bool isTrue) {
@@ -101,49 +112,89 @@ class UploadNewsPagePageController extends GetxController {
   }
 
   Future<void> executeNewsUploadApi() async {
+    Utils(Get.context!).startLoading();
     try {
-      final List<File> mediaFiles = <File>[];
+      final List<File> files = <File>[];
 
       try {
         for (int i = 0; i < imageList.length; i++) {
-          var path = imageList[i];
-          File imageFile = File(path);
-
-          var stream = http.ByteStream(imageFile.openRead());
-          var length = await imageFile.length();
-          var multipartFile = http.MultipartFile("pictures", stream, length,
-              filename: basename(imageFile.path));
+          // var path = imageList[i];
+          // File imageFile = File(path);
+          // var stream = http.ByteStream(imageFile.openRead());
+          // var length = await imageFile.length();
+          // var multipartFile = http.MultipartFile("pictures", stream, length,
+          //     filename: basename(imageFile.path));
 
           // mediaFiles.add(multipartFile);
+          files.add(File(imageList[i]));
         }
       } on Exception catch (exception) {
         final message = exception;
       }
 
-      final response = await restAPI.callCreateNewsApi(
-        CreateNewsRequest(
-            heading: headingController.text,
-            subHeading: subHeadingController.text,
-            newsContent: descriptionController.text,
-            durationInMin: 0.toString(),
-            locationId: locationDropdownSelectedID,
-            categoryId: categoriesDropdownSelectedID,
-            languageId: "2",
-            status: "Created",
-            multiPartFile: mediaFiles),
+      CreateNewsRequest createNewsRequest = CreateNewsRequest();
+      createNewsRequest.heading = headingController.text;
+      createNewsRequest.subHeading = subHeadingController.text;
+      createNewsRequest.newsContent = descriptionController.text;
+      createNewsRequest.durationInMin = 0.toString();
+      createNewsRequest.locationId = locationDropdownSelectedID;
+      createNewsRequest.categoryIdsList = categoriesDropdownSelectedID;
+      createNewsRequest.languageId = "2";
+      createNewsRequest.status = "Created";
+      createNewsRequest.files = files;
+      final response = await restAPI.callCreateNewsApi(createNewsRequest);
+      Utils(Get.context!).stopLoading();
+      DialogUtils.showSingleButtonCustomDialog(
+        context: Get.context!,
+        title: 'success'.tr,
+        message: 'news_created_successfully'.tr,
+        firstButtonText: 'ok'.tr,
+        firstBtnFunction: () {
+          Navigator.of(Get.context!).pop();
+        },
       );
-
-      final res = response;
-    } on dioError.DioError catch (obj) {
+    } on DioException catch (obj) {
+      Utils(Get.context!).stopLoading();
       final res = (obj).response;
-      if (kDebugMode) {
-        print("Got error : ${res?.statusCode} -> ${res?.statusMessage}");
+      if (res?.statusCode == 401) {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'unauthorized_title'.tr,
+          message: 'unauthorized_message'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } else {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message: res != null ? res.statusMessage : 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
       }
-      // FOR CUSTOM MESSAGE
-      // final errorMessage = NetworkExceptions.getDioException(obj);
+      //return updateProfilleResponse;
     } on Exception catch (exception) {
+      Utils(Get.context!).stopLoading();
       if (kDebugMode) {
         print("Got error : $exception");
+      }
+      try {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message: 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } on Exception catch (exception) {
+        final message = exception.toString();
       }
     } finally {}
   }

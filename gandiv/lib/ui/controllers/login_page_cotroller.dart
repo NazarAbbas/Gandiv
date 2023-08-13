@@ -1,15 +1,20 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gandiv/models/login_request.dart';
 import 'package:gandiv/models/login_response.dart';
+import 'package:gandiv/route_management/routes.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../../constants/constant.dart';
+import '../../constants/dialog_utils.dart';
+import '../../constants/utils.dart';
 import '../../database/app_database.dart';
 import '../../models/profile_db_model.dart';
 import '../../network/rest_api.dart';
+import 'comman_controller.dart';
 
 class LoginPageController extends GetxController {
   final RestAPI restAPI = Get.find<RestAPI>();
@@ -19,6 +24,7 @@ class LoginPageController extends GetxController {
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  CommanController commanController = Get.find<CommanController>();
 
   final formGlobalKey = GlobalKey<FormState>();
 
@@ -62,51 +68,111 @@ class LoginPageController extends GetxController {
   //   return null;
   // }
 
-  Future<LoginResponse?> onLogin() async {
-    return await validateFields();
+  Future<void> onLogin() async {
+    await validateFields();
   }
 
-  Future<LoginResponse?> validateFields() async {
+  Future<void> validateFields() async {
     if (formGlobalKey.currentState!.validate()) {
       formGlobalKey.currentState?.save();
-      return await executeLoginApi();
+      await executeLoginApi();
     }
-    return null;
   }
 
-  Future<LoginResponse?> executeLoginApi() async {
+  Future<void> executeLoginApi() async {
+    Utils(Get.context!).startLoading();
     LoginResponse? loginResponse = LoginResponse();
     try {
       LoginRequest loginRequest = LoginRequest(
           username: emailController.text, password: passwordController.text);
+
       loginResponse = await restAPI.calllLoginApi(loginRequest);
-      GetStorage().write(Constant.token, loginResponse.loginData?.token);
-      var profileData = ProfileData(
-          id: loginResponse.loginData?.id,
-          title: loginResponse.loginData?.title,
-          firstName: loginResponse.loginData?.firstName,
-          lastName: loginResponse.loginData?.lastName,
-          mobileNo: loginResponse.loginData?.mobileNo,
-          email: loginResponse.loginData?.email,
-          gender: loginResponse.loginData?.gender,
-          profileImage: loginResponse.loginData?.profileImage,
-          role: loginResponse.loginData?.role,
-          token: loginResponse.loginData?.token);
-      await appDatabase.profileDao.deleteProfile();
-      await appDatabase.profileDao.insertProfile(profileData);
-      await GetStorage().write(Constant.token, loginResponse.loginData?.token);
-      return loginResponse;
-    } on DioError catch (obj) {
+      if (loginResponse.status == 200) {
+        var profileData = ProfileData(
+            id: loginResponse.loginData?.id,
+            title: loginResponse.loginData?.title,
+            firstName: loginResponse.loginData?.firstName,
+            lastName: loginResponse.loginData?.lastName,
+            mobileNo: loginResponse.loginData?.mobileNo,
+            email: loginResponse.loginData?.email,
+            gender: loginResponse.loginData?.gender,
+            profileImage: loginResponse.loginData?.profileImage,
+            role: loginResponse.loginData?.role,
+            token: loginResponse.loginData?.token);
+        commanController.isNotLogedIn.value = false;
+        commanController.userRole.value = loginResponse.loginData!.role;
+        await appDatabase.profileDao.deleteProfile();
+        await appDatabase.profileDao.insertProfile(profileData);
+        await GetStorage()
+            .write(Constant.token, loginResponse.loginData?.token);
+        Utils(Get.context!).stopLoading();
+        Fluttertoast.showToast(
+            msg: "Login successfully!",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        Get.back();
+        // Get.toNamed(Routes.dashboardScreen);
+        // Navigator.of(Get.context!).pushNamedAndRemoveUntil(
+        //     Routes.dashboardScreen, (Route<dynamic> route) => false);
+      } else {
+        Utils(Get.context!).stopLoading();
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message: loginResponse.message,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      }
+    } on DioException catch (obj) {
+      Utils(Get.context!).stopLoading();
       final res = (obj).response;
-      loginResponse ??= LoginResponse();
-      loginResponse.message = res?.data['message'];
-      loginResponse.status = res?.data['status'];
-      loginResponse.loginData = res?.data['data'];
-      return loginResponse;
-      // FOR CUSTOM MESSAGE
-      // final errorMessage = NetworkExceptions.getDioException(obj);
+      if (res?.statusCode == 401) {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'unauthorized_title'.tr,
+          message: 'unauthorized_message'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } else {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message: res != null ? res.statusMessage : 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      }
+      //return updateProfilleResponse;
     } on Exception catch (exception) {
-      return loginResponse;
+      Utils(Get.context!).stopLoading();
+      if (kDebugMode) {
+        print("Got error : $exception");
+      }
+      try {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message: 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } on Exception catch (exception) {
+        final message = exception.toString();
+      }
     } finally {}
   }
 }

@@ -193,7 +193,7 @@ class DialogUtils {
 
   static void showSingleButtonCustomDialog(
       {required BuildContext context,
-      required String title,
+      required String? title,
       required String? message,
       required String firstButtonText,
       required Function firstBtnFunction}) {
@@ -201,7 +201,10 @@ class DialogUtils {
         context: context,
         builder: (_) {
           return AlertDialog(
-            title: Text(title),
+            title: Text(
+              title ?? "",
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             content: Container(
               color: dashboardPageController.isDarkTheme.value == true
                   ? AppColors.dartTheme
@@ -209,11 +212,11 @@ class DialogUtils {
               height: 150,
               child: Column(
                 children: [
-                  Container(
-                    height: 80,
+                  SizedBox(
+                    height: 100,
                     child: Text(
                       message ?? "",
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ),
                   SizedBox(

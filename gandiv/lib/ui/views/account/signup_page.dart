@@ -75,31 +75,31 @@ class SignupPage extends GetView<SignupPageController> {
   }
 
   void loginButtonClick(BuildContext context) async {
-    Utils(context).startLoading();
+    /// Utils(context).startLoading();
     // await Future.delayed(const Duration(seconds: 2));
     final response = await controller.onSignup();
     // ignore: use_build_context_synchronously
-    Utils(context).stopLoading();
+    //  Utils(context).stopLoading();
     //  Get.back();
     //  Get.back();
 
-    if (response != null && response.status != 200) {
-      // ignore: use_build_context_synchronously
-      DialogUtils.showSingleButtonCustomDialog(
-        context: context,
-        title: 'ERROR',
-        message: response?.message,
-        firstButtonText: 'OK',
-        firstBtnFunction: () {
-          Navigator.of(context).pop();
-        },
-      );
-    } else if (response != null && response.status == 200) {
-      {
-        Get.back();
-        Get.back();
-      }
-    }
+    // if (response != null && response.status != 200) {
+    //   // ignore: use_build_context_synchronously
+    //   DialogUtils.showSingleButtonCustomDialog(
+    //     context: context,
+    //     title: 'ERROR',
+    //     message: response?.message,
+    //     firstButtonText: 'OK',
+    //     firstBtnFunction: () {
+    //       Navigator.of(context).pop();
+    //     },
+    //   );
+    // } else if (response != null && response.status == 200) {
+    //   {
+    //     Get.back();
+    //     Get.back();
+    //   }
+    // }
   }
 
   Image topImageWidget() {
@@ -404,13 +404,13 @@ class SignupPage extends GetView<SignupPageController> {
                   dashboardPageController.isDarkTheme.value == true
                       ? AppColors.white
                       : AppColors.black,
-              value: "4",
+              value: "3",
               activeColor: dashboardPageController.isDarkTheme.value == true
                   ? AppColors.white
                   : AppColors.black,
               groupValue: controller.singleUserRoleValue.value,
               onChanged: (value) {
-                controller.setUserRole(4.toString());
+                controller.setUserRole(3.toString());
               },
             ),
             RadioListTile(
@@ -421,13 +421,13 @@ class SignupPage extends GetView<SignupPageController> {
                   dashboardPageController.isDarkTheme.value == true
                       ? AppColors.white
                       : AppColors.black,
-              value: "3",
+              value: "4",
               activeColor: dashboardPageController.isDarkTheme.value == true
                   ? AppColors.white
                   : AppColors.black,
               groupValue: controller.singleUserRoleValue.value,
               onChanged: (value) {
-                controller.setUserRole(3.toString());
+                controller.setUserRole(4.toString());
               },
             )
           ],

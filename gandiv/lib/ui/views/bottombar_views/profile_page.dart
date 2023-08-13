@@ -11,6 +11,7 @@ import '../../../constants/dialog_utils.dart';
 import '../../../constants/values/app_images.dart';
 import '../../../database/app_database.dart';
 import '../../../route_management/routes.dart';
+import '../../controllers/comman_controller.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -38,7 +39,7 @@ class ProfilePage extends StatefulWidget {
 // ignore: must_be_immutable
 class ProfilePageState extends State<ProfilePage> {
   // ProfilePage({super.key});
-
+  CommanController commanController = Get.find<CommanController>();
   final ImagePicker imgpicker = ImagePicker();
   String imagepath = "";
   late File imagefile;
@@ -170,10 +171,22 @@ class ProfilePageState extends State<ProfilePage> {
               divider(),
               editProfileWidget(),
               divider(),
-              uploadNewsWidget(context),
-              divider(),
-              logoutWidget(context),
-              divider(),
+              Visibility(
+                visible:
+                    commanController.isNotLogedIn.value == true ? false : true,
+                child: Column(
+                  children: [
+                    Visibility(
+                        visible: commanController.userRole.value == "Reporter"
+                            ? true
+                            : true,
+                        child: uploadNewsWidget(context)),
+                    divider(),
+                    logoutWidget(context),
+                    divider(),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

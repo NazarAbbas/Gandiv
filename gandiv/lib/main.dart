@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gandiv/route_management/all_pages.dart';
@@ -8,10 +10,12 @@ import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
 import 'package:get_storage/get_storage.dart';
 import 'constants/dependency_injection/dependency_injection.dart';
+import 'network/my_http_overrides.dart';
 
 void main() async {
   await DependencyInjection.init();
   await GetStorage.init();
+  HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
 

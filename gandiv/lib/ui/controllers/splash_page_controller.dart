@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:gandiv/ui/controllers/comman_controller.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../constants/constant.dart';
@@ -12,16 +13,22 @@ import '../../route_management/routes.dart';
 class SplashPageController extends GetxController {
   final RestAPI restAPI = Get.find<RestAPI>();
   final AppDatabase appDatabase = Get.find<AppDatabase>();
+  CommanController commanController = Get.find<CommanController>();
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
     final selectedLanguage = GetStorage();
     selectedLanguage.write(Constant.selectedLanguage, 1);
-    selectedLanguage.write(Constant.token,
-        "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODExYjg2Ny0zYzQ4LTRkZjYtMzY3My0wOGRiNzE3OWU0YzIiLCJlbWFpbCI6ImFkbWluQGdhbmRpdi5jb20iLCJhdWQiOlsiU3VwZXJBZG1pbiIsIkF1ZGllbmNlIl0sInJvbGUiOiJTdXBlckFkbWluIiwibmJmIjoxNjkwMTEyMjE5LCJleHAiOjE2OTAxMTU4MTksImlhdCI6MTY5MDExMjIxOSwiaXNzIjoiSXNzdWVyIn0.CFvO1iI-kyhRx3ptCc61tMG50lG8EN34PHmSlSCSXbUqhQPkSpZpx117Ny867PF_1AWd5ie8PwxjwS0_H4Sv0g");
-    final token = GetStorage().read(Constant.token);
-    getLocationsApis();
+    final profileData = await appDatabase.profileDao.findProfile();
+    if (profileData.isNotEmpty) {
+      commanController.isNotLogedIn.value = false;
+      commanController.userRole.value = profileData[0].role!;
+    } else {
+      commanController.isNotLogedIn.value = true;
+    }
+
+    await getLocationsApis();
   }
 
   Future<void> getLocationsApis() async {

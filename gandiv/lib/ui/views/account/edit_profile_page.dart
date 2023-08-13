@@ -8,7 +8,6 @@ import 'package:gandiv/ui/controllers/edit_profile_page_controller.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../constants/dialog_utils.dart';
-import '../../../constants/utils.dart';
 import '../../../constants/values/app_images.dart';
 
 // ignore: must_be_immutable
@@ -19,86 +18,71 @@ class EditProfilePage extends GetView<EditProfilePageController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.colorPrimary,
-        title: Text('edit_profile'.tr),
-      ),
-      body: Form(
-        key: controller.formGlobalKey,
-        child: Obx(
-          () => Center(
-            child: Container(
-              color: dashboardPageController.isDarkTheme.value == true
-                  ? AppColors.dartTheme
-                  : AppColors.white,
-              width: double.infinity,
-              height: double.infinity,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: Column(
-                  children: <Widget>[
-                    topImageWidget(context),
-                    firstNameWidget(),
-                    lastNameWidget(),
-                    mobileNumberWidget(),
-                    emailWidget(),
-                    //_userRoleContainer(),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 40, left: 20, right: 20),
-                      child: SizedBox(
-                        height: 60, //height of button
-                        width: double.infinity, //width of button
-                        child: ElevatedButton(
-                          onPressed: () {
-                            loginButtonClick(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                              primary: AppColors.colorPrimary,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(1))),
-                          child: Text(
-                            'edit_profile'.tr,
+    return Obx(
+      () => Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppColors.colorPrimary,
+          title: Text('edit_profile'.tr),
+        ),
+        body: controller.isLoading.value
+            ? Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: AppColors.transparent,
+                child: const Center(child: CircularProgressIndicator()),
+              )
+            : Form(
+                key: controller.formGlobalKey,
+                child: Center(
+                  child: Container(
+                    color: dashboardPageController.isDarkTheme.value == true
+                        ? AppColors.dartTheme
+                        : AppColors.white,
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Column(
+                        children: <Widget>[
+                          topImageWidget(context),
+                          firstNameWidget(),
+                          lastNameWidget(),
+                          mobileNumberWidget(),
+                          emailWidget(),
+                          //_userRoleContainer(),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 40, left: 20, right: 20),
+                            child: SizedBox(
+                              height: 60, //height of button
+                              width: double.infinity, //width of button
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  loginButtonClick(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    primary: AppColors.colorPrimary,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(1))),
+                                child: Text(
+                                  'edit_profile'.tr,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
-        ),
       ),
     );
   }
 
   void loginButtonClick(BuildContext context) async {
-    Utils(context).startLoading();
-    //final response = await Future.delayed(const Duration(seconds: 2));
     final response = await controller.executeUpdateProfile();
-    // ignore: use_build_context_synchronously
-    Utils(context).stopLoading();
-    if (response == null || response.status != 200) {
-      // ignore: use_build_context_synchronously
-      DialogUtils.showSingleButtonCustomDialog(
-        context: context,
-        title: 'ERROR',
-        message: response?.message,
-        firstButtonText: 'OK',
-        firstBtnFunction: () {
-          Navigator.of(context).pop();
-        },
-      );
-    } else if (response != null && response.status == 200) {
-      {
-        Get.back();
-        Get.back();
-      }
-      // Get.back();
-      //Get.back();
-    }
   }
 
   Stack topImageWidget(BuildContext context) {
@@ -165,7 +149,7 @@ class EditProfilePage extends GetView<EditProfilePageController> {
                         alignment: Alignment.center,
                         margin: const EdgeInsets.all(20),
                         width: 150,
-                        height: 10,
+                        height: 150,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           image: DecorationImage(

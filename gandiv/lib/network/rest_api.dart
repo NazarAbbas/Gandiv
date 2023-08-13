@@ -8,10 +8,12 @@ import 'package:gandiv/models/locations_response.dart';
 import 'package:gandiv/models/login_request.dart';
 import 'package:gandiv/models/login_response.dart';
 import 'package:gandiv/models/news_list_response.dart';
+import 'package:gandiv/models/profile_response.dart';
 import 'package:gandiv/models/update_profile_request.dart';
 import 'package:gandiv/models/verify_response.dart';
 import 'package:gandiv/network/rest_client.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../constants/constant.dart';
 import '../models/create_news_request.dart';
@@ -60,8 +62,13 @@ class RestAPI {
   Future<UpdateProfilleResponse> callUpdateProfileApi(
       UpdateProfileRequest updateProfileRequest) async {
     final client = RestClient(dio);
+    final token = await GetStorage().read(Constant.token);
     final response = await client.updateProfileApi(
-        Constant.hardCodeToken, updateProfileRequest);
+        token: "Bearer $token",
+        firstName: updateProfileRequest.firstName,
+        lastName: updateProfileRequest.lastName,
+        file: updateProfileRequest.file,
+        mobileNo: updateProfileRequest.mobileNo);
     return response;
   }
 
@@ -84,10 +91,9 @@ class RestAPI {
   Future<CreateNewsResponse> callCreateNewsApi(
       CreateNewsRequest createNewsRequest) async {
     final client = RestClient(dio);
-    final token = Constant.hardCodeToken;
-    // "Bearer ${GetStorage().read(Constant.token) ?? "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ODExYjg2Ny0zYzQ4LTRkZjYtMzY3My0wOGRiNzE3OWU0YzIiLCJlbWFpbCI6ImFkbWluQGdhbmRpdi5jb20iLCJhdWQiOlsiU3VwZXJBZG1pbiIsIkF1ZGllbmNlIl0sInJvbGUiOiJTdXBlckFkbWluIiwibmJmIjoxNjkwMTEyMjE5LCJleHAiOjE2OTAxMTU4MTksImlhdCI6MTY5MDExMjIxOSwiaXNzIjoiSXNzdWVyIn0.CFvO1iI-kyhRx3ptCc61tMG50lG8EN34PHmSlSCSXbUqhQPkSpZpx117Ny867PF_1AWd5ie8PwxjwS0_H4Sv0g"}";
+    final token = await GetStorage().read(Constant.token);
     final response = await client.createNewsApi(
-        token: token,
+        token: "Bearer $token",
         heading: createNewsRequest.heading,
         subHeading: createNewsRequest.subHeading,
         newsContent: createNewsRequest.newsContent,
@@ -95,8 +101,8 @@ class RestAPI {
         languageId: createNewsRequest.languageId,
         status: createNewsRequest.status,
         durationInMin: createNewsRequest.durationInMin,
-        categoryId: createNewsRequest.categoryId,
-        multiPartFile: createNewsRequest.multiPartFile);
+        categoryId: createNewsRequest.categoryIdsList,
+        files: createNewsRequest.files);
     return response;
   }
 
@@ -104,6 +110,14 @@ class RestAPI {
   Future<VerifyResponse> calllVerifyApi(String code) async {
     final client = RestClient(dio);
     final response = await client.verifyApi(code);
+    return response;
+  }
+
+  //PUT profile request
+  Future<ProfileResponse> callProfileApi() async {
+    final token = await GetStorage().read(Constant.token);
+    final client = RestClient(dio);
+    final response = await client.profileApi("Bearer $token");
     return response;
   }
 
@@ -120,17 +134,6 @@ class RestAPI {
     final response = await client.ePaperApi();
     return response;
   }
-
-  // //Get News request
-  // Future<NewsListResponse> callNewsListApi(
-  //     [String categoryId = '',
-  //     String locationId = '',
-  //     int pageSize = 10,
-  //     int pageNumber = 1]) async {
-  //   final client = RestClient(dio);
-  //   final response = await client.newsListApi();
-  //   return response;
-  // }
 
   //Get News request
   Future<NewsListResponse> callNewsListApi(

@@ -7,12 +7,12 @@ class ProfileData {
   @primaryKey
   final String? id;
   final String? title;
-  final String? firstName;
-  final String? lastName;
-  final String? mobileNo;
+  String? firstName;
+  String? lastName;
+  String? mobileNo;
   final String? email;
   final String? gender;
-  final String? profileImage;
+  String? profileImage;
   final String? role;
   final String? token;
 

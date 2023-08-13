@@ -87,7 +87,8 @@ class InterNationalNewsPageController extends FullLifeCycleController {
           heading: bookmarkNews.heading,
           subHeading: bookmarkNews.subHeading,
           newsContent: bookmarkNews.newsContent,
-          category: bookmarkNews.category,
+          categoryList:
+              Utils.convertCategoriesListToJson(bookmarkNews.categories),
           location: bookmarkNews.location,
           language: bookmarkNews.language,
           imageListDb: newsList[index].mediaList?.imageList == null

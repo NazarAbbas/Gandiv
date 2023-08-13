@@ -57,7 +57,8 @@ class BookmarkPageController extends FullLifeCycleController {
               heading: bookmarkNews[i].heading,
               subHeading: bookmarkNews[i].subHeading,
               newsContent: bookmarkNews[i].newsContent,
-              category: bookmarkNews[i].category,
+              categories: Utils.convertStringToCategoriesList(
+                  bookmarkNews[i].categoryList),
               location: bookmarkNews[i].location,
               language: bookmarkNews[i].language,
               mediaList: MediaList(

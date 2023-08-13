@@ -74,6 +74,13 @@ class Languages extends Translations {
           'no': 'नहीं',
           'yes': 'हां',
           'mobileNumber': 'मोबाइल नंबर',
+          'unauthorized_title': 'अनधिकृत पहुँच',
+          'unauthorized_message':
+              'आपके खाते की इस पृष्ठ तक पहुँच नहीं है। कृपया अपने खाते में लॉगिन करें।',
+          'ok': 'ठीक है।',
+          'success': 'सफलता',
+          'registration_success_alert': "खाता सफलतापूर्वक बनाया गया है",
+          'news_created_successfully': 'समाचार सफलतापूर्वक बनाया गया!',
         },
         'en_US': {
           'setting': 'SETTING',
@@ -140,11 +147,19 @@ class Languages extends Translations {
           'forgot_password': 'Forgot password?',
           'please_enter_valid_email': 'Please enter valid email',
           'send': 'Send',
-          'something_went_wrong': 'Something went wrong',
+          'something_went_wrong': 'Something went wrong.',
           'error': 'Error',
           'no': 'NO',
           'yes': 'YES',
-          'mobileNumber': 'Mobile Number'
+          'mobileNumber': 'Mobile Number',
+          'unauthorized_title': 'Unauthorized Access',
+          'unauthorized_message':
+              'Your account does not have access to this page. Please login your account.',
+          'ok': 'OK',
+          'success': 'Success',
+          'registration_success_alert':
+              "Account has been created successfully!",
+          'news_created_successfully': 'News created successfully!',
         },
       };
 }

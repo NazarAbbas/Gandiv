@@ -194,39 +194,47 @@ class NewsDetailPageColumn extends State<NewsDetailPage> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: CarouselSlider(
-                    options: CarouselOptions(
-                        pauseAutoPlayOnTouch: true,
-                        autoPlay: false,
-                        height: MediaQuery.of(context).size.width * (3 / 4),
-                        enlargeCenterPage: true),
-                    items: controller.newsList.value.mediaList!.imageList!
-                        .map((i) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Image.network(
-                            fit: BoxFit.cover,
-                            i.url!,
-                            width: MediaQuery.of(context).size.width,
-                            loadingBuilder: (BuildContext context, Widget child,
-                                ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                          null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      );
-                    }).toList(),
+                Visibility(
+                  visible:
+                      controller.newsList.value.mediaList?.imageList == null
+                          ? false
+                          : true,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: CarouselSlider(
+                      options: CarouselOptions(
+                          pauseAutoPlayOnTouch: true,
+                          autoPlay: false,
+                          height: MediaQuery.of(context).size.width * (3 / 4),
+                          enlargeCenterPage: true),
+                      items: controller.newsList.value.mediaList?.imageList!
+                          .map((i) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return Image.network(
+                              fit: BoxFit.cover,
+                              i.url!,
+                              width: MediaQuery.of(context).size.width,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ),
                 Padding(

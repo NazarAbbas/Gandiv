@@ -91,7 +91,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `NewsListDB` (`id` TEXT, `heading` TEXT, `subHeading` TEXT, `newsContent` TEXT, `category` TEXT, `location` TEXT, `language` TEXT, `imageListDb` TEXT, `videoListDb` TEXT, `audioListDb` TEXT, `publishedOn` TEXT, `publishedBy` TEXT, `isBookmark` INTEGER, `isAudioPlaying` INTEGER, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `NewsListDB` (`id` TEXT, `heading` TEXT, `subHeading` TEXT, `newsContent` TEXT, `categoryList` TEXT, `location` TEXT, `language` TEXT, `imageListDb` TEXT, `videoListDb` TEXT, `audioListDb` TEXT, `publishedOn` TEXT, `publishedBy` TEXT, `isBookmark` INTEGER, `isAudioPlaying` INTEGER, PRIMARY KEY (`id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `ProfileData` (`id` TEXT, `title` TEXT, `firstName` TEXT, `lastName` TEXT, `mobileNo` TEXT, `email` TEXT, `gender` TEXT, `profileImage` TEXT, `role` TEXT, `token` TEXT, PRIMARY KEY (`id`))');
         await database.execute(
@@ -139,7 +139,7 @@ class _$NewsListDao extends NewsListDao {
                   'heading': item.heading,
                   'subHeading': item.subHeading,
                   'newsContent': item.newsContent,
-                  'category': item.category,
+                  'categoryList': item.categoryList,
                   'location': item.location,
                   'language': item.language,
                   'imageListDb': item.imageListDb,
@@ -171,7 +171,7 @@ class _$NewsListDao extends NewsListDao {
             heading: row['heading'] as String?,
             subHeading: row['subHeading'] as String?,
             newsContent: row['newsContent'] as String?,
-            category: row['category'] as String?,
+            categoryList: row['categoryList'] as String?,
             location: row['location'] as String?,
             language: row['language'] as String?,
             imageListDb: row['imageListDb'] as String?,
@@ -195,7 +195,7 @@ class _$NewsListDao extends NewsListDao {
             heading: row['heading'] as String?,
             subHeading: row['subHeading'] as String?,
             newsContent: row['newsContent'] as String?,
-            category: row['category'] as String?,
+            categoryList: row['categoryList'] as String?,
             location: row['location'] as String?,
             language: row['language'] as String?,
             imageListDb: row['imageListDb'] as String?,

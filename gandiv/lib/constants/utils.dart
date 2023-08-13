@@ -4,6 +4,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
+import 'package:gandiv/models/categories_response.dart';
 import 'package:get_storage/get_storage.dart';
 import '../models/news_list_response.dart';
 import 'constant.dart';
@@ -120,5 +121,14 @@ class Utils {
 
   static NewsList convertToObject(String json) {
     return NewsList.fromRawJson(json);
+  }
+
+  static String? convertCategoriesListToJson(List<Category>? categoriesList) {
+    return jsonEncode(categoriesList?.map((e) => e.toJson()).toList());
+  }
+
+  static List<Category>? convertStringToCategoriesList(String? categoriesList) {
+    var tagsJson = jsonDecode(categoriesList!) as List;
+    return tagsJson.map((tagJson) => Category.fromJson(tagJson)).toList();
   }
 }

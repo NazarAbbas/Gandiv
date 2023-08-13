@@ -10,7 +10,7 @@ class NewsListDB {
   final String? heading;
   final String? subHeading;
   final String? newsContent;
-  final String? category;
+  final String? categoryList;
   final String? location;
   final String? language;
   final String? imageListDb;
@@ -26,7 +26,7 @@ class NewsListDB {
     required this.heading,
     required this.subHeading,
     required this.newsContent,
-    required this.category,
+    required this.categoryList,
     required this.location,
     required this.language,
     required this.imageListDb,
@@ -48,7 +48,7 @@ class NewsListDB {
         heading: json["heading"],
         subHeading: json["subHeading"],
         newsContent: json["newsContent"],
-        category: json["category"],
+        categoryList: json["categoryList"],
         location: json["location"],
         language: json["language"],
         imageListDb: json["imageList"],
@@ -65,7 +65,7 @@ class NewsListDB {
         "heading": heading,
         "subHeading": subHeading,
         "newsContent": newsContent,
-        "category": category,
+        "categoryList": categoryList,
         "location": location,
         "language": language,
         "imageList": imageListDb,

@@ -77,7 +77,7 @@ class NewsListData {
       };
 }
 
-@JsonSerializable()
+@JsonSerializable(nullable: true)
 class NewsList {
   @JsonKey(name: 'id')
   final String? id;
@@ -87,13 +87,13 @@ class NewsList {
   late final String? subHeading;
   @JsonKey(name: 'newsContent')
   late String? newsContent;
-  @JsonKey(name: 'category')
-  final String? category;
+  @JsonKey(name: 'categories')
+  List<Category>? categories;
   @JsonKey(name: 'location')
   final String? location;
   @JsonKey(name: 'language')
   final String? language;
-  @TypeConverters([MediaListConverter])
+  // @TypeConverters([MediaListConverter])
   @JsonKey(name: 'mediaList')
   late MediaList? mediaList;
   @JsonKey(name: 'publishedOn')
@@ -112,7 +112,7 @@ class NewsList {
     this.heading,
     this.subHeading,
     this.newsContent,
-    this.category,
+    this.categories,
     this.location,
     this.language,
     this.mediaList,
@@ -133,10 +133,13 @@ class NewsList {
         heading: json["heading"],
         subHeading: json["subHeading"],
         newsContent: json["newsContent"],
-        category: json["category"],
+        categories: List<Category>.from(
+            json["categories"].map((x) => Category.fromJson(x))),
         location: json["location"],
         language: json["language"],
-        mediaList: MediaList.fromJson(json["mediaList"]),
+        mediaList: json["mediaList"] != null
+            ? MediaList.fromJson(json["mediaList"])
+            : null,
         publishedOn: json["publishedOn"],
         publishedBy: json["publishedBy"],
         isBookmark: json["isBookmark"],
@@ -149,7 +152,7 @@ class NewsList {
         "heading": heading,
         "subHeading": subHeading,
         "newsContent": newsContent,
-        "category": category,
+        "categories": categories,
         "location": location,
         "language": language,
         "mediaList": mediaList,
@@ -257,6 +260,31 @@ class AudioList {
         "url": url,
         "type": type,
         "placeholder": placeholder,
+      };
+}
+
+class Category {
+  String id;
+  String name;
+
+  Category({
+    required this.id,
+    required this.name,
+  });
+
+  factory Category.fromRawJson(String str) =>
+      Category.fromJson(json.decode(str));
+
+  String toRawJson() => json.encode(toJson());
+
+  factory Category.fromJson(Map<String, dynamic> json) => Category(
+        id: json["id"],
+        name: json["name"]!,
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
       };
 }
 

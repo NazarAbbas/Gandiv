@@ -104,7 +104,7 @@ class _RestClient implements RestClient {
     languageId,
     durationInMin,
     categoryId,
-    multiPartFile,
+    files,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -126,7 +126,7 @@ class _RestClient implements RestClient {
     }
     if (newsContent != null) {
       _data.fields.add(MapEntry(
-        'newsContent',
+        'NewsContent',
         newsContent,
       ));
     }
@@ -154,14 +154,11 @@ class _RestClient implements RestClient {
         durationInMin,
       ));
     }
-    if (categoryId != null) {
-      _data.fields.add(MapEntry(
-        'CategoryId',
-        categoryId,
-      ));
-    }
-    if (multiPartFile != null) {
-      _data.files.addAll(multiPartFile.map((i) => MapEntry(
+    categoryId?.forEach((i) {
+      _data.fields.add(MapEntry('CategoryIds', i));
+    });
+    if (files != null) {
+      _data.files.addAll(files.map((i) => MapEntry(
           'MediaFiles',
           MultipartFile.fromFileSync(
             i.path,
@@ -187,26 +184,56 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<UpdateProfilleResponse> updateProfileApi(
+  Future<UpdateProfilleResponse> updateProfileApi({
     token,
-    updateProfileRequest,
-  ) async {
+    firstName,
+    lastName,
+    mobileNo,
+    file,
+  }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{r'Authorization': token};
     _headers.removeWhere((k, v) => v == null);
-    final _data = <String, dynamic>{};
-    _data.addAll(updateProfileRequest.toJson());
+    final _data = FormData();
+    if (firstName != null) {
+      _data.fields.add(MapEntry(
+        'FirstName',
+        firstName,
+      ));
+    }
+    if (lastName != null) {
+      _data.fields.add(MapEntry(
+        'LastName',
+        lastName,
+      ));
+    }
+    if (mobileNo != null) {
+      _data.fields.add(MapEntry(
+        'MobileNo',
+        mobileNo,
+      ));
+    }
+    if (file != null) {
+      _data.files.add(MapEntry(
+        'File',
+        MultipartFile.fromFileSync(
+          file.path,
+          filename: file.path.split(Platform.pathSeparator).last,
+        ),
+      ));
+    }
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<UpdateProfilleResponse>(Options(
       method: 'PUT',
       headers: _headers,
       extra: _extra,
+      contentType: 'multipart/form-data',
     )
             .compose(
               _dio.options,
-              '/users/update',
+              '/users/profile',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -235,6 +262,31 @@ class _RestClient implements RestClient {
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = VerifyResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<ProfileResponse> profileApi(token) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final Map<String, dynamic>? _data = null;
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<ProfileResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/users/profile',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ProfileResponse.fromJson(_result.data!);
     return value;
   }
 

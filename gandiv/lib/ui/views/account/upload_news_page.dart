@@ -9,6 +9,8 @@ import 'package:gandiv/ui/controllers/upload_news_page_controller.dart';
 import 'package:get/get.dart';
 import 'package:getwidget/components/dropdown/gf_dropdown.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import '../../../constants/dialog_utils.dart';
 import '../../../constants/utils.dart';
 
@@ -150,11 +152,11 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
   }
 
   void uploadttonClick(BuildContext context) async {
-    Utils(context).startLoading();
+    // Utils(context).startLoading();
     //await Future.delayed(const Duration(seconds: 2));
     await controller.onUpload();
     // ignore: use_build_context_synchronously
-    Utils(context).stopLoading();
+    // Utils(context).stopLoading();
     // Get.back();
     // Get.back();
   }
@@ -341,16 +343,52 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
   }
 
   Padding locationDropDownWidget() {
+    // return Padding(
+    //   padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+    //   child: MultiSelectDialogField(
+    //     items: controller.multiSelectList,
+    //     listType: MultiSelectListType.LIST,
+    //     title: Text('location'.tr),
+    //     selectedColor: AppColors.colorPrimary.withOpacity(1),
+    //     decoration: BoxDecoration(
+    //       color: AppColors.lightGray,
+    //       borderRadius: const BorderRadius.all(Radius.circular(40)),
+    //       border: Border.all(
+    //         color: AppColors.colorPrimary,
+    //         width: 2,
+    //       ),
+    //     ),
+    //     buttonIcon: const Icon(
+    //       Icons.arrow_drop_down,
+    //       color: Colors.black,
+    //     ),
+    //     buttonText: Text(
+    //       'please_select_location'.tr,
+    //       style: TextStyle(
+    //         color: AppColors.colorPrimary,
+    //         fontSize: 16,
+    //       ),
+    //     ),
+    //     onConfirm: (results) {
+    //       final xx = results;
+    //       final xxxxx = "";
+    //     },
+    //   ),
+    // );
+
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
       child: SizedBox(
         width: double.infinity,
         child: DropdownButtonHideUnderline(
           child: GFDropdown(
-            hint: Text('please_select_location'.tr),
+            hint: Text(
+              'please_select_location'.tr,
+              style: (TextStyle(color: AppColors.colorPrimary)),
+            ),
             padding: const EdgeInsets.all(0),
-            borderRadius: BorderRadius.circular(5),
-            border: const BorderSide(color: Colors.black12, width: 1),
+            borderRadius: BorderRadius.circular(40),
+            border: BorderSide(color: AppColors.colorPrimary, width: 1),
             dropdownButtonColor: Colors.white,
             value: controller.locationDropdownValue.value,
             onChanged: (newValue) async {
@@ -375,33 +413,74 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
   Padding categoriesDropDownWidget() {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
-      child: SizedBox(
-        width: double.infinity,
-        child: DropdownButtonHideUnderline(
-          child: GFDropdown(
-            hint: Text('please_select_category'.tr),
-            padding: const EdgeInsets.all(0),
-            borderRadius: BorderRadius.circular(5),
-            border: const BorderSide(color: Colors.black12, width: 1),
-            dropdownButtonColor: Colors.white,
-            value: controller.categoriesDropdownValue.value,
-            onChanged: (newValue) async {
-              controller.categoriesDropdownValue.value = newValue!;
-              final selectedId = await controller.appDatabase.categoriesDao
-                  .findCategoriesIdByName(newValue);
-
-              controller.categoriesDropdownSelectedID =
-                  selectedId == null ? "" : selectedId.id;
-            },
-            items: controller.categoriesList
-                .map((value) => DropdownMenuItem(
-                      value: value,
-                      child: Text(value),
-                    ))
-                .toList(),
+      child: MultiSelectDialogField(
+        items: controller.multiSelectCategoriesList,
+        listType: MultiSelectListType.LIST,
+        title: Text('category'.tr),
+        selectedColor: AppColors.colorPrimary.withOpacity(1),
+        decoration: BoxDecoration(
+          color: AppColors.lightGray,
+          borderRadius: const BorderRadius.all(Radius.circular(40)),
+          border: Border.all(
+            color: AppColors.colorPrimary,
+            width: 2,
           ),
         ),
+        buttonIcon: const Icon(
+          Icons.arrow_drop_down,
+          color: Colors.black,
+        ),
+        buttonText: Text(
+          'please_select_category'.tr,
+          style: TextStyle(
+            color: AppColors.colorPrimary,
+            fontSize: 16,
+          ),
+        ),
+        onConfirm: (results) async {
+          for (int i = 0; i < results.length; i++) {
+            final selectedId = await controller.appDatabase.categoriesDao
+                .findCategoriesIdByName(results[i]);
+            controller.categoriesDropdownSelectedID
+                .add(selectedId!.id.toString());
+          }
+
+          // controller.categoriesDropdownSelectedID = results;
+          //final xx = results;
+          //final xxxxx = "";
+        },
       ),
     );
+
+    // return Padding(
+    //   padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+    //   child: SizedBox(
+    //     width: double.infinity,
+    //     child: DropdownButtonHideUnderline(
+    //       child: GFDropdown(
+    //         hint: Text('please_select_category'.tr),
+    //         padding: const EdgeInsets.all(0),
+    //         borderRadius: BorderRadius.circular(5),
+    //         border: const BorderSide(color: Colors.black12, width: 1),
+    //         dropdownButtonColor: Colors.white,
+    //         value: controller.categoriesDropdownValue.value,
+    //         onChanged: (newValue) async {
+    //           controller.categoriesDropdownValue.value = newValue!;
+    //           final selectedId = await controller.appDatabase.categoriesDao
+    //               .findCategoriesIdByName(newValue);
+
+    //           controller.categoriesDropdownSelectedID =
+    //               selectedId == null ? "" : selectedId.id;
+    //         },
+    //         items: controller.categoriesList
+    //             .map((value) => DropdownMenuItem(
+    //                   value: value,
+    //                   child: Text(value),
+    //                 ))
+    //             .toList(),
+    //       ),
+    //     ),
+    //   ),
+    // );
   }
 }

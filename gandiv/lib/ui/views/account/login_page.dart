@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gandiv/constants/dialog_utils.dart';
 import 'package:gandiv/constants/utils.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
+import 'package:gandiv/ui/controllers/comman_controller.dart';
 import 'package:gandiv/ui/controllers/dashboard_page_cotroller.dart';
 import 'package:gandiv/ui/controllers/login_page_cotroller.dart';
 import 'package:get/get.dart';
@@ -116,27 +117,28 @@ class LoginPage extends GetView<LoginPageController> {
   }
 
   void loginButtonClick(BuildContext context) async {
-    Utils(context).startLoading();
+    // Utils(context).startLoading();
+
     final response = await controller.onLogin();
     // ignore: use_build_context_synchronously
-    Utils(context).stopLoading();
-    // ignore: use_build_context_synchronously
-    if (response != null && response.status != 200) {
-      // ignore: use_build_context_synchronously
-      DialogUtils.showSingleButtonCustomDialog(
-        context: context,
-        title: 'ERROR',
-        message: response.message,
-        firstButtonText: 'OK',
-        firstBtnFunction: () {
-          Navigator.of(context).pop();
-        },
-      );
-    } else if (response != null && response.status == 200) {
-      {
-        Get.back();
-      }
-    }
+    // Utils(context).stopLoading();
+    // // ignore: use_build_context_synchronously
+    // if (response != null && response.status != 200) {
+    //   // ignore: use_build_context_synchronously
+    //   DialogUtils.showSingleButtonCustomDialog(
+    //     context: context,
+    //     title: 'ERROR',
+    //     message: response.message,
+    //     firstButtonText: 'OK',
+    //     firstBtnFunction: () {
+    //       Navigator.of(context).pop();
+    //     },
+    //   );
+    // } else if (response != null && response.status == 200) {
+    //   {
+    //     Get.back();
+    //   }
+    // }
   }
 
   Future updateProfilePic(BuildContext context) {
