@@ -8,7 +8,6 @@ import '../../../constants/values/app_colors.dart';
 import '../../../constants/values/app_images.dart';
 import '../../../route_management/routes.dart';
 import '../../controllers/dashboard_page_cotroller.dart';
-import '../../controllers/state_news_page_controller.dart';
 
 class InterNationalNewsPage extends StatefulWidget {
   const InterNationalNewsPage({super.key});
@@ -354,7 +353,8 @@ class InterNationalNewsPageListRow extends State<InterNationalNewsPage> {
                     padding: const EdgeInsets.only(left: 10),
                     child: GestureDetector(
                       onTap: () {
-                        Share.share('check out my website https://example.com');
+                        Utils.share(controller.newsList[index]);
+                        //Share.share('check out my website https://example.com');
                       },
                       child: Image.asset(
                         color: dashboardPageController.isDarkTheme.value == true

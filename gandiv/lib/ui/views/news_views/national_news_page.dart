@@ -1,4 +1,3 @@
-import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:gandiv/ui/controllers/dashboard_page_cotroller.dart';
@@ -354,7 +353,8 @@ class NationalNewsPageListRow extends State<NationalNewsPage> {
                     padding: const EdgeInsets.only(left: 10),
                     child: GestureDetector(
                       onTap: () {
-                        Share.share('check out my website https://example.com');
+                        Utils.share(controller.newsList[index]);
+                        //Share.share('check out my website https://example.com');
                       },
                       child: Image.asset(
                         color: dashboardPageController.isDarkTheme.value == true

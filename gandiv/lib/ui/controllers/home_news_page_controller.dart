@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-
 import '../../constants/constant.dart';
 import '../../constants/utils.dart';
 import '../../database/app_database.dart';
@@ -44,7 +43,9 @@ class HomeNewsPageController extends FullLifeCycleController {
         isLoadMoreItems.value = false;
       }
     } else {
-      if (controller.hasClients) controller.jumpTo(0);
+      if (controller.hasClients) {
+        controller.jumpTo(0);
+      }
       languageId = GetStorage().read(Constant.selectedLanguage);
       pageNo = 1;
       pageSize = 5;

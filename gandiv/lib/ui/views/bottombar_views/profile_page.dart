@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:gandiv/ui/controllers/dashboard_page_cotroller.dart';
 import 'package:gandiv/ui/controllers/profile_page_controller.dart';
+import 'package:gandiv/ui/views/bottombar_views/home_page.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../constants/dialog_utils.dart';
@@ -36,9 +37,7 @@ class ProfilePage extends StatefulWidget {
   ProfilePageState createState() => ProfilePageState();
 }
 
-// ignore: must_be_immutable
 class ProfilePageState extends State<ProfilePage> {
-  // ProfilePage({super.key});
   CommanController commanController = Get.find<CommanController>();
   final ImagePicker imgpicker = ImagePicker();
   String imagepath = "";
@@ -50,7 +49,6 @@ class ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    //controller.newsList.clear();
     controller.onInit();
   }
 
@@ -169,13 +167,24 @@ class ProfilePageState extends State<ProfilePage> {
                   padding: const EdgeInsets.only(top: 20), child: divider()),
               notificationSettingWidget(),
               divider(),
-              editProfileWidget(),
-              divider(),
+              // Column(
+              //   children: [
+              //     editProfileWidget(),
+              //     divider(),
+              //     changePasswordWidget(),
+              //     divider(),
+              //   ],
+              // ),
+
               Visibility(
                 visible:
                     commanController.isNotLogedIn.value == true ? false : true,
                 child: Column(
                   children: [
+                    editProfileWidget(),
+                    divider(),
+                    changePasswordWidget(),
+                    divider(),
                     Visibility(
                         visible: commanController.userRole.value == "Reporter"
                             ? true
@@ -265,8 +274,17 @@ class ProfilePageState extends State<ProfilePage> {
               },
               secondBtnFunction: () async {
                 final AppDatabase appDatabase = Get.find<AppDatabase>();
+
+                final CommanController commanController =
+                    Get.find<CommanController>();
                 await appDatabase.profileDao.deleteProfile();
-                exit(0);
+                commanController.isNotLogedIn.value = true;
+                Navigator.of(context).pop();
+                DashboardPageController dashboardPageController =
+                    Get.find<DashboardPageController>();
+                dashboardPageController.setTabbarIndex(0);
+
+                //exit(0);
               },
             );
           } catch (e) {
@@ -280,7 +298,7 @@ class ProfilePageState extends State<ProfilePage> {
           height: 60,
           color: dashboardPageController.isDarkTheme.value == true
               ? AppColors.dartTheme
-              : AppColors.lightGray,
+              : AppColors.white,
           child: Align(
             alignment: Alignment.centerLeft,
             child: Padding(
@@ -355,6 +373,48 @@ class ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  GestureDetector changePasswordWidget() {
+    return GestureDetector(
+      onTap: () => {
+        Get.toNamed(Routes.changePasswordPage),
+      },
+      child: Container(
+        width: double.infinity,
+        height: 60,
+        color: dashboardPageController.isDarkTheme.value == true
+            ? AppColors.dartTheme
+            : AppColors.white,
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 20, right: 20),
+            child: Row(
+              children: [
+                Text(
+                  'change_password'.tr,
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: dashboardPageController.isDarkTheme.value == true
+                          ? AppColors.white
+                          : AppColors.black),
+                ),
+                const Spacer(),
+                Image.asset(
+                  AppImages.sideArrow,
+                  height: 20,
+                  width: 20,
+                  color: dashboardPageController.isDarkTheme.value == true
+                      ? AppColors.white
+                      : AppColors.black,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   GestureDetector uploadNewsWidget(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -365,7 +425,7 @@ class ProfilePageState extends State<ProfilePage> {
         height: 60,
         color: dashboardPageController.isDarkTheme.value == true
             ? AppColors.dartTheme
-            : AppColors.white,
+            : AppColors.lightGray,
         child: Align(
           alignment: Alignment.centerLeft,
           child: Padding(

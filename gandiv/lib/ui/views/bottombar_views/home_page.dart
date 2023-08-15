@@ -31,13 +31,15 @@ class HomePageState extends State<HomePage> {
   ];
 
   void refreshPage() async {
-    HomeNewsPageListRow().controller.newsList.clear();
-    final index = controller.tabController.index;
-    if (index == 0) {
-      final xxxx = HomeNewsPageListRow().refreshPage();
-    } else {
-      controller.onInit();
-    }
+    //HomeNewsPageListRow().controller.newsList.clear();
+    // final index = controller.tabController.index;
+    // if (index == 0) {
+    //   HomeNewsPageListRow().refreshPage();
+    // } else {
+    //   controller.onInit();
+    // }
+    // controller.onInit();
+    HomeNewsPageListRow().refreshPage();
     controller.onInit();
 
     // setState(() {});

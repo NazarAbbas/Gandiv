@@ -348,7 +348,8 @@ class StateNewsPageListRow extends State<StateNewsPage> {
                     padding: const EdgeInsets.only(left: 10),
                     child: GestureDetector(
                       onTap: () {
-                        Share.share('check out my website https://example.com');
+                        Utils.share(controller.newsList[index]);
+                        // Share.share('check out my website https://example.com');
                       },
                       child: Image.asset(
                         color: dashboardPageController.isDarkTheme.value == true

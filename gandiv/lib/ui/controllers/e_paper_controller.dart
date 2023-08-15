@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
+import '../../constants/dialog_utils.dart';
 import '../../constants/utils.dart';
 import '../../network/rest_api.dart';
 
@@ -32,17 +34,49 @@ class EPaperController extends GetxController {
     try {
       final aboutUsResponse = await restAPI.calllEPaperApi();
       pdfUrl.value = aboutUsResponse.ePaperData;
-    } on DioError catch (obj) {
+    } on DioException catch (obj) {
+      Utils(Get.context!).stopLoading();
       final res = (obj).response;
-      if (kDebugMode) {
-        print("Got error : ${res?.statusCode} -> ${res?.statusMessage}");
+      if (res?.statusCode == 401) {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'unauthorized_title'.tr,
+          message: 'unauthorized_message'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } else {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message:
+              res != null ? res.data['message'] : 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
       }
-
-      // FOR CUSTOM MESSAGE
-      // final errorMessage = NetworkExceptions.getDioException(obj);
+      //return updateProfilleResponse;
     } on Exception catch (exception) {
+      Utils(Get.context!).stopLoading();
       if (kDebugMode) {
         print("Got error : $exception");
+      }
+      try {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message: 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } on Exception catch (exception) {
+        final message = exception.toString();
       }
     } finally {}
   }

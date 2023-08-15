@@ -6,6 +6,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:gandiv/models/categories_response.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:share/share.dart';
 import '../models/news_list_response.dart';
 import 'constant.dart';
 
@@ -93,7 +94,11 @@ class Utils {
   }
 
   static List<ImageList> convertJsonListToImageList(String? json) {
-    var tagsJson = jsonDecode(json!) as List;
+    if (json == null || json.isEmpty) {
+      List<ImageList> emptyList = <ImageList>[];
+      return emptyList;
+    }
+    var tagsJson = jsonDecode(json) as List;
     return tagsJson.map((tagJson) => ImageList.fromJson(tagJson)).toList();
   }
 
@@ -102,7 +107,11 @@ class Utils {
   }
 
   static List<VideoList> convertJsonListToVideoList(String? json) {
-    var tagsJson = jsonDecode(json!) as List;
+    if (json == null || json.isEmpty) {
+      List<VideoList> emptyList = <VideoList>[];
+      return emptyList;
+    }
+    var tagsJson = jsonDecode(json) as List;
     return tagsJson.map((tagJson) => VideoList.fromJson(tagJson)).toList();
   }
 
@@ -111,7 +120,11 @@ class Utils {
   }
 
   static List<AudioList> convertJsonListToAudioList(String? json) {
-    var tagsJson = jsonDecode(json!) as List;
+    if (json == null || json.isEmpty) {
+      List<AudioList> emptyList = <AudioList>[];
+      return emptyList;
+    }
+    var tagsJson = jsonDecode(json ?? "") as List;
     return tagsJson.map((tagJson) => AudioList.fromJson(tagJson)).toList();
   }
 
@@ -128,7 +141,11 @@ class Utils {
   }
 
   static List<Category>? convertStringToCategoriesList(String? categoriesList) {
-    var tagsJson = jsonDecode(categoriesList!) as List;
+    var tagsJson = jsonDecode(categoriesList ?? "") as List;
     return tagsJson.map((tagJson) => Category.fromJson(tagJson)).toList();
+  }
+
+  static void share(NewsList news) {
+    Share.share("${news.heading}\n${news.subHeading}\n${news.newsContent}");
   }
 }

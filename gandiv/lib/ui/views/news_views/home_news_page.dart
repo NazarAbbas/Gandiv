@@ -2,35 +2,14 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:get/get.dart';
-import 'package:share/share.dart';
 import '../../../constants/utils.dart';
 import '../../../constants/values/app_images.dart';
-import '../../../database/app_database.dart';
 import '../../../route_management/routes.dart';
 import '../../controllers/dashboard_page_cotroller.dart';
 import '../../controllers/home_news_page_controller.dart';
 
 class HomeNewsPage extends StatefulWidget {
   const HomeNewsPage({super.key});
-
-  //int selectedPosition = 0;
-  // Widget build(BuildContext context) {
-  // //   return SafeArea(
-  // //     child: Scaffold(
-  // //       body: HomeNewsPageListRow(),
-  // //       // body: Obx(
-  // //       //   () => controller.isDataLoading.value || controller.newsList.isEmpty
-  // //       //       ? Container(
-  // //       //           width: double.infinity,
-  // //       //           height: double.infinity,
-  // //       //           color: AppColors.transparent,
-  // //       //           child: const Center(child: CircularProgressIndicator()))
-  // //       //       : HomeNewsPageListRow(),
-  // //       // ),
-  // //     ),
-  // //   );
-  // // }
-
   @override
   HomeNewsPageListRow createState() => HomeNewsPageListRow();
 }
@@ -39,7 +18,6 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
   DashboardPageController dashboardPageController =
       Get.find<DashboardPageController>();
   HomeNewsPageController controller = Get.find<HomeNewsPageController>();
-  final AppDatabase appDatabase = Get.find<AppDatabase>();
   void refreshPage() async {
     controller.newsList.clear();
     controller.onInit();
@@ -114,7 +92,9 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
                                               arguments:
                                                   controller.newsList[index])
                                           ?.then(
-                                        (value) => {controller.onInit()},
+                                        (value) => {
+                                          controller.onInit(),
+                                        },
                                       )
                                     },
                                     child: rowWidget(index, context),
@@ -356,7 +336,8 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
                     padding: const EdgeInsets.only(left: 10),
                     child: GestureDetector(
                       onTap: () {
-                        Share.share('check out my website https://example.com');
+                        Utils.share(controller.newsList[index]);
+                        // Share.share('check out my website https://example.com');
                       },
                       child: Image.asset(
                         color: dashboardPageController.isDarkTheme.value == true

@@ -10,7 +10,7 @@ import 'dashboard_page.dart';
 
 class DrawerSettings extends GetView<DashboardPageController> {
   const DrawerSettings(
-      {super.key, required this.context, required MyCallback this.callback});
+      {super.key, required this.context, required this.callback});
   final BuildContext context;
   final MyCallback callback;
   final bool isDarkTheme = false;
@@ -201,6 +201,9 @@ class DrawerSettings extends GetView<DashboardPageController> {
                 groupValue: controller.singleLanguageValue.value,
                 onChanged: (value) {
                   callback();
+                  DashboardPageController dashboardPageController =
+                      Get.find<DashboardPageController>();
+                  dashboardPageController.setTabbarIndex(0);
                   Get.updateLocale(const Locale('hi', 'IN'));
                   controller.selectLanguage(value.toString());
                   closeNavigationDrawer();
@@ -257,6 +260,7 @@ class DrawerSettings extends GetView<DashboardPageController> {
                     : AppColors.black,
                 groupValue: controller.singleLocationValue.value,
                 onChanged: (value) {
+                  callback();
                   GetStorage().write(Constant.selectedLocation, 'Varanasi');
                   controller.selectLocation(value.toString());
                   closeNavigationDrawer();
@@ -276,6 +280,7 @@ class DrawerSettings extends GetView<DashboardPageController> {
                     : AppColors.black,
                 groupValue: controller.singleLocationValue.value,
                 onChanged: (value) {
+                  callback();
                   GetStorage().write(Constant.selectedLocation, 'Agra');
                   controller.selectLocation(value.toString());
                   closeNavigationDrawer();

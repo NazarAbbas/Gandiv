@@ -9,7 +9,6 @@ import '../../../constants/values/app_images.dart';
 import '../../../database/app_database.dart';
 import '../../../route_management/routes.dart';
 import '../../controllers/dashboard_page_cotroller.dart';
-import '../../controllers/home_news_page_controller.dart';
 
 class LocationPage extends StatefulWidget {
   const LocationPage({super.key});
@@ -52,6 +51,9 @@ class LocationPagePageListRow extends State<LocationPage> {
   @override
   void initState() {
     super.initState();
+    controller.pageNo = 1;
+    controller.pageSize = 5;
+    controller.newsList.clear();
     controller.onInit();
   }
 

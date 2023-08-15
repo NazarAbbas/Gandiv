@@ -1,11 +1,12 @@
 import 'dart:async';
-
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gandiv/ui/controllers/comman_controller.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../constants/constant.dart';
+import '../../constants/dialog_utils.dart';
 import '../../database/app_database.dart';
 import '../../network/rest_api.dart';
 import '../../route_management/routes.dart';
@@ -35,25 +36,56 @@ class SplashPageController extends GetxController {
     try {
       final response = await restAPI.calllNewsLocations();
       await appDatabase.locationsDao.deleteLocations();
+      // ignore: avoid_function_literals_in_foreach_calls
       response.data.forEach((element) async {
         await appDatabase.locationsDao.insertLocations(element);
       });
       // final xx = await appDatabase.locationsDao.findLocations();
       // final xxxx = xx;
-    } on DioError catch (obj) {
+    } on DioException catch (obj) {
       final res = (obj).response;
-      if (kDebugMode) {
-        print("Got error : ${res?.statusCode} -> ${res?.statusMessage}");
+      if (res?.statusCode == 401) {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'unauthorized_title'.tr,
+          message: 'unauthorized_message'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } else {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message:
+              res != null ? res.data['message'] : 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
       }
-      // FOR CUSTOM MESSAGE
-      // final errorMessage = NetworkExceptions.getDioException(obj);
+      //return updateProfilleResponse;
     } on Exception catch (exception) {
       if (kDebugMode) {
         print("Got error : $exception");
       }
+      try {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message: 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } on Exception catch (exception) {
+        final message = exception.toString();
+      }
     } finally {
       getCategoriesApis();
-      //isDataLoading.value = false;
     }
   }
 
@@ -66,19 +98,50 @@ class SplashPageController extends GetxController {
       });
       // final xx = await appDatabase.categoriesDao.findCategories();
       // final xxxx = xx;
-    } on DioError catch (obj) {
+    } on DioException catch (obj) {
       final res = (obj).response;
-      if (kDebugMode) {
-        print("Got error : ${res?.statusCode} -> ${res?.statusMessage}");
+      if (res?.statusCode == 401) {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'unauthorized_title'.tr,
+          message: 'unauthorized_message'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } else {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message:
+              res != null ? res.data['message'] : 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
       }
-      // FOR CUSTOM MESSAGE
-      // final errorMessage = NetworkExceptions.getDioException(obj);
+      //return updateProfilleResponse;
     } on Exception catch (exception) {
       if (kDebugMode) {
         print("Got error : $exception");
       }
+      try {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message: 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } on Exception catch (exception) {
+        final message = exception.toString();
+      }
     } finally {
-      Timer(const Duration(seconds: 2),
+      Timer(const Duration(seconds: 1),
           () => Get.toNamed(Routes.dashboardScreen));
       // Get.toNamed(Routes.dashboardScreen);
     }

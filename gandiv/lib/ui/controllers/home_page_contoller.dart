@@ -14,14 +14,6 @@ class HomePageController extends GetxController
   @override
   Future<void> onReady() async {
     super.onReady();
-
-    // final database = Get.find<AppDatabase>();
-    // final userDao = database.userDao;
-    // final user = Users(id: 4, login: 'demo@gmail.com');
-    // await userDao.insertUser(user);
-    // final delete = await userDao.deleteUserById(1);
-    // final search = await userDao.findAllUsers();
-    // final allUsers = await userDao.findAllUsers();
   }
 
   @override

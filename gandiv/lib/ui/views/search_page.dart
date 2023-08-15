@@ -45,12 +45,12 @@ class SearchPagePageListRow extends State<SearchPage> {
   final AppDatabase appDatabase = Get.find<AppDatabase>();
   int selectedPosition = 0;
 
-  Future<void> _pullRefresh() async {
-    controller.pageNo = 1;
-    controller.pageSize = 5;
-    controller.newsList.clear();
-    controller.onInit();
-  }
+  // Future<void> _pullRefresh() async {
+  //   controller.pageNo = 1;
+  //   controller.pageSize = 5;
+  //   controller.newsList.clear();
+  //   controller.onInit();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -419,8 +419,7 @@ class SearchPagePageListRow extends State<SearchPage> {
                   padding: const EdgeInsets.only(left: 10),
                   child: GestureDetector(
                     onTap: () {
-                      Share.share(
-                          "${controller.newsList[index].heading}\n${controller.newsList[index].subHeading}\n${controller.newsList[index].newsContent}");
+                      Utils.share(controller.newsList[index]);
                     },
                     child: Image.asset(
                       color: dashboardPageController.isDarkTheme.value == true

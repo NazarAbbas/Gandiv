@@ -50,17 +50,6 @@ class ProfilePageController extends GetxController {
     }
   }
 
-  @override
-  void onReady() {
-    super.onReady();
-    // networkImagePath.value = AppImages.notification,;
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
   void openImage(ImageSource imageSource) async {
     try {
       var pickedFile = await imgpicker.pickImage(source: imageSource);

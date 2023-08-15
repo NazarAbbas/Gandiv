@@ -1,5 +1,6 @@
 import 'package:gandiv/route_management/routes.dart';
 import 'package:gandiv/ui/binding/screen_binding.dart';
+import 'package:gandiv/ui/views/account/change_password_page.dart';
 import 'package:gandiv/ui/views/account/edit_profile_page.dart';
 import 'package:gandiv/ui/views/account/forgot_password_page.dart';
 import 'package:gandiv/ui/views/account/signup_page.dart';
@@ -8,6 +9,7 @@ import 'package:gandiv/ui/views/bottombar_views/profile_page.dart';
 import 'package:gandiv/ui/views/dashboard_view/dashboard_page.dart';
 import 'package:gandiv/ui/views/e_paper_page.dart';
 import 'package:gandiv/ui/views/news_views/news_detail_page.dart';
+import 'package:gandiv/ui/views/news_views/video_player_page.dart';
 import 'package:gandiv/ui/views/notification_page.dart';
 import 'package:gandiv/ui/views/search_page.dart';
 import 'package:gandiv/ui/views/splash_page.dart';
@@ -21,7 +23,7 @@ class AllPages {
     return [
       GetPage(
         name: Routes.dashboardScreen,
-        page: () => DashboardPage(),
+        page: () => const DashboardPage(),
         binding: ScreenBindings(),
       ),
       GetPage(
@@ -31,7 +33,7 @@ class AllPages {
       ),
       GetPage(
         name: Routes.searchPage,
-        page: () => SearchPage(),
+        page: () => const SearchPage(),
         binding: ScreenBindings(),
       ),
       GetPage(
@@ -66,7 +68,7 @@ class AllPages {
       ),
       GetPage(
         name: Routes.profilePage,
-        page: () => ProfilePage(),
+        page: () => const ProfilePage(),
         binding: ScreenBindings(),
       ),
       GetPage(
@@ -82,6 +84,16 @@ class AllPages {
       GetPage(
         name: Routes.forgotPasswordPage,
         page: () => ForgotPasswordPage(),
+        binding: ScreenBindings(),
+      ),
+      GetPage(
+        name: Routes.changePasswordPage,
+        page: () => ChangePassswordPage(),
+        binding: ScreenBindings(),
+      ),
+      GetPage(
+        name: Routes.videoPlayerPage,
+        page: () => const VideoPlayerPage(),
         binding: ScreenBindings(),
       )
     ];

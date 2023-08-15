@@ -3,6 +3,8 @@ import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 import 'package:gandiv/ui/controllers/e_paper_controller.dart';
 import 'package:get/get.dart';
 
+import '../../constants/values/app_colors.dart';
+
 class EPaperPage extends GetView<EPaperController> {
   const EPaperPage({Key? key}) : super(key: key);
 
@@ -10,6 +12,7 @@ class EPaperPage extends GetView<EPaperController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.colorPrimary,
         title: Text('e_paper'.tr),
       ),
       body: Obx(

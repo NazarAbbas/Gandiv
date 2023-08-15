@@ -6,11 +6,9 @@ import 'package:gandiv/ui/controllers/news_details_page_controller.dart';
 import 'package:gandiv/ui/controllers/profile_page_controller.dart';
 import 'package:gandiv/ui/controllers/splash_page_controller.dart';
 import 'package:gandiv/ui/controllers/upload_news_page_controller.dart';
-import 'package:gandiv/ui/views/account/forgot_password_page.dart';
 import 'package:get/instance_manager.dart';
-import '../../constants/utils.dart';
-import '../../database/app_database.dart';
 import '../controllers/about_us_page_controller.dart';
+import '../controllers/change_password_page_cotroller.dart';
 import '../controllers/edit_profile_page_controller.dart';
 import '../controllers/location_page_controller.dart';
 import '../controllers/national_news_page_controller.dart';
@@ -21,6 +19,7 @@ import '../controllers/login_page_cotroller.dart';
 import '../controllers/search_page_controller.dart';
 import '../controllers/signup_page_cotroller.dart';
 import '../controllers/state_news_page_controller.dart';
+import '../controllers/video_player_page_controller.dart';
 
 class ScreenBindings implements Bindings {
   @override
@@ -42,6 +41,8 @@ class ScreenBindings implements Bindings {
     Get.lazyPut(() => LocationPageController());
     Get.lazyPut(() => SplashPageController());
     Get.lazyPut(() => ForgotPasswordPageController());
+    Get.lazyPut(() => ChangePasswordPageController());
+    Get.lazyPut(() => VideoPlayerPageController());
     Get.lazyPut<BookmarkPageController>(() => BookmarkPageController(),
         fenix: false);
     Get.lazyPut<NewsDetailsPageController>(() => NewsDetailsPageController(),

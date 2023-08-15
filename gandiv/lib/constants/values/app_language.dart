@@ -81,6 +81,10 @@ class Languages extends Translations {
           'success': 'सफलता',
           'registration_success_alert': "खाता सफलतापूर्वक बनाया गया है",
           'news_created_successfully': 'समाचार सफलतापूर्वक बनाया गया!',
+          'change_password': 'पासवर्ड बदलें',
+          'confirm_password': 'पासवर्ड पुष्टि करें',
+          'new_password': 'नया पासवर्ड',
+          'password_change_success_message': 'पासवर्ड सफलतापूर्वक बदल गया!'
         },
         'en_US': {
           'setting': 'SETTING',
@@ -160,6 +164,10 @@ class Languages extends Translations {
           'registration_success_alert':
               "Account has been created successfully!",
           'news_created_successfully': 'News created successfully!',
+          'change_password': 'Change password',
+          'confirm_password': 'Confirm password',
+          'new_password': 'New password',
+          'password_change_success_message': 'Password changed successfully!'
         },
       };
 }

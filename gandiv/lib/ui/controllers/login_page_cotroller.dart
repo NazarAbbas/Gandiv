@@ -147,7 +147,8 @@ class LoginPageController extends GetxController {
         DialogUtils.showSingleButtonCustomDialog(
           context: Get.context!,
           title: 'error'.tr,
-          message: res != null ? res.statusMessage : 'something_went_wrong'.tr,
+          message:
+              res != null ? res.data['message'] : 'something_went_wrong'.tr,
           firstButtonText: 'ok'.tr,
           firstBtnFunction: () {
             Navigator.of(Get.context!).pop();

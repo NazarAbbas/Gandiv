@@ -9,17 +9,18 @@ import '../../models/news_list_response.dart';
 
 class BookmarkPageController extends FullLifeCycleController {
   final AppDatabase appDatabase = Get.find<AppDatabase>();
-
   List<NewsList> newsList = <NewsList>[].obs;
   ScrollController controller = ScrollController();
   var isDataLoading = false.obs;
   @override
   void onInit() async {
     super.onInit();
-    isDataLoading.value = true;
-    newsList.clear();
-    await getBookmarkNews();
-    isDataLoading.value = false;
+    // ignore: unrelated_type_equality_checks
+    if (isDataLoading == false) {
+      isDataLoading.value = true;
+      newsList.clear();
+      await getBookmarkNews();
+    }
   }
 
   void setAudioPlaying(bool istrue, int index) {
@@ -69,8 +70,11 @@ class BookmarkPageController extends FullLifeCycleController {
               isBookmark: bookmarkNews[i].isBookmark,
               isAudioPlaying: bookmarkNews[i].isAudioPlaying);
           newsList.add(news);
-          removeDuplicates(newsList);
         }
+
+        final uniqueLis = removeDuplicates(newsList);
+        newsList.clear();
+        newsList.addAll(uniqueLis);
       } else {
         newsList.clear();
       }
@@ -91,12 +95,6 @@ class BookmarkPageController extends FullLifeCycleController {
   }
 
   List<T> removeDuplicates<T>(List<T> list) {
-    // Convert the list to a Set to remove duplicates
-    Set<T> set = Set<T>.from(list);
-
-    // Convert the Set back to a List
-    List<T> uniqueList = set.toList();
-
-    return uniqueList;
+    return list.toSet().toList();
   }
 }

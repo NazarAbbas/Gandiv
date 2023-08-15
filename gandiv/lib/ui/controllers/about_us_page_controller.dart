@@ -1,7 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
+import '../../constants/dialog_utils.dart';
+import '../../constants/utils.dart';
 import '../../network/rest_api.dart';
 
 class AboutUsPageController extends GetxController {
@@ -11,34 +14,56 @@ class AboutUsPageController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
     executeSignupApi();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
   }
 
   Future<void> executeSignupApi() async {
     try {
+      // Utils(Get.context!).startLoading();
       final aboutUsResponse = await restAPI.calllAboutUsApi();
       abourUsData.value = aboutUsResponse.aboutUsData;
-    } on DioError catch (obj) {
+    } on DioException catch (obj) {
+      // Utils(Get.context!).stopLoading();
       final res = (obj).response;
-      if (kDebugMode) {
-        print("Got error : ${res?.statusCode} -> ${res?.statusMessage}");
+      if (res?.statusCode == 401) {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'unauthorized_title'.tr,
+          message: 'unauthorized_message'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } else {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message: res != null ? res.statusMessage : 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
       }
-
-      // FOR CUSTOM MESSAGE
-      // final errorMessage = NetworkExceptions.getDioException(obj);
+      //return updateProfilleResponse;
     } on Exception catch (exception) {
+      //Utils(Get.context!).stopLoading();
       if (kDebugMode) {
         print("Got error : $exception");
+      }
+      try {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message: 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } on Exception catch (exception) {
+        final message = exception.toString();
       }
     } finally {}
   }

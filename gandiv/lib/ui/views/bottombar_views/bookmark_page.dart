@@ -1,7 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:share/share.dart';
+
 import '../../../constants/utils.dart';
 import '../../../constants/values/app_colors.dart';
 import '../../../constants/values/app_images.dart';
@@ -34,7 +34,13 @@ class BookmarkPageListRow extends State<BookmarkPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => SafeArea(
+    return WillPopScope(
+      onWillPop: () async {
+        // controller.onInit();
+        return false;
+      },
+      child: Obx(
+        () => SafeArea(
           child: Scaffold(
             body: controller.isDataLoading.value
                 ? Container(
@@ -97,7 +103,9 @@ class BookmarkPageListRow extends State<BookmarkPage> {
                     ],
                   ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   int selectedPosition = 0;
@@ -158,7 +166,10 @@ class BookmarkPageListRow extends State<BookmarkPage> {
               ),
             ),
             Visibility(
-              visible: controller.newsList[index].mediaList?.imageList == null
+              visible: (controller.newsList[index].mediaList?.imageList ==
+                          null ||
+                      controller.newsList[index].mediaList?.imageList?.length ==
+                          0)
                   ? false
                   : true,
               child: Padding(
@@ -281,7 +292,8 @@ class BookmarkPageListRow extends State<BookmarkPage> {
                     padding: const EdgeInsets.only(left: 10),
                     child: GestureDetector(
                       onTap: () {
-                        Share.share('check out my website https://example.com');
+                        Utils.share(controller.newsList[index]);
+                        //Share.share('check out my website https://example.com');
                       },
                       child: Image.asset(
                         color: dashboardPageController.isDarkTheme.value == true

@@ -70,40 +70,39 @@ class ForgotPasswordPage extends GetView<ForgotPasswordPageController> {
   }
 
   void sendButtonClick(BuildContext context) async {
-    Utils(context).startLoading();
     final response = await controller.onForgotPassword();
     // ignore: use_build_context_synchronously
-    Utils(context).stopLoading();
-    if (response == null) {
-    } else {
-      // ignore: use_build_context_synchronously
-      if (response != null && response.status != 200) {
-        // ignore: use_build_context_synchronously
-        DialogUtils.showSingleButtonCustomDialog(
-          context: context,
-          title: 'error'.tr,
-          message: response.message,
-          firstButtonText: 'OK',
-          firstBtnFunction: () {
-            Navigator.of(context).pop();
-          },
-        );
-      } else if (response.status == 200) {
-        {
-          // ignore: use_build_context_synchronously
-          DialogUtils.showSingleButtonCustomDialog(
-            context: context,
-            title: 'Alert'.tr,
-            message: response.message,
-            firstButtonText: 'OK',
-            firstBtnFunction: () {
-              Navigator.of(context).pop();
-              Get.back();
-            },
-          );
-        }
-      }
-    }
+    //Utils(context).stopLoading();
+    // if (response == null) {
+    // } else {
+    //   // ignore: use_build_context_synchronously
+    //   if (response != null && response.status != 200) {
+    //     // ignore: use_build_context_synchronously
+    //     DialogUtils.showSingleButtonCustomDialog(
+    //       context: context,
+    //       title: 'error'.tr,
+    //       message: response.message,
+    //       firstButtonText: 'OK',
+    //       firstBtnFunction: () {
+    //         Navigator.of(context).pop();
+    //       },
+    //     );
+    //   } else if (response.status == 200) {
+    //     {
+    //       // ignore: use_build_context_synchronously
+    //       DialogUtils.showSingleButtonCustomDialog(
+    //         context: context,
+    //         title: 'Alert'.tr,
+    //         message: response.message,
+    //         firstButtonText: 'OK',
+    //         firstBtnFunction: () {
+    //           Navigator.of(context).pop();
+    //           Get.back();
+    //         },
+    //       );
+    //     }
+    //   }
+    // }
   }
 
   Image topImageWidget() {

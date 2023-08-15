@@ -266,6 +266,35 @@ class _RestClient implements RestClient {
   }
 
   @override
+  Future<ChangePasswordResponse> changePasswordApi(
+    token,
+    changePasswordRequest,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{r'Authorization': token};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    _data.addAll(changePasswordRequest.toJson());
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ChangePasswordResponse>(Options(
+      method: 'PUT',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/users/change-password',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ChangePasswordResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<ProfileResponse> profileApi(token) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

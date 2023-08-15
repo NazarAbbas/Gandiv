@@ -1,9 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:gandiv/models/news_list_response.dart';
 import 'package:gandiv/ui/controllers/news_details_page_controller.dart';
 import 'package:get/get.dart';
-import 'package:share/share.dart';
 import '../../../constants/utils.dart';
 import '../../../constants/values/app_colors.dart';
 import '../../../constants/values/app_images.dart';
@@ -117,29 +115,17 @@ class NewsDetailPageColumn extends State<NewsDetailPage> {
                   icon: Image.asset(
                     AppImages.share,
                     fit: BoxFit.contain,
-                    width: 35,
-                    height: 35,
+                    width: 25,
+                    height: 25,
                     color: dashboardPageController.isDarkTheme.value == true
                         ? AppColors.white
                         : AppColors.black,
                   ),
                   onPressed: () {
-                    Share.share('check out my website https://example.com');
+                    Utils.share(controller.newsList.value);
+                    //Share.share('check out my website https://example.com');
                   },
                 ),
-                // Positioned(
-                //   top: 35,
-                //   bottom: 0,
-                //   left: 20,
-                //   right: 0,
-                //   child: Text(
-                //     '.',
-                //     style: TextStyle(
-                //       color: AppColors.colorPrimary,
-                //       //code here
-                //     ),
-                //   ),
-                // ),
               ],
             ),
           )
@@ -152,111 +138,149 @@ class NewsDetailPageColumn extends State<NewsDetailPage> {
     return Obx(
       () => Expanded(
         child: SingleChildScrollView(
-          child: Card(
-            color: dashboardPageController.isDarkTheme.value == true
-                ? AppColors.dartTheme
-                : AppColors.white,
-            elevation: 8.0,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      controller.newsList.value.heading!,
-                      style: const TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: controller.newsList.value.subHeading == null
-                      ? false
-                      : true,
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        controller.newsList.value.subHeading == null
-                            ? ""
-                            : controller.newsList.value.subHeading!,
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible:
-                      controller.newsList.value.mediaList?.imageList == null
-                          ? false
-                          : true,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: CarouselSlider(
-                      options: CarouselOptions(
-                          pauseAutoPlayOnTouch: true,
-                          autoPlay: false,
-                          height: MediaQuery.of(context).size.width * (3 / 4),
-                          enlargeCenterPage: true),
-                      items: controller.newsList.value.mediaList?.imageList!
-                          .map((i) {
-                        return Builder(
-                          builder: (BuildContext context) {
-                            return Image.network(
-                              fit: BoxFit.cover,
-                              i.url!,
-                              width: MediaQuery.of(context).size.width,
-                              loadingBuilder: (BuildContext context,
-                                  Widget child,
-                                  ImageChunkEvent? loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes !=
-                                            null
-                                        ? loadingProgress
-                                                .cumulativeBytesLoaded /
-                                            loadingProgress.expectedTotalBytes!
-                                        : null,
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      controller.newsList.value!.newsContent!,
-                      style: TextStyle(
-                        color: dashboardPageController.isDarkTheme.value == true
-                            ? AppColors.white
-                            : AppColors.black,
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            child: Card(
+              color: dashboardPageController.isDarkTheme.value == true
+                  ? AppColors.dartTheme
+                  : AppColors.white,
+              elevation: 8.0,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5)),
+              child: Column(
+                children: [
+                  headingWidget(),
+                  subHeadingWidget(),
+                  imagesWidget(context),
+                  contentWidget(),
+                  videoWidget()
+                ],
+              ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Padding contentWidget() {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          controller.newsList.value!.newsContent!,
+          style: TextStyle(
+            color: dashboardPageController.isDarkTheme.value == true
+                ? AppColors.white
+                : AppColors.black,
+            fontSize: 14.0,
+            fontWeight: FontWeight.normal,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Visibility imagesWidget(BuildContext context) {
+    return Visibility(
+      visible: (controller.newsList.value.mediaList?.imageList == null ||
+              controller.newsList.value.mediaList?.imageList?.length == 0)
+          ? false
+          : true,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: CarouselSlider(
+          options: CarouselOptions(
+              pauseAutoPlayOnTouch: true,
+              autoPlay: false,
+              height: MediaQuery.of(context).size.width * (3 / 4),
+              enlargeCenterPage: true),
+          items: controller.newsList.value.mediaList?.imageList!.map((i) {
+            return Builder(
+              builder: (BuildContext context) {
+                return Image.network(
+                  fit: BoxFit.cover,
+                  i.url!,
+                  width: MediaQuery.of(context).size.width,
+                  loadingBuilder: (BuildContext context, Widget child,
+                      ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  Visibility subHeadingWidget() {
+    return Visibility(
+      visible: controller.newsList.value.subHeading == null ? false : true,
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            controller.newsList.value.subHeading == null
+                ? ""
+                : controller.newsList.value.subHeading!,
+            style: const TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding headingWidget() {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          controller.newsList.value.heading!,
+          style: const TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Visibility videoWidget() {
+    return Visibility(
+      visible: (controller.newsList.value.mediaList == null ||
+              controller.newsList.value.mediaList?.videoList?.length == 0)
+          ? true
+          : true,
+      child: GestureDetector(
+        onTap: () {
+          Get.toNamed(Routes.videoPlayerPage, arguments: controller.newsList)
+              ?.then(
+            (value) => {
+              controller.onInit(),
+            },
+          );
+        },
+        child: Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: Image.asset(
+              AppImages.videoPlayerIcon,
+            )),
       ),
     );
   }

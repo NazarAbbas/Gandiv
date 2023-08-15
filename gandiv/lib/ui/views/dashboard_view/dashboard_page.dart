@@ -30,10 +30,10 @@ class DashboardPageState extends State<DashboardPage> {
 
   //New
   final List<Widget> _bottomBarWidgets = <Widget>[
-    HomePage(),
+    const HomePage(),
     const BookmarkPage(),
     const LocationPage(),
-    ProfilePage()
+    const ProfilePage()
   ];
 
   void myCallbackFunction() {

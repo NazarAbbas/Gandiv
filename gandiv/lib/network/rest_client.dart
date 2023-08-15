@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:gandiv/models/about_us_response.dart';
 import 'package:gandiv/models/categories_response.dart';
+import 'package:gandiv/models/change_password_request.dart';
+import 'package:gandiv/models/change_password_response.dart';
 import 'package:gandiv/models/e_paper.dart';
 import 'package:gandiv/models/forgot_password_response.dart';
 import 'package:gandiv/models/locations_response.dart';
@@ -37,6 +39,7 @@ class Apis {
   static const String createNews = '/news/create';
   static const String updateProfile = '/users/profile';
   static const String getProfile = '/users/profile';
+  static const String changePassword = '/users/change-password';
 }
 
 @RestApi(baseUrl: "http://devapi.gandivsamachar.com/api")
@@ -75,27 +78,13 @@ abstract class RestClient {
       @required @Part(name: 'MobileNo') String? mobileNo,
       @required @Part(name: 'File') File? file});
 
-  // @PUT(Apis.updateProfile)
-  // Future<UpdateProfilleResponse> updateProfileApi(
-  //     @Header('Authorization') String? token,
-  //     @Body() UpdateProfileRequest updateProfileRequest);
-
-  // @MultiPart()
-  // @POST(Apis.createNews)
-  // Future<CreateNewsResponse> createNewsApi(
-  //     {@required @Header('Authorization') String? token,
-  //     @required @Part(name: 'Heading') String? heading,
-  //     @required @Part(name: 'SubHeading') String? subHeading,
-  //     @required @Part(name: 'newsContent') String? newsContent,
-  //     @required @Part(name: 'LocationId') String? locationId,
-  //     @required @Part(name: 'Status') String? status,
-  //     @required @Part(name: 'LanguageId') String? languageId,
-  //     @required @Part(name: 'DurationInMin') String? durationInMin,
-  //     @required @Part(name: 'CategoryId') String? categoryId,
-  //     @required @Part(name: 'MediaFiles') List<http.MultipartFile>? mediaFiles});
-
   @PUT(Apis.verify)
   Future<VerifyResponse> verifyApi(@Path("code") String code);
+
+  @PUT(Apis.changePassword)
+  Future<ChangePasswordResponse> changePasswordApi(
+      @Header('Authorization') String? token,
+      @Body() ChangePasswordRequest changePasswordRequest);
 
   @GET(Apis.getProfile)
   Future<ProfileResponse> profileApi(@Header('Authorization') String? token);

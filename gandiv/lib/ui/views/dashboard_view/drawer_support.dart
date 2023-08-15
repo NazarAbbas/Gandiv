@@ -1,6 +1,5 @@
-import 'package:email_launcher/email_launcher.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_switch/flutter_switch.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -48,9 +47,13 @@ class DrawerSupport extends GetView<DashboardPageController> {
             String body = Uri.encodeComponent("Hi! I'm Flutter Developer");
             Uri mail = Uri.parse("mailto:$email?subject=$subject&body=$body");
             if (await launchUrl(mail)) {
-              print("email app is  opened");
+              if (kDebugMode) {
+                print("email app is  opened");
+              }
             } else {
-              print("email app is not opened");
+              if (kDebugMode) {
+                print("email app is not opened");
+              }
             }
           },
           child: Container(

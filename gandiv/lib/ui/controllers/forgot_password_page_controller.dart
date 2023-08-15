@@ -1,7 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:gandiv/constants/dialog_utils.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import '../../constants/utils.dart';
 import '../../models/forgot_password_response.dart';
 import '../../network/rest_api.dart';
 
@@ -28,35 +31,68 @@ class ForgotPasswordPageController extends GetxController {
     return null;
   }
 
-  Future<ForgotPasswordResponse?> onForgotPassword() async {
+  Future<void> onForgotPassword() async {
     return await validateFields();
   }
 
-  Future<ForgotPasswordResponse?> validateFields() async {
+  Future<void> validateFields() async {
     if (formGlobalKey.currentState!.validate()) {
       formGlobalKey.currentState?.save();
-      return await executeForgotPasswordApi();
+      await executeForgotPasswordApi();
     }
-    return null;
   }
 
-  Future<ForgotPasswordResponse?> executeForgotPasswordApi() async {
+  Future<void> executeForgotPasswordApi() async {
     // ForgotPasswordResponse? loginResponse = ForgotPasswordResponse();
-    ForgotPasswordResponse? forgotPasswordResponse = null;
+    Utils(Get.context!).startLoading();
     try {
-      forgotPasswordResponse = (await restAPI.callForgotPassswordApi(
-          userName: emailController.text));
-      return forgotPasswordResponse;
+      final forgotPasswordResponse =
+          await restAPI.callForgotPassswordApi(userName: emailController.text);
+      Utils(Get.context!).stopLoading();
     } on DioException catch (obj) {
+      Utils(Get.context!).stopLoading();
       final res = (obj).response;
-      return forgotPasswordResponse;
-      // FOR CUSTOM MESSAGE
-      // final errorMessage = NetworkExceptions.getDioException(obj);
+      if (res?.statusCode == 401) {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'unauthorized_title'.tr,
+          message: 'unauthorized_message'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } else {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message:
+              res != null ? res.data['message'] : 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      }
+      //return updateProfilleResponse;
     } on Exception catch (exception) {
-      //return loginResponse;
-    } finally {
-      // ignore: control_flow_in_finally
-      return forgotPasswordResponse;
-    }
+      Utils(Get.context!).stopLoading();
+      if (kDebugMode) {
+        print("Got error : $exception");
+      }
+      try {
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'error'.tr,
+          message: 'something_went_wrong'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } on Exception catch (exception) {
+        final message = exception.toString();
+      }
+    } finally {}
   }
 }

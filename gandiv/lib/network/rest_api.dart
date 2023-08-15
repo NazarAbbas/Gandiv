@@ -2,6 +2,8 @@
 import 'package:dio/dio.dart';
 import 'package:gandiv/models/about_us_response.dart';
 import 'package:gandiv/models/categories_response.dart';
+import 'package:gandiv/models/change_password_request.dart';
+import 'package:gandiv/models/change_password_response.dart';
 import 'package:gandiv/models/e_paper.dart';
 import 'package:gandiv/models/forgot_password_response.dart';
 import 'package:gandiv/models/locations_response.dart';
@@ -110,6 +112,16 @@ class RestAPI {
   Future<VerifyResponse> calllVerifyApi(String code) async {
     final client = RestClient(dio);
     final response = await client.verifyApi(code);
+    return response;
+  }
+
+  //PUT change password request
+  Future<ChangePasswordResponse> calllChangePasswordApi(
+      ChangePasswordRequest changePasswordRequest) async {
+    final token = await GetStorage().read(Constant.token);
+    final client = RestClient(dio);
+    final response =
+        await client.changePasswordApi("Bearer $token", changePasswordRequest);
     return response;
   }
 
