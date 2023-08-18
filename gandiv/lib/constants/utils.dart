@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,9 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:gandiv/models/categories_response.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 import '../models/news_list_response.dart';
 import 'constant.dart';
 
@@ -147,5 +150,23 @@ class Utils {
 
   static void share(NewsList news) {
     Share.share("${news.heading}\n${news.subHeading}\n${news.newsContent}");
+  }
+
+  static Future<File> genThumbnailFile(String path) async {
+    final fileName = await VideoThumbnail.thumbnailFile(
+      video: path,
+      thumbnailPath: (await getTemporaryDirectory()).path,
+      imageFormat: ImageFormat.PNG,
+      maxHeight:
+          100, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
+      quality: 75,
+    );
+    File file = File(fileName!);
+    return file;
+  }
+
+  static Future<String?> get _localPath async {
+    final directory = await getExternalStorageDirectory();
+    return directory?.absolute.path;
   }
 }

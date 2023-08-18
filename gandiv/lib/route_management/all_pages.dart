@@ -14,9 +14,9 @@ import 'package:gandiv/ui/views/notification_page.dart';
 import 'package:gandiv/ui/views/search_page.dart';
 import 'package:gandiv/ui/views/splash_page.dart';
 import 'package:get/route_manager.dart';
-
 import '../ui/views/drawer_views/about_us_page.dart';
 import '../ui/views/account/login_page.dart';
+import '../ui/views/news_views/audio_player_page.dart';
 
 class AllPages {
   static List<GetPage> getPages() {
@@ -94,6 +94,11 @@ class AllPages {
       GetPage(
         name: Routes.videoPlayerPage,
         page: () => const VideoPlayerPage(),
+        binding: ScreenBindings(),
+      ),
+      GetPage(
+        name: Routes.audioPlayerPage,
+        page: () => const AudioPlayerPage(),
         binding: ScreenBindings(),
       )
     ];

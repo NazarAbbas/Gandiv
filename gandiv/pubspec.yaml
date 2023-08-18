@@ -72,6 +72,21 @@ dependencies:
   video_thumbnail_imageview: ^0.0.5
   photo_view: ^0.14.0
   cached_network_image: ^3.2.3
+  change_app_package_name: ^1.1.0
+  just_audio: ^0.9.34
+  audio_session: ^0.1.16
+  rxdart: ^0.27.7
+  async: ^2.11.0
+  just_audio_platform_interface: ^4.2.1
+  crypto: ^3.0.3
+  just_audio_web: ^0.4.8
+  meta: ^1.9.1
+  uuid: ^3.0.7
+  just_audio_background: ^0.0.1-beta.10
+  flutter_echo: ^0.0.1
+  gif_view: ^0.3.1
+   
+  
   
 
 dev_dependencies:

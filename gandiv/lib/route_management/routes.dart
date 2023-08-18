@@ -14,4 +14,5 @@ class Routes {
   static String forgotPasswordPage = '/FORGOT_PASSWORD_PAGE';
   static String changePasswordPage = '/CHANGE_PASSWORD_PAGE';
   static String videoPlayerPage = '/VIDEO_PLAYER_PAGE';
+  static String audioPlayerPage = '/AUDIO_PLAYER_PAGE';
 }

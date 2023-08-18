@@ -29,31 +29,33 @@ class StateNewsPageController extends FullLifeCycleController
   @override
   void onInit() async {
     super.onInit();
-    isDataLoading.value = true;
-    if (newsList.isNotEmpty) {
-      for (int i = 0; i < newsList.length; i++) {
-        final bookMarkNews =
-            await appDatabase.newsListDao.findNewsById(newsList[i].id!);
-        if (bookMarkNews != null) {
-          newsList[i].isBookmark = true;
-        } else {
-          newsList[i].isBookmark = false;
+    if (isDataLoading.value == false) {
+      isDataLoading.value = true;
+      if (newsList.isNotEmpty) {
+        for (int i = 0; i < newsList.length; i++) {
+          final bookMarkNews =
+              await appDatabase.newsListDao.findNewsById(newsList[i].id!);
+          if (bookMarkNews != null) {
+            newsList[i].isBookmark = true;
+          } else {
+            newsList[i].isBookmark = false;
+          }
+          isDataLoading.value = false;
+          isLoadMoreItems.value = false;
         }
-        isDataLoading.value = false;
-        isLoadMoreItems.value = false;
+      } else {
+        final location = await appDatabase.locationsDao.findLocationsIdByName(
+            GetStorage().read(Constant.selectedLocation));
+        final category =
+            await appDatabase.categoriesDao.findCategoriesIdByName('State');
+        languageId = GetStorage().read(Constant.selectedLanguage);
+        locationId = location!.id!;
+        categoryId = category!.id;
+        pageNo = 1;
+        pageSize = 5;
+        newsList.clear();
+        await getHomeNews();
       }
-    } else {
-      final location = await appDatabase.locationsDao
-          .findLocationsIdByName(GetStorage().read(Constant.selectedLocation));
-      final category =
-          await appDatabase.categoriesDao.findCategoriesIdByName('State');
-      languageId = GetStorage().read(Constant.selectedLanguage);
-      locationId = location!.id!;
-      categoryId = category!.id;
-      pageNo = 1;
-      pageSize = 5;
-      newsList.clear();
-      await getHomeNews();
     }
   }
 

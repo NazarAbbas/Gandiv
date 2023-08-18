@@ -28,4 +28,8 @@ class AppImages {
   static String profileImage = 'assets/images/profile.png';
   static String videoPlayerIcon = 'assets/images/video_player_icon.jpg';
   static String videoPlayIcon = 'assets/images/video_play_icon.png';
+  static String audioPlayIcon = 'assets/images/sound.gif';
+  static String audioPlayerIcon = 'assets/images/audio_player_icon.png';
+  static String audioPlayer = 'assets/images/audio_player.jpg';
+  static String appleMusicIcon = 'assets/images/apple_music_icon.png';
 }

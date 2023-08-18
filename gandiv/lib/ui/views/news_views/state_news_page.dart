@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -214,24 +215,38 @@ class StateNewsPageListRow extends State<StateNewsPage> {
                       controller.newsList[index].mediaList?.imageList?.map((i) {
                     return Builder(
                       builder: (BuildContext context) {
-                        return Image.network(
+                        return CachedNetworkImage(
                           fit: BoxFit.cover,
-                          i.url!,
                           width: MediaQuery.of(context).size.width,
-                          loadingBuilder: (BuildContext context, Widget child,
-                              ImageChunkEvent? loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                              child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes !=
-                                        null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
-                                    : null,
-                              ),
-                            );
-                          },
+                          imageUrl: i.url!,
+                          placeholder: (context, url) => const Center(
+                            child: SizedBox(
+                              width: 40.0,
+                              height: 40.0,
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
                         );
+                        // return Image.network(
+                        //   fit: BoxFit.cover,
+                        //   i.url!,
+                        //   width: MediaQuery.of(context).size.width,
+                        //   loadingBuilder: (BuildContext context, Widget child,
+                        //       ImageChunkEvent? loadingProgress) {
+                        //     if (loadingProgress == null) return child;
+                        //     return Center(
+                        //       child: CircularProgressIndicator(
+                        //         value: loadingProgress.expectedTotalBytes !=
+                        //                 null
+                        //             ? loadingProgress.cumulativeBytesLoaded /
+                        //                 loadingProgress.expectedTotalBytes!
+                        //             : null,
+                        //       ),
+                        //     );
+                        //   },
+                        // );
                       },
                     );
                   }).toList(),

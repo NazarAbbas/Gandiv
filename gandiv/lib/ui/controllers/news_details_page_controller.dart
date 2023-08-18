@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+
 import '../../constants/utils.dart';
 import '../../database/app_database.dart';
 import '../../models/news_list_db_model.dart';
@@ -8,11 +11,25 @@ import '../../models/news_list_response.dart';
 class NewsDetailsPageController extends FullLifeCycleController {
   var newsList = NewsList().obs;
   final AppDatabase appDatabase = Get.find<AppDatabase>();
+  final isLoading = false.obs;
+  List<File> files = <File>[].obs;
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    newsList.value = Get.arguments;
+    isLoading.value = true;
+    newsList.value = Get.arguments; //[...Get.arguments];
+    if (newsList.value.mediaList != null &&
+        newsList.value.mediaList!.videoList != null &&
+        newsList.value.mediaList!.videoList!.isNotEmpty) {
+      for (int i = 0; i < newsList.value.mediaList!.videoList!.length; i++) {
+        File file = await Utils.genThumbnailFile(
+            newsList.value.mediaList!.videoList![i].url!);
+        files.add(file);
+      }
+    }
+
+    isLoading.value = false;
   }
 
   void setAudioPlaying(bool istrue) {

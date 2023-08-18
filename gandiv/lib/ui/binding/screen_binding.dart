@@ -8,6 +8,7 @@ import 'package:gandiv/ui/controllers/splash_page_controller.dart';
 import 'package:gandiv/ui/controllers/upload_news_page_controller.dart';
 import 'package:get/instance_manager.dart';
 import '../controllers/about_us_page_controller.dart';
+import '../controllers/audio_player_page_controller.dart';
 import '../controllers/change_password_page_cotroller.dart';
 import '../controllers/edit_profile_page_controller.dart';
 import '../controllers/location_page_controller.dart';
@@ -43,6 +44,7 @@ class ScreenBindings implements Bindings {
     Get.lazyPut(() => ForgotPasswordPageController());
     Get.lazyPut(() => ChangePasswordPageController());
     Get.lazyPut(() => VideoPlayerPageController());
+    Get.lazyPut(() => AudioPlayerPageController());
     Get.lazyPut<BookmarkPageController>(() => BookmarkPageController(),
         fenix: false);
     Get.lazyPut<NewsDetailsPageController>(() => NewsDetailsPageController(),

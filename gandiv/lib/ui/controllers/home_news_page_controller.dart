@@ -29,28 +29,30 @@ class HomeNewsPageController extends FullLifeCycleController {
   @override
   void onInit() async {
     super.onInit();
-    isDataLoading.value = true;
-    if (newsList.isNotEmpty) {
-      for (int i = 0; i < newsList.length; i++) {
-        final bookMarkNews =
-            await appDatabase.newsListDao.findNewsById(newsList[i].id!);
-        if (bookMarkNews != null) {
-          newsList[i].isBookmark = true;
-        } else {
-          newsList[i].isBookmark = false;
+    if (isDataLoading.value == false) {
+      isDataLoading.value = true;
+      if (newsList.isNotEmpty) {
+        for (int i = 0; i < newsList.length; i++) {
+          final bookMarkNews =
+              await appDatabase.newsListDao.findNewsById(newsList[i].id!);
+          if (bookMarkNews != null) {
+            newsList[i].isBookmark = true;
+          } else {
+            newsList[i].isBookmark = false;
+          }
+          isDataLoading.value = false;
+          isLoadMoreItems.value = false;
         }
-        isDataLoading.value = false;
-        isLoadMoreItems.value = false;
+      } else {
+        if (controller.hasClients) {
+          controller.jumpTo(0);
+        }
+        languageId = GetStorage().read(Constant.selectedLanguage);
+        pageNo = 1;
+        pageSize = 5;
+        newsList.clear();
+        await getHomeNews();
       }
-    } else {
-      if (controller.hasClients) {
-        controller.jumpTo(0);
-      }
-      languageId = GetStorage().read(Constant.selectedLanguage);
-      pageNo = 1;
-      pageSize = 5;
-      newsList.clear();
-      await getHomeNews();
     }
   }
 
@@ -139,6 +141,21 @@ class HomeNewsPageController extends FullLifeCycleController {
           pageNumber: pageNo,
           pageSize: pageSize,
           searchText: '');
+
+      //For Testing purpose
+      if (response != null && response.newsListData.newsList.length != 0) {
+        List<VideoList> videoList = <VideoList>[];
+        VideoList video = VideoList(
+            url:
+                "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
+            type: "mp4",
+            placeholder: "");
+        videoList.add(video);
+        response.newsListData.newsList[0].mediaList?.videoList = videoList;
+      }
+
+      // Testing End
+
       totalCount = response.newsListData.totalCount!;
       for (int i = 0; i < response.newsListData.newsList.length; i++) {
         final bookMarkNews = await appDatabase.newsListDao
