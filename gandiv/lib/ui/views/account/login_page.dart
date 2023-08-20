@@ -18,7 +18,9 @@ class LoginPage extends GetView<LoginPageController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.colorPrimary,
+        backgroundColor: dashboardPageController.isDarkTheme.value == true
+            ? AppColors.dartTheme
+            : AppColors.colorPrimary,
         title: Text('login'.tr),
       ),
       body: Form(
@@ -49,10 +51,20 @@ class LoginPage extends GetView<LoginPageController> {
                             loginButtonClick(context);
                           },
                           style: ElevatedButton.styleFrom(
-                              primary: AppColors.colorPrimary,
+                              primary:
+                                  dashboardPageController.isDarkTheme.value ==
+                                          true
+                                      ? AppColors.white
+                                      : AppColors.colorPrimary,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(1))),
                           child: Text(
+                            style: TextStyle(
+                                color:
+                                    dashboardPageController.isDarkTheme.value ==
+                                            true
+                                        ? AppColors.black
+                                        : AppColors.white),
                             'login'.tr,
                           ),
                         ),
@@ -66,9 +78,13 @@ class LoginPage extends GetView<LoginPageController> {
                         },
                         child: RichText(
                           text: TextSpan(
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16.0,
-                              color: Colors.blue,
+                              color:
+                                  dashboardPageController.isDarkTheme.value ==
+                                          true
+                                      ? AppColors.white
+                                      : Colors.blue,
                             ),
                             children: <TextSpan>[
                               TextSpan(
@@ -88,9 +104,13 @@ class LoginPage extends GetView<LoginPageController> {
                         },
                         child: RichText(
                           text: TextSpan(
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16.0,
-                              color: Colors.blue,
+                              color:
+                                  dashboardPageController.isDarkTheme.value ==
+                                          true
+                                      ? AppColors.white
+                                      : Colors.blue,
                             ),
                             children: <TextSpan>[
                               TextSpan(text: 'new_user'.tr),

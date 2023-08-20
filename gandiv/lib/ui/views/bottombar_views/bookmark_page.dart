@@ -59,11 +59,19 @@ class BookmarkPageListRow extends State<BookmarkPage> {
                                 child: Container(
                                   width: double.infinity,
                                   height: double.infinity,
-                                  color: AppColors.lightGray,
+                                  color: dashboardPageController
+                                              .isDarkTheme.value ==
+                                          true
+                                      ? AppColors.dartTheme
+                                      : AppColors.white,
                                   child: Center(
                                     child: Text('no_news_available'.tr,
                                         style: TextStyle(
-                                            color: AppColors.colorPrimary,
+                                            color: dashboardPageController
+                                                        .isDarkTheme.value ==
+                                                    true
+                                                ? AppColors.white
+                                                : AppColors.colorPrimary,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 20)),
                                   ),
@@ -182,7 +190,9 @@ class BookmarkPageListRow extends State<BookmarkPage> {
                 padding: const EdgeInsets.all(16.0),
                 child: CarouselSlider(
                   options: CarouselOptions(
-                      pauseAutoPlayOnTouch: true,
+                      initialPage: 0,
+                      enableInfiniteScroll: false,
+                      pauseAutoPlayOnTouch: false,
                       autoPlay: false,
                       height: MediaQuery.of(context).size.width * (3 / 4),
                       enlargeCenterPage: true),

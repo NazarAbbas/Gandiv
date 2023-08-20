@@ -20,7 +20,9 @@ class ForgotPasswordPage extends GetView<ForgotPasswordPageController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.colorPrimary,
+        backgroundColor: dashboardPageController.isDarkTheme.value == true
+            ? AppColors.dartTheme
+            : AppColors.colorPrimary,
         title: Text('forgot_password'.tr),
       ),
       body: Form(
@@ -50,10 +52,20 @@ class ForgotPasswordPage extends GetView<ForgotPasswordPageController> {
                             sendButtonClick(context);
                           },
                           style: ElevatedButton.styleFrom(
-                              primary: AppColors.colorPrimary,
+                              primary:
+                                  dashboardPageController.isDarkTheme.value ==
+                                          true
+                                      ? AppColors.white
+                                      : AppColors.colorPrimary,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(1))),
                           child: Text(
+                            style: TextStyle(
+                                color:
+                                    dashboardPageController.isDarkTheme.value ==
+                                            true
+                                        ? AppColors.black
+                                        : AppColors.white),
                             'send'.tr,
                           ),
                         ),

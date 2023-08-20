@@ -98,56 +98,64 @@ class SignupPageController extends GetxController {
 
   Future<void> executeSignupApi() async {
     try {
-      Utils(Get.context!).startLoading();
-      SignupRequest signupRequest = SignupRequest(
-          firstname: firstNameController.text,
-          lastname: lastNameController.text,
-          email: emailController.text,
-          mobileNo: phoneNumberController.text,
-          password: passwordController.text,
-          userType: singleUserRoleValue.value);
-      final signupResponse = await restAPI.calllSignupApi(signupRequest);
-      if (signupResponse.status == 200) {
-        var profileData = ProfileData(
-            id: signupResponse.signupData?.id,
-            title: signupResponse.signupData?.title,
-            firstName: signupResponse.signupData?.firstName,
-            lastName: signupResponse.signupData?.lastName,
-            mobileNo: signupResponse.signupData?.mobileNo,
-            email: signupResponse.signupData?.email,
-            gender: signupResponse.signupData?.gender,
-            profileImage: signupResponse.signupData?.profileImage,
-            role: signupResponse.signupData?.role,
-            token: signupResponse.signupData?.token);
-        commanController.isNotLogedIn.value = false;
-        commanController.userRole.value = signupResponse.signupData!.role!;
-        await appDatabase.profileDao.deleteProfile();
-        await appDatabase.profileDao.insertProfile(profileData);
-        await GetStorage()
-            .write(Constant.token, signupResponse.signupData?.token);
-        Utils(Get.context!).stopLoading();
+      if (await Utils.checkUserConnection()) {
+        Utils(Get.context!).startLoading();
+        SignupRequest signupRequest = SignupRequest(
+            firstname: firstNameController.text,
+            lastname: lastNameController.text,
+            email: emailController.text,
+            mobileNo: phoneNumberController.text,
+            password: passwordController.text,
+            userType: singleUserRoleValue.value);
+        final signupResponse = await restAPI.calllSignupApi(signupRequest);
+        if (signupResponse.status == 200) {
+          var profileData = ProfileData(
+              id: signupResponse.signupData?.id,
+              title: signupResponse.signupData?.title,
+              firstName: signupResponse.signupData?.firstName,
+              lastName: signupResponse.signupData?.lastName,
+              mobileNo: signupResponse.signupData?.mobileNo,
+              email: signupResponse.signupData?.email,
+              gender: signupResponse.signupData?.gender,
+              profileImage: signupResponse.signupData?.profileImage,
+              role: signupResponse.signupData?.role,
+              token: signupResponse.signupData?.token);
+          commanController.isNotLogedIn.value = false;
+          commanController.userRole.value = signupResponse.signupData!.role!;
+          await appDatabase.profileDao.deleteProfile();
+          await appDatabase.profileDao.insertProfile(profileData);
+          await GetStorage()
+              .write(Constant.token, signupResponse.signupData?.token);
+          Utils(Get.context!).stopLoading();
 
-        DialogUtils.showSingleButtonCustomDialog(
-          context: Get.context!,
-          title: 'success'.tr,
-          message: 'registration_success_alert'.tr,
-          firstButtonText: 'ok'.tr,
-          firstBtnFunction: () {
-            Navigator.of(Get.context!).pop();
-            Get.back();
-            Get.back();
-          },
-        );
+          DialogUtils.showSingleButtonCustomDialog(
+            context: Get.context!,
+            title: 'success'.tr,
+            message: 'registration_success_alert'.tr,
+            firstButtonText: 'ok'.tr,
+            firstBtnFunction: () {
+              Navigator.of(Get.context!).pop();
+              Get.back();
+              Get.back();
+            },
+          );
+        } else {
+          Utils(Get.context!).stopLoading();
+          DialogUtils.showSingleButtonCustomDialog(
+            context: Get.context!,
+            title: 'error'.tr,
+            message: signupResponse.message,
+            firstButtonText: 'ok'.tr,
+            firstBtnFunction: () {
+              Navigator.of(Get.context!).pop();
+            },
+          );
+        }
       } else {
         Utils(Get.context!).stopLoading();
-        DialogUtils.showSingleButtonCustomDialog(
+        DialogUtils.noInternetConnection(
           context: Get.context!,
-          title: 'error'.tr,
-          message: signupResponse.message,
-          firstButtonText: 'ok'.tr,
-          firstBtnFunction: () {
-            Navigator.of(Get.context!).pop();
-          },
+          callBackFunction: () {},
         );
       }
     } on DioException catch (obj) {

@@ -84,7 +84,10 @@ class Languages extends Translations {
           'change_password': 'पासवर्ड बदलें',
           'confirm_password': 'पासवर्ड पुष्टि करें',
           'new_password': 'नया पासवर्ड',
-          'password_change_success_message': 'पासवर्ड सफलतापूर्वक बदल गया!'
+          'password_change_success_message': 'पासवर्ड सफलतापूर्वक बदल गया!',
+          'no_internet_title': 'कोई इंटरनेट कनेक्शन नहीं है।',
+          'no_internet_message':
+              'इस क्षेत्र में उपलब्ध विशेषता इंटरनेट कनेक्टिविटी की आवश्यकता है। कृपया अपने डिवाइस को इंटरनेट से कनेक्ट करें और पुनः प्रयास करें।'
         },
         'en_US': {
           'setting': 'SETTING',
@@ -167,7 +170,10 @@ class Languages extends Translations {
           'change_password': 'Change password',
           'confirm_password': 'Confirm password',
           'new_password': 'New password',
-          'password_change_success_message': 'Password changed successfully!'
+          'password_change_success_message': 'Password changed successfully!',
+          'no_internet_title': 'No internet connection.',
+          'no_internet_message':
+              'The feature in this area require internet connectivity. Please connect your device to the internet and try again.'
         },
       };
 }

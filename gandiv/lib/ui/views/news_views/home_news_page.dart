@@ -72,7 +72,7 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
                               color: AppColors.colorPrimary,
                               onRefresh: _pullRefresh,
                               child: ListView.builder(
-                                key: const PageStorageKey('home_news_page'),
+                                // key: const PageStorageKey('home_news_page'),
                                 physics: const AlwaysScrollableScrollPhysics(),
                                 itemCount: controller.newsList.length,
                                 controller: controller.controller,
@@ -195,10 +195,15 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
                 padding: const EdgeInsets.all(16.0),
                 child: CarouselSlider(
                   options: CarouselOptions(
-                      pauseAutoPlayOnTouch: true,
+                      initialPage: 0,
+                      enableInfiniteScroll: false,
+                      pauseAutoPlayOnTouch: false,
                       autoPlay: false,
                       height: MediaQuery.of(context).size.width * (3 / 4),
-                      enlargeCenterPage: true),
+                      enlargeCenterPage: true,
+                      onPageChanged: (index, reason) {
+                        final xx = index;
+                      }),
                   items:
                       controller.newsList[index].mediaList?.imageList?.map((i) {
                     return Builder(
@@ -217,24 +222,6 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
                           errorWidget: (context, url, error) =>
                               const Icon(Icons.error),
                         );
-                        // return Image.network(
-                        //   fit: BoxFit.cover,
-                        //   i.url!,
-                        //   width: MediaQuery.of(context).size.width,
-                        //   loadingBuilder: (BuildContext context, Widget child,
-                        //       ImageChunkEvent? loadingProgress) {
-                        //     if (loadingProgress == null) return child;
-                        //     return Center(
-                        //       child: CircularProgressIndicator(
-                        //         value: loadingProgress.expectedTotalBytes !=
-                        //                 null
-                        //             ? loadingProgress.cumulativeBytesLoaded /
-                        //                 loadingProgress.expectedTotalBytes!
-                        //             : null,
-                        //       ),
-                        //     );
-                        //   },
-                        // );
                       },
                     );
                   }).toList(),
@@ -310,6 +297,10 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
                         selectedPosition = index;
                         Utils(context).startAudio(newsContent);
                         controller.setAudioPlaying(true, index);
+                        // Utils.ftts.setCompletionHandler(() {
+                        //   Utils(context).stopAudio(newsContent);
+                        //   controller.setAudioPlaying(false, index);
+                        // });
                       }
                     },
                     child: Image.asset(

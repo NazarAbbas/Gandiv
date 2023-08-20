@@ -21,7 +21,9 @@ class EditProfilePage extends GetView<EditProfilePageController> {
     return Obx(
       () => Scaffold(
         appBar: AppBar(
-          backgroundColor: AppColors.colorPrimary,
+          backgroundColor: dashboardPageController.isDarkTheme.value == true
+              ? AppColors.dartTheme
+              : AppColors.colorPrimary,
           title: Text('edit_profile'.tr),
         ),
         body: controller.isLoading.value
@@ -61,11 +63,21 @@ class EditProfilePage extends GetView<EditProfilePageController> {
                                   loginButtonClick(context);
                                 },
                                 style: ElevatedButton.styleFrom(
-                                    primary: AppColors.colorPrimary,
+                                    primary: dashboardPageController
+                                                .isDarkTheme.value ==
+                                            true
+                                        ? AppColors.white
+                                        : AppColors.colorPrimary,
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(1))),
                                 child: Text(
+                                  style: TextStyle(
+                                      color: dashboardPageController
+                                                  .isDarkTheme.value ==
+                                              true
+                                          ? AppColors.black
+                                          : AppColors.white),
                                   'edit_profile'.tr,
                                 ),
                               ),

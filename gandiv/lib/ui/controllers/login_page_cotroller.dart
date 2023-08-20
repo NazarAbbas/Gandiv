@@ -85,49 +85,56 @@ class LoginPageController extends GetxController {
     try {
       LoginRequest loginRequest = LoginRequest(
           username: emailController.text, password: passwordController.text);
-
-      loginResponse = await restAPI.calllLoginApi(loginRequest);
-      if (loginResponse.status == 200) {
-        var profileData = ProfileData(
-            id: loginResponse.loginData?.id,
-            title: loginResponse.loginData?.title,
-            firstName: loginResponse.loginData?.firstName,
-            lastName: loginResponse.loginData?.lastName,
-            mobileNo: loginResponse.loginData?.mobileNo,
-            email: loginResponse.loginData?.email,
-            gender: loginResponse.loginData?.gender,
-            profileImage: loginResponse.loginData?.profileImage,
-            role: loginResponse.loginData?.role,
-            token: loginResponse.loginData?.token);
-        commanController.isNotLogedIn.value = false;
-        commanController.userRole.value = loginResponse.loginData!.role;
-        await appDatabase.profileDao.deleteProfile();
-        await appDatabase.profileDao.insertProfile(profileData);
-        await GetStorage()
-            .write(Constant.token, loginResponse.loginData?.token);
-        Utils(Get.context!).stopLoading();
-        Fluttertoast.showToast(
-            msg: "Login successfully!",
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-        Get.back();
-        // Get.toNamed(Routes.dashboardScreen);
-        // Navigator.of(Get.context!).pushNamedAndRemoveUntil(
-        //     Routes.dashboardScreen, (Route<dynamic> route) => false);
+      if (await Utils.checkUserConnection()) {
+        loginResponse = await restAPI.calllLoginApi(loginRequest);
+        if (loginResponse.status == 200) {
+          var profileData = ProfileData(
+              id: loginResponse.loginData?.id,
+              title: loginResponse.loginData?.title,
+              firstName: loginResponse.loginData?.firstName,
+              lastName: loginResponse.loginData?.lastName,
+              mobileNo: loginResponse.loginData?.mobileNo,
+              email: loginResponse.loginData?.email,
+              gender: loginResponse.loginData?.gender,
+              profileImage: loginResponse.loginData?.profileImage,
+              role: loginResponse.loginData?.role,
+              token: loginResponse.loginData?.token);
+          commanController.isNotLogedIn.value = false;
+          commanController.userRole.value = loginResponse.loginData!.role;
+          await appDatabase.profileDao.deleteProfile();
+          await appDatabase.profileDao.insertProfile(profileData);
+          await GetStorage()
+              .write(Constant.token, loginResponse.loginData?.token);
+          Utils(Get.context!).stopLoading();
+          Fluttertoast.showToast(
+              msg: "Login successfully!",
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+              fontSize: 16.0);
+          Get.back();
+          // Get.toNamed(Routes.dashboardScreen);
+          // Navigator.of(Get.context!).pushNamedAndRemoveUntil(
+          //     Routes.dashboardScreen, (Route<dynamic> route) => false);
+        } else {
+          Utils(Get.context!).stopLoading();
+          DialogUtils.showSingleButtonCustomDialog(
+            context: Get.context!,
+            title: 'error'.tr,
+            message: loginResponse.message,
+            firstButtonText: 'ok'.tr,
+            firstBtnFunction: () {
+              Navigator.of(Get.context!).pop();
+            },
+          );
+        }
       } else {
         Utils(Get.context!).stopLoading();
-        DialogUtils.showSingleButtonCustomDialog(
+        DialogUtils.noInternetConnection(
           context: Get.context!,
-          title: 'error'.tr,
-          message: loginResponse.message,
-          firstButtonText: 'ok'.tr,
-          firstBtnFunction: () {
-            Navigator.of(Get.context!).pop();
-          },
+          callBackFunction: () {},
         );
       }
     } on DioException catch (obj) {

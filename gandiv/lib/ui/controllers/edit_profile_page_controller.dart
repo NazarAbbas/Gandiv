@@ -43,12 +43,20 @@ class EditProfilePageController extends GetxController {
   Future<void> getProfile() async {
     try {
       //final profile = await appDatabase.profileDao.findProfile();
-      final profileResponse = await restAPI.callProfileApi();
-      firstNameController.value.text = profileResponse.data!.firstName ?? "";
-      lastNameController.value.text = profileResponse.data!.lastName ?? "";
-      emailController.value.text = profileResponse.data!.email ?? "";
-      phoneController.value.text = profileResponse.data!.mobileNo ?? "";
-      networkImagePath.value = profileResponse.data?.profileImage ?? "";
+      if (await Utils.checkUserConnection()) {
+        final profileResponse = await restAPI.callProfileApi();
+        firstNameController.value.text = profileResponse.data!.firstName ?? "";
+        lastNameController.value.text = profileResponse.data!.lastName ?? "";
+        emailController.value.text = profileResponse.data!.email ?? "";
+        phoneController.value.text = profileResponse.data!.mobileNo ?? "";
+        networkImagePath.value = profileResponse.data?.profileImage ?? "";
+      } else {
+        Utils(Get.context!).stopLoading();
+        DialogUtils.noInternetConnection(
+          context: Get.context!,
+          callBackFunction: () {},
+        );
+      }
     } on DioException catch (obj) {
       final res = (obj).response;
       if (kDebugMode) {

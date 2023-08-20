@@ -16,7 +16,7 @@ import 'constant.dart';
 class Utils {
   Utils(this.context);
   late BuildContext context;
-  FlutterTts ftts = FlutterTts();
+  static FlutterTts ftts = FlutterTts();
 
   Future<void> startLoading() async {
     return await showDialog<void>(
@@ -71,12 +71,15 @@ class Utils {
     final languageId = GetStorage().read(Constant.selectedLanguage);
     if (languageId == 1) {
       await ftts.setLanguage("hi");
+      //await ftts.setVoice({"name": "Karen", "locale": "hi-IN"});
     } else {
       await ftts.setLanguage("en-US");
     }
     await ftts.setSpeechRate(0.5); //speed of speech
     await ftts.setVolume(1.0); //volume of speech
     await ftts.setPitch(1); //pitc of sound
+    // final voices = await ftts.getVoices;
+
     //play text to sp
     var result = await ftts.speak(content);
     if (result == 1) {
@@ -84,6 +87,7 @@ class Utils {
     } else {
       //not speaking
     }
+    await ftts.awaitSpeakCompletion(true);
   }
 
   void stopAudio(String content) async {
@@ -168,5 +172,16 @@ class Utils {
   static Future<String?> get _localPath async {
     final directory = await getExternalStorageDirectory();
     return directory?.absolute.path;
+  }
+
+  static Future checkUserConnection() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        return true;
+      }
+    } on SocketException catch (_) {
+      return false;
+    }
   }
 }

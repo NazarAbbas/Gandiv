@@ -22,11 +22,13 @@ class NewsDetailsPageController extends FullLifeCycleController {
     if (newsList.value.mediaList != null &&
         newsList.value.mediaList!.videoList != null &&
         newsList.value.mediaList!.videoList!.isNotEmpty) {
-      for (int i = 0; i < newsList.value.mediaList!.videoList!.length; i++) {
-        File file = await Utils.genThumbnailFile(
-            newsList.value.mediaList!.videoList![i].url!);
-        files.add(file);
-      }
+      try {
+        for (int i = 0; i < newsList.value.mediaList!.videoList!.length; i++) {
+          File file = await Utils.genThumbnailFile(
+              newsList.value.mediaList!.videoList![i].url!);
+          files.add(file);
+        }
+      } on Exception catch (exception) {}
     }
 
     isLoading.value = false;

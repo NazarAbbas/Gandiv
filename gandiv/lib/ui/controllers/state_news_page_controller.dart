@@ -6,6 +6,7 @@ import 'package:gandiv/models/news_list_db_model.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../constants/constant.dart';
+import '../../constants/dialog_utils.dart';
 import '../../database/app_database.dart';
 import '../../models/news_list_response.dart';
 import '../../network/rest_api.dart';
@@ -137,24 +138,31 @@ class StateNewsPageController extends FullLifeCycleController
 
   Future<void> getHomeNews() async {
     try {
-      final response = await restAPI.callNewsListApi(
-          categoryId: categoryId,
-          locationId: locationId,
-          languageId: languageId,
-          pageNumber: pageNo,
-          pageSize: pageSize,
-          searchText: '');
-      totalCount = response.newsListData.totalCount!;
-      for (int i = 0; i < response.newsListData.newsList.length; i++) {
-        final bookMarkNews = await appDatabase.newsListDao
-            .findNewsById(response.newsListData.newsList[i].id!);
-        if (bookMarkNews != null) {
-          response.newsListData.newsList[i].isBookmark = true;
-        } else {
-          response.newsListData.newsList[i].isBookmark = false;
+      if (await Utils.checkUserConnection()) {
+        final response = await restAPI.callNewsListApi(
+            categoryId: categoryId,
+            locationId: locationId,
+            languageId: languageId,
+            pageNumber: pageNo,
+            pageSize: pageSize,
+            searchText: '');
+        totalCount = response.newsListData.totalCount!;
+        for (int i = 0; i < response.newsListData.newsList.length; i++) {
+          final bookMarkNews = await appDatabase.newsListDao
+              .findNewsById(response.newsListData.newsList[i].id!);
+          if (bookMarkNews != null) {
+            response.newsListData.newsList[i].isBookmark = true;
+          } else {
+            response.newsListData.newsList[i].isBookmark = false;
+          }
         }
+        newsList.addAll(response.newsListData.newsList);
+      } else {
+        DialogUtils.noInternetConnection(
+          context: Get.context!,
+          callBackFunction: () {},
+        );
       }
-      newsList.addAll(response.newsListData.newsList);
     } on DioException catch (obj) {
       final res = (obj).response;
       if (kDebugMode) {

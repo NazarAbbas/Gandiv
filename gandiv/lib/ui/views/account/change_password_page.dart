@@ -16,7 +16,9 @@ class ChangePassswordPage extends GetView<ChangePasswordPageController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.colorPrimary,
+        backgroundColor: dashboardPageController.isDarkTheme.value == true
+            ? AppColors.dartTheme
+            : AppColors.colorPrimary,
         title: Text('change_password'.tr),
       ),
       body: Form(
@@ -48,11 +50,21 @@ class ChangePassswordPage extends GetView<ChangePasswordPageController> {
                             changePasswordButtonClick(context);
                           },
                           style: ElevatedButton.styleFrom(
-                              primary: AppColors.colorPrimary,
+                              primary:
+                                  dashboardPageController.isDarkTheme.value ==
+                                          true
+                                      ? AppColors.white
+                                      : AppColors.colorPrimary,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(1))),
                           child: Text(
-                            'change_passsword'.tr,
+                            style: TextStyle(
+                                color:
+                                    dashboardPageController.isDarkTheme.value ==
+                                            true
+                                        ? AppColors.black
+                                        : AppColors.white),
+                            'change_password'.tr,
                           ),
                         ),
                       ),

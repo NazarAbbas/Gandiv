@@ -18,7 +18,9 @@ class SignupPage extends GetView<SignupPageController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.colorPrimary,
+        backgroundColor: dashboardPageController.isDarkTheme.value == true
+            ? AppColors.dartTheme
+            : AppColors.colorPrimary,
         title: Text('signup'.tr),
       ),
       body: Form(
@@ -54,10 +56,20 @@ class SignupPage extends GetView<SignupPageController> {
                               loginButtonClick(context);
                             },
                             style: ElevatedButton.styleFrom(
-                                primary: AppColors.colorPrimary,
+                                primary:
+                                    dashboardPageController.isDarkTheme.value ==
+                                            true
+                                        ? AppColors.white
+                                        : AppColors.colorPrimary,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(1))),
                             child: Text(
+                              style: TextStyle(
+                                  color: dashboardPageController
+                                              .isDarkTheme.value ==
+                                          true
+                                      ? AppColors.black
+                                      : AppColors.white),
                               'signup'.tr,
                             ),
                           ),

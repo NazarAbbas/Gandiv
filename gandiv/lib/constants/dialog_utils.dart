@@ -1,3 +1,6 @@
+import 'dart:ffi';
+
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:get/get.dart';
@@ -243,5 +246,21 @@ class DialogUtils {
             ),
           );
         });
+  }
+
+  static void noInternetConnection(
+      {required BuildContext context, required Function callBackFunction}) {
+    AwesomeDialog(
+      dismissOnTouchOutside: false,
+      context: context,
+      dialogType: DialogType.error,
+      animType: AnimType.rightSlide,
+      title: 'no_internet_title'.tr,
+      desc: 'no_internet_message'.tr,
+      btnOkColor: AppColors.colorPrimary,
+      btnOkOnPress: () {
+        callBackFunction.call();
+      },
+    ).show();
   }
 }

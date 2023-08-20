@@ -20,8 +20,15 @@ class AboutUsPageController extends GetxController {
   Future<void> executeSignupApi() async {
     try {
       // Utils(Get.context!).startLoading();
-      final aboutUsResponse = await restAPI.calllAboutUsApi();
-      abourUsData.value = aboutUsResponse.aboutUsData;
+      if (await Utils.checkUserConnection()) {
+        final aboutUsResponse = await restAPI.calllAboutUsApi();
+        abourUsData.value = aboutUsResponse.aboutUsData;
+      } else {
+        DialogUtils.noInternetConnection(
+          context: Get.context!,
+          callBackFunction: () {},
+        );
+      }
     } on DioException catch (obj) {
       // Utils(Get.context!).stopLoading();
       final res = (obj).response;

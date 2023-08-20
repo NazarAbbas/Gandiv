@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
@@ -78,11 +79,19 @@ class LocationPagePageListRow extends State<LocationPage> {
                               child: Container(
                                 width: double.infinity,
                                 height: double.infinity,
-                                color: AppColors.lightGray,
+                                color:
+                                    dashboardPageController.isDarkTheme.value ==
+                                            true
+                                        ? AppColors.dartTheme
+                                        : AppColors.white,
                                 child: Center(
                                   child: Text('no_news_available'.tr,
                                       style: TextStyle(
-                                          color: AppColors.colorPrimary,
+                                          color: dashboardPageController
+                                                      .isDarkTheme.value ==
+                                                  true
+                                              ? AppColors.white
+                                              : AppColors.colorPrimary,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 20)),
                                 ),
@@ -92,7 +101,7 @@ class LocationPagePageListRow extends State<LocationPage> {
                               color: AppColors.colorPrimary,
                               onRefresh: _pullRefresh,
                               child: ListView.builder(
-                                key: const PageStorageKey(0),
+                                //key: const PageStorageKey(0),
                                 physics: const AlwaysScrollableScrollPhysics(),
                                 itemCount: controller.newsList.length,
                                 controller: controller.controller,
@@ -213,7 +222,9 @@ class LocationPagePageListRow extends State<LocationPage> {
                 padding: const EdgeInsets.all(16.0),
                 child: CarouselSlider(
                   options: CarouselOptions(
-                      pauseAutoPlayOnTouch: true,
+                      initialPage: 0,
+                      enableInfiniteScroll: false,
+                      pauseAutoPlayOnTouch: false,
                       autoPlay: false,
                       height: MediaQuery.of(context).size.width * (3 / 4),
                       enlargeCenterPage: true),
@@ -221,24 +232,38 @@ class LocationPagePageListRow extends State<LocationPage> {
                       controller.newsList[index].mediaList?.imageList?.map((i) {
                     return Builder(
                       builder: (BuildContext context) {
-                        return Image.network(
+                        return CachedNetworkImage(
                           fit: BoxFit.cover,
-                          i.url!,
                           width: MediaQuery.of(context).size.width,
-                          loadingBuilder: (BuildContext context, Widget child,
-                              ImageChunkEvent? loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                              child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes !=
-                                        null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
-                                    : null,
-                              ),
-                            );
-                          },
+                          imageUrl: i.url!,
+                          placeholder: (context, url) => const Center(
+                            child: SizedBox(
+                              width: 40.0,
+                              height: 40.0,
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
                         );
+                        // return Image.network(
+                        //   fit: BoxFit.cover,
+                        //   i.url!,
+                        //   width: MediaQuery.of(context).size.width,
+                        //   loadingBuilder: (BuildContext context, Widget child,
+                        //       ImageChunkEvent? loadingProgress) {
+                        //     if (loadingProgress == null) return child;
+                        //     return Center(
+                        //       child: CircularProgressIndicator(
+                        //         value: loadingProgress.expectedTotalBytes !=
+                        //                 null
+                        //             ? loadingProgress.cumulativeBytesLoaded /
+                        //                 loadingProgress.expectedTotalBytes!
+                        //             : null,
+                        //       ),
+                        //     );
+                        //   },
+                        // );
                       },
                     );
                   }).toList(),

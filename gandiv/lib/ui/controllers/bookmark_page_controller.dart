@@ -78,7 +78,7 @@ class BookmarkPageController extends FullLifeCycleController {
       } else {
         newsList.clear();
       }
-    } on DioError catch (obj) {
+    } on DioException catch (obj) {
       final res = (obj).response;
       if (kDebugMode) {
         print("Got error : ${res?.statusCode} -> ${res?.statusMessage}");

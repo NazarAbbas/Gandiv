@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:gandiv/constants/utils.dart';
 import 'package:gandiv/ui/controllers/comman_controller.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -34,14 +37,22 @@ class SplashPageController extends GetxController {
 
   Future<void> getLocationsApis() async {
     try {
-      final response = await restAPI.calllNewsLocations();
-      await appDatabase.locationsDao.deleteLocations();
-      // ignore: avoid_function_literals_in_foreach_calls
-      response.data.forEach((element) async {
-        await appDatabase.locationsDao.insertLocations(element);
-      });
-      // final xx = await appDatabase.locationsDao.findLocations();
-      // final xxxx = xx;
+      if (await Utils.checkUserConnection()) {
+        final response = await restAPI.calllNewsLocations();
+        await appDatabase.locationsDao.deleteLocations();
+        // ignore: avoid_function_literals_in_foreach_calls
+        response.data.forEach((element) async {
+          await appDatabase.locationsDao.insertLocations(element);
+        });
+        getCategoriesApis();
+      } else {
+        DialogUtils.noInternetConnection(
+          context: Get.context!,
+          callBackFunction: () {
+            exit(0);
+          },
+        );
+      }
     } on DioException catch (obj) {
       final res = (obj).response;
       if (res?.statusCode == 401) {
@@ -67,6 +78,10 @@ class SplashPageController extends GetxController {
         );
       }
       //return updateProfilleResponse;
+    } on SocketException catch (e) {
+      if (kDebugMode) {
+        print("Got error ");
+      }
     } on Exception catch (exception) {
       if (kDebugMode) {
         print("Got error : $exception");
@@ -84,20 +99,25 @@ class SplashPageController extends GetxController {
       } on Exception catch (exception) {
         final message = exception.toString();
       }
-    } finally {
-      getCategoriesApis();
-    }
+    } finally {}
   }
 
   Future<void> getCategoriesApis() async {
     try {
-      final response = await restAPI.calllNewsCategories();
-      await appDatabase.categoriesDao.deleteCategories();
-      response.data.forEach((element) async {
-        await appDatabase.categoriesDao.insertCategories(element);
-      });
-      // final xx = await appDatabase.categoriesDao.findCategories();
-      // final xxxx = xx;
+      if (await Utils.checkUserConnection()) {
+        final response = await restAPI.calllNewsCategories();
+        await appDatabase.categoriesDao.deleteCategories();
+        response.data.forEach((element) async {
+          await appDatabase.categoriesDao.insertCategories(element);
+        });
+      } else {
+        DialogUtils.noInternetConnection(
+          context: Get.context!,
+          callBackFunction: () {
+            //Navigator.of(Get.context!).pop();
+          },
+        );
+      }
     } on DioException catch (obj) {
       final res = (obj).response;
       if (res?.statusCode == 401) {
@@ -142,7 +162,7 @@ class SplashPageController extends GetxController {
       }
     } finally {
       Timer(const Duration(seconds: 1),
-          () => Get.toNamed(Routes.dashboardScreen));
+          () => Get.offNamed(Routes.dashboardScreen));
       // Get.toNamed(Routes.dashboardScreen);
     }
   }

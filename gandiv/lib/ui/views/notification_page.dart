@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../constants/values/app_colors.dart';
+import '../controllers/dashboard_page_cotroller.dart';
 import '../controllers/notification_page_controller.dart';
 
 class NotificationPage extends GetView<NotificationPageController> {
@@ -9,9 +10,13 @@ class NotificationPage extends GetView<NotificationPageController> {
 
   @override
   Widget build(BuildContext context) {
+    DashboardPageController dashboardPageController =
+        Get.find<DashboardPageController>();
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.colorPrimary,
+        backgroundColor: dashboardPageController.isDarkTheme.value == true
+            ? AppColors.dartTheme
+            : AppColors.colorPrimary,
         title: Text('notificatios'.tr),
       ),
       body: Container(

@@ -57,7 +57,9 @@ class SearchPagePageListRow extends State<SearchPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('search'.tr),
-        backgroundColor: AppColors.colorPrimary,
+        backgroundColor: dashboardPageController.isDarkTheme.value == true
+            ? AppColors.dartTheme
+            : AppColors.colorPrimary,
       ),
       body: Obx(
         () => Column(
@@ -96,13 +98,21 @@ class SearchPagePageListRow extends State<SearchPage> {
                   decoration: InputDecoration(
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
-                      borderSide:
-                          BorderSide(color: AppColors.colorPrimary, width: 1.0),
+                      borderSide: BorderSide(
+                          color:
+                              dashboardPageController.isDarkTheme.value == true
+                                  ? AppColors.white
+                                  : AppColors.colorPrimary,
+                          width: 1.0),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
-                      borderSide:
-                          BorderSide(color: AppColors.colorPrimary, width: 1.0),
+                      borderSide: BorderSide(
+                          color:
+                              dashboardPageController.isDarkTheme.value == true
+                                  ? AppColors.white
+                                  : AppColors.colorPrimary,
+                          width: 1.0),
                     ),
                     hintText: controller.speechTextHint.value,
                     // Add a clear button to the search bar
@@ -113,7 +123,10 @@ class SearchPagePageListRow extends State<SearchPage> {
                         },
                         icon: AvatarGlow(
                           animate: controller.isListening.value,
-                          glowColor: AppColors.colorPrimary,
+                          glowColor:
+                              dashboardPageController.isDarkTheme.value == true
+                                  ? AppColors.white
+                                  : AppColors.colorPrimary,
                           endRadius: 90.0,
                           duration: const Duration(microseconds: 2000),
                           repeat: true,
@@ -123,14 +136,19 @@ class SearchPagePageListRow extends State<SearchPage> {
                             controller.isListening.value
                                 ? Icons.mic
                                 : Icons.mic_none,
-                            color: AppColors.colorPrimary,
+                            color: dashboardPageController.isDarkTheme.value ==
+                                    true
+                                ? AppColors.white
+                                : AppColors.colorPrimary,
                           ),
                         )),
                     // Add a search icon or button to the search bar
                     prefixIcon: IconButton(
                       icon: Icon(
                         Icons.search,
-                        color: AppColors.colorPrimary,
+                        color: dashboardPageController.isDarkTheme.value == true
+                            ? AppColors.white
+                            : AppColors.colorPrimary,
                       ),
                       onPressed: () {
                         // Perform the search here
@@ -158,7 +176,11 @@ class SearchPagePageListRow extends State<SearchPage> {
                         child: Center(
                           child: Text('no_news_available'.tr,
                               style: TextStyle(
-                                  color: AppColors.colorPrimary,
+                                  color: dashboardPageController
+                                              .isDarkTheme.value ==
+                                          true
+                                      ? AppColors.white
+                                      : AppColors.colorPrimary,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20)),
                         ),
@@ -166,19 +188,29 @@ class SearchPagePageListRow extends State<SearchPage> {
                     )
                   : controller.searchController.text.isEmpty
                       ? Padding(
-                          padding: const EdgeInsets.all(50),
+                          padding: const EdgeInsets.all(10),
                           child: Container(
                             width: double.infinity,
                             height: double.infinity,
-                            color: AppColors.lightGray,
-                            child: Center(
-                              child: Text(
-                                  textAlign: TextAlign.center,
-                                  'search_messgae'.tr,
-                                  style: TextStyle(
-                                      color: AppColors.colorPrimary,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20)),
+                            color: dashboardPageController.isDarkTheme.value ==
+                                    true
+                                ? AppColors.dartTheme
+                                : AppColors.white,
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Center(
+                                child: Text(
+                                    textAlign: TextAlign.center,
+                                    'search_messgae'.tr,
+                                    style: TextStyle(
+                                        color: dashboardPageController
+                                                    .isDarkTheme.value ==
+                                                true
+                                            ? AppColors.white
+                                            : AppColors.colorPrimary,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20)),
+                              ),
                             ),
                           ),
                         )

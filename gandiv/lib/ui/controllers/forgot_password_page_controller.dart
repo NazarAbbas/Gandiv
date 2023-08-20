@@ -46,9 +46,17 @@ class ForgotPasswordPageController extends GetxController {
     // ForgotPasswordResponse? loginResponse = ForgotPasswordResponse();
     Utils(Get.context!).startLoading();
     try {
-      final forgotPasswordResponse =
-          await restAPI.callForgotPassswordApi(userName: emailController.text);
-      Utils(Get.context!).stopLoading();
+      if (await Utils.checkUserConnection()) {
+        final forgotPasswordResponse = await restAPI.callForgotPassswordApi(
+            userName: emailController.text);
+        Utils(Get.context!).stopLoading();
+      } else {
+        Utils(Get.context!).stopLoading();
+        DialogUtils.noInternetConnection(
+          context: Get.context!,
+          callBackFunction: () {},
+        );
+      }
     } on DioException catch (obj) {
       Utils(Get.context!).stopLoading();
       final res = (obj).response;

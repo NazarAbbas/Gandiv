@@ -114,45 +114,54 @@ class UploadNewsPagePageController extends GetxController {
   Future<void> executeNewsUploadApi() async {
     Utils(Get.context!).startLoading();
     try {
-      final List<File> files = <File>[];
+      if (await Utils.checkUserConnection()) {
+        final List<File> files = <File>[];
 
-      try {
-        for (int i = 0; i < imageList.length; i++) {
-          // var path = imageList[i];
-          // File imageFile = File(path);
-          // var stream = http.ByteStream(imageFile.openRead());
-          // var length = await imageFile.length();
-          // var multipartFile = http.MultipartFile("pictures", stream, length,
-          //     filename: basename(imageFile.path));
+        try {
+          for (int i = 0; i < imageList.length; i++) {
+            // var path = imageList[i];
+            // File imageFile = File(path);
+            // var stream = http.ByteStream(imageFile.openRead());
+            // var length = await imageFile.length();
+            // var multipartFile = http.MultipartFile("pictures", stream, length,
+            //     filename: basename(imageFile.path));
 
-          // mediaFiles.add(multipartFile);
-          files.add(File(imageList[i]));
+            // mediaFiles.add(multipartFile);
+            files.add(File(imageList[i]));
+          }
+        } on Exception catch (exception) {
+          final message = exception;
         }
-      } on Exception catch (exception) {
-        final message = exception;
-      }
 
-      CreateNewsRequest createNewsRequest = CreateNewsRequest();
-      createNewsRequest.heading = headingController.text;
-      createNewsRequest.subHeading = subHeadingController.text;
-      createNewsRequest.newsContent = descriptionController.text;
-      createNewsRequest.durationInMin = 0.toString();
-      createNewsRequest.locationId = locationDropdownSelectedID;
-      createNewsRequest.categoryIdsList = categoriesDropdownSelectedID;
-      createNewsRequest.languageId = "2";
-      createNewsRequest.status = "Created";
-      createNewsRequest.files = files;
-      final response = await restAPI.callCreateNewsApi(createNewsRequest);
-      Utils(Get.context!).stopLoading();
-      DialogUtils.showSingleButtonCustomDialog(
-        context: Get.context!,
-        title: 'success'.tr,
-        message: 'news_created_successfully'.tr,
-        firstButtonText: 'ok'.tr,
-        firstBtnFunction: () {
-          Navigator.of(Get.context!).pop();
-        },
-      );
+        CreateNewsRequest createNewsRequest = CreateNewsRequest();
+        createNewsRequest.heading = headingController.text;
+        createNewsRequest.subHeading = subHeadingController.text;
+        createNewsRequest.newsContent = descriptionController.text;
+        createNewsRequest.durationInMin = 0.toString();
+        createNewsRequest.locationId = locationDropdownSelectedID;
+        createNewsRequest.categoryIdsList = categoriesDropdownSelectedID;
+        createNewsRequest.languageId = "2";
+        createNewsRequest.status = "Created";
+        createNewsRequest.files = files;
+
+        final response = await restAPI.callCreateNewsApi(createNewsRequest);
+        Utils(Get.context!).stopLoading();
+        DialogUtils.showSingleButtonCustomDialog(
+          context: Get.context!,
+          title: 'success'.tr,
+          message: 'news_created_successfully'.tr,
+          firstButtonText: 'ok'.tr,
+          firstBtnFunction: () {
+            Navigator.of(Get.context!).pop();
+          },
+        );
+      } else {
+        Utils(Get.context!).stopLoading();
+        DialogUtils.noInternetConnection(
+          context: Get.context!,
+          callBackFunction: () {},
+        );
+      }
     } on DioException catch (obj) {
       Utils(Get.context!).stopLoading();
       final res = (obj).response;

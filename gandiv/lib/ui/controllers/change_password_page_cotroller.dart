@@ -89,29 +89,39 @@ class ChangePasswordPageController extends GetxController {
     try {
       // LoginRequest loginRequest = LoginRequest(
       //     username: emailController.text, password: passwordController.text);
-
-      final changePasswordResponse =
-          await restAPI.calllChangePasswordApi(changePasswordRequest);
-      if (changePasswordResponse.status == 200) {
-        Utils(Get.context!).stopLoading();
-        Fluttertoast.showToast(
-            msg: 'password_change_success_message'.tr,
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-        Get.back();
+      if (await Utils.checkUserConnection()) {
+        final changePasswordResponse =
+            await restAPI.calllChangePasswordApi(changePasswordRequest);
+        if (changePasswordResponse.status == 200) {
+          Utils(Get.context!).stopLoading();
+          Fluttertoast.showToast(
+              msg: 'password_change_success_message'.tr,
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+              fontSize: 16.0);
+          Get.back();
+        } else {
+          Utils(Get.context!).stopLoading();
+          DialogUtils.showSingleButtonCustomDialog(
+            context: Get.context!,
+            title: 'error'.tr,
+            message: changePasswordResponse.message,
+            firstButtonText: 'ok'.tr,
+            firstBtnFunction: () {
+              Navigator.of(Get.context!).pop();
+            },
+          );
+        }
       } else {
         Utils(Get.context!).stopLoading();
-        DialogUtils.showSingleButtonCustomDialog(
+        DialogUtils.noInternetConnection(
           context: Get.context!,
-          title: 'error'.tr,
-          message: changePasswordResponse.message,
-          firstButtonText: 'ok'.tr,
-          firstBtnFunction: () {
-            Navigator.of(Get.context!).pop();
+          callBackFunction: () {
+            Utils(Get.context!).stopLoading();
+            //Get.back();
           },
         );
       }

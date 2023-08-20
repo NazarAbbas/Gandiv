@@ -90,8 +90,8 @@ class NationalNewsPageListRow extends State<NationalNewsPage> {
                                 color: AppColors.colorPrimary,
                                 onRefresh: _pullRefresh,
                                 child: ListView.builder(
-                                  key: const PageStorageKey(
-                                      'national_news_page'),
+                                  // key: const PageStorageKey(
+                                  //     'national_news_page'),
                                   physics:
                                       const AlwaysScrollableScrollPhysics(),
                                   itemCount: controller.newsList.length,
@@ -212,7 +212,9 @@ class NationalNewsPageListRow extends State<NationalNewsPage> {
                 padding: const EdgeInsets.all(16.0),
                 child: CarouselSlider(
                   options: CarouselOptions(
-                      pauseAutoPlayOnTouch: true,
+                      initialPage: 0,
+                      enableInfiniteScroll: false,
+                      pauseAutoPlayOnTouch: false,
                       autoPlay: false,
                       height: MediaQuery.of(context).size.width * (3 / 4),
                       enlargeCenterPage: true),

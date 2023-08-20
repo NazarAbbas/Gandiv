@@ -12,7 +12,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import '../../../constants/dialog_utils.dart';
-import '../../../constants/utils.dart';
 
 // ignore: must_be_immutable
 class UploadNewsPage extends GetView<UploadNewsPagePageController> {
@@ -28,7 +27,9 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: AppColors.colorPrimary,
+          backgroundColor: dashboardPageController.isDarkTheme.value == true
+              ? AppColors.dartTheme
+              : AppColors.colorPrimary,
           title: Text('upload_news'.tr),
         ),
         body: Form(
@@ -72,10 +73,16 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
                   uploadttonClick(context);
                 },
                 style: ElevatedButton.styleFrom(
-                    primary: AppColors.colorPrimary,
+                    primary: dashboardPageController.isDarkTheme.value == true
+                        ? AppColors.white
+                        : AppColors.colorPrimary,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(1))),
                 child: Text(
+                  style: TextStyle(
+                      color: dashboardPageController.isDarkTheme.value == true
+                          ? AppColors.black
+                          : AppColors.white),
                   'upload'.tr,
                 ),
               ),
@@ -91,9 +98,15 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
         children: [
           Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: dashboardPageController.isDarkTheme.value == true
+                    ? AppColors.dartTheme
+                    : AppColors.white,
                 boxShadow: [
-                  BoxShadow(color: AppColors.colorPrimary, spreadRadius: 1),
+                  BoxShadow(
+                      color: dashboardPageController.isDarkTheme.value == true
+                          ? AppColors.white
+                          : AppColors.colorPrimary,
+                      spreadRadius: 1),
                 ],
               ),
               width: double.infinity,
@@ -131,9 +144,15 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
             },
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: dashboardPageController.isDarkTheme.value == true
+                    ? AppColors.dartTheme
+                    : AppColors.white,
                 boxShadow: [
-                  BoxShadow(color: AppColors.colorPrimary, spreadRadius: 1),
+                  BoxShadow(
+                      color: dashboardPageController.isDarkTheme.value == true
+                          ? AppColors.white
+                          : AppColors.colorPrimary,
+                      spreadRadius: 1),
                 ],
               ),
               width: double.infinity,
@@ -141,7 +160,10 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
               child: Center(
                 child: Text(
                   'upload_image'.tr,
-                  style: TextStyle(color: AppColors.colorPrimary),
+                  style: TextStyle(
+                      color: dashboardPageController.isDarkTheme.value == true
+                          ? AppColors.white
+                          : AppColors.colorPrimary),
                 ),
               ),
             ),
@@ -152,13 +174,7 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
   }
 
   void uploadttonClick(BuildContext context) async {
-    // Utils(context).startLoading();
-    //await Future.delayed(const Duration(seconds: 2));
     await controller.onUpload();
-    // ignore: use_build_context_synchronously
-    // Utils(context).stopLoading();
-    // Get.back();
-    // Get.back();
   }
 
   Padding headingWidget() {
@@ -323,6 +339,8 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
       padding: const EdgeInsets.all(16.0),
       child: CarouselSlider(
         options: CarouselOptions(
+            initialPage: 0,
+            enableInfiniteScroll: false,
             pauseAutoPlayOnTouch: true,
             autoPlay: false,
             height: MediaQuery.of(context).size.width * (3 / 4),
@@ -388,8 +406,15 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
             ),
             padding: const EdgeInsets.all(0),
             borderRadius: BorderRadius.circular(40),
-            border: BorderSide(color: AppColors.colorPrimary, width: 1),
-            dropdownButtonColor: Colors.white,
+            border: BorderSide(
+                color: dashboardPageController.isDarkTheme.value == true
+                    ? AppColors.white
+                    : AppColors.colorPrimary,
+                width: 1),
+            dropdownButtonColor:
+                dashboardPageController.isDarkTheme.value == true
+                    ? AppColors.dartTheme
+                    : AppColors.white,
             value: controller.locationDropdownValue.value,
             onChanged: (newValue) async {
               controller.locationDropdownValue.value = newValue!;
@@ -413,42 +438,69 @@ class UploadNewsPage extends GetView<UploadNewsPagePageController> {
   Padding categoriesDropDownWidget() {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
-      child: MultiSelectDialogField(
-        items: controller.multiSelectCategoriesList,
-        listType: MultiSelectListType.LIST,
-        title: Text('category'.tr),
-        selectedColor: AppColors.colorPrimary.withOpacity(1),
-        decoration: BoxDecoration(
-          color: AppColors.lightGray,
-          borderRadius: const BorderRadius.all(Radius.circular(40)),
-          border: Border.all(
-            color: AppColors.colorPrimary,
-            width: 2,
+      child: Center(
+        child: MultiSelectDialogField(
+          items: controller.multiSelectCategoriesList,
+          listType: MultiSelectListType.LIST,
+          title: Text('category'.tr),
+          itemsTextStyle: TextStyle(
+              color: dashboardPageController.isDarkTheme.value == true
+                  ? Colors.white
+                  : AppColors.black),
+          selectedItemsTextStyle: TextStyle(
+              color: dashboardPageController.isDarkTheme.value == true
+                  ? Colors.white
+                  : AppColors.black),
+          checkColor: dashboardPageController.isDarkTheme.value == true
+              ? AppColors.dartTheme
+              : AppColors.white,
+          backgroundColor: dashboardPageController.isDarkTheme.value == true
+              ? AppColors.dartTheme
+              : AppColors.white,
+          selectedColor: dashboardPageController.isDarkTheme.value == true
+              ? AppColors.white.withOpacity(1)
+              : AppColors.colorPrimary.withOpacity(1),
+          decoration: BoxDecoration(
+            color: dashboardPageController.isDarkTheme.value == true
+                ? AppColors.dartTheme
+                : AppColors.white,
+            borderRadius: const BorderRadius.all(Radius.circular(40)),
+            border: Border.all(
+              color: dashboardPageController.isDarkTheme.value == true
+                  ? AppColors.white
+                  : AppColors.colorPrimary,
+              width: 1,
+            ),
           ),
-        ),
-        buttonIcon: const Icon(
-          Icons.arrow_drop_down,
-          color: Colors.black,
-        ),
-        buttonText: Text(
-          'please_select_category'.tr,
-          style: TextStyle(
-            color: AppColors.colorPrimary,
-            fontSize: 16,
+          buttonIcon: Icon(
+            Icons.arrow_drop_down,
+            color: dashboardPageController.isDarkTheme.value == true
+                ? AppColors.white
+                : AppColors.black,
           ),
-        ),
-        onConfirm: (results) async {
-          for (int i = 0; i < results.length; i++) {
-            final selectedId = await controller.appDatabase.categoriesDao
-                .findCategoriesIdByName(results[i]);
-            controller.categoriesDropdownSelectedID
-                .add(selectedId!.id.toString());
-          }
+          buttonText: Text(
+            'please_select_category'.tr,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: dashboardPageController.isDarkTheme.value == true
+                  ? AppColors.white
+                  : AppColors.black,
+              fontSize: 16,
+            ),
+          ),
+          onConfirm: (results) async {
+            for (int i = 0; i < results.length; i++) {
+              final selectedId = await controller.appDatabase.categoriesDao
+                  .findCategoriesIdByName(results[i]);
+              controller.categoriesDropdownSelectedID
+                  .add(selectedId!.id.toString());
+            }
 
-          // controller.categoriesDropdownSelectedID = results;
-          //final xx = results;
-          //final xxxxx = "";
-        },
+            // controller.categoriesDropdownSelectedID = results;
+            //final xx = results;
+            //final xxxxx = "";
+          },
+        ),
       ),
     );
 

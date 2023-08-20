@@ -27,21 +27,32 @@ class NewsDetailPageColumn extends State<NewsDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: buildAppBar(),
+      () => WillPopScope(
+        onWillPop: () {
+          if (controller.newsList.value.isAudioPlaying == true) {
+            Utils(context).stopAudio(controller.newsList.value.newsContent!);
+            controller.setAudioPlaying(false);
+          }
+          //trigger leaving and use own data
+          Navigator.pop(context, false);
+          return Future.value(false);
+        },
+        child: Scaffold(
+          appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(60),
+            child: buildAppBar(),
+          ),
+          body: controller.isLoading.value
+              ? Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  color: AppColors.transparent,
+                  child: const Center(child: CircularProgressIndicator()),
+                )
+              : Column(
+                  children: [columnWidget(0, context)],
+                ),
         ),
-        body: controller.isLoading.value
-            ? Container(
-                width: double.infinity,
-                height: double.infinity,
-                color: AppColors.transparent,
-                child: const Center(child: CircularProgressIndicator()),
-              )
-            : Column(
-                children: [columnWidget(0, context)],
-              ),
       ),
     );
   }
@@ -162,20 +173,20 @@ class NewsDetailPageColumn extends State<NewsDetailPage> {
                   subHeadingWidget(),
                   imagesWidget(context),
                   contentWidget(),
-                  controller.newsList.value.mediaList != null &&
-                          controller.newsList.value.mediaList!.videoList !=
-                              null &&
-                          controller
-                              .newsList.value.mediaList!.videoList!.isNotEmpty
-                      ? videoWidget()
-                      : emptyWidget(),
-                  controller.newsList.value.mediaList != null &&
-                          controller.newsList.value.mediaList!.audioList !=
-                              null &&
-                          controller
-                              .newsList.value.mediaList!.videoList!.isNotEmpty
-                      ? audioWidget()
-                      : emptyWidget()
+                  // controller.newsList.value.mediaList != null &&
+                  //         controller.newsList.value.mediaList!.videoList !=
+                  //             null &&
+                  //         controller
+                  //             .newsList.value.mediaList!.videoList!.isNotEmpty
+                  //     ? videoWidget()
+                  //     : emptyWidget(),
+                  // controller.newsList.value.mediaList != null &&
+                  //         controller.newsList.value.mediaList!.audioList !=
+                  //             null &&
+                  //         controller
+                  //             .newsList.value.mediaList!.videoList!.isNotEmpty
+                  //     ? audioWidget()
+                  //     : emptyWidget()
                 ],
               ),
             ),
@@ -214,6 +225,7 @@ class NewsDetailPageColumn extends State<NewsDetailPage> {
         padding: const EdgeInsets.all(16.0),
         child: CarouselSlider(
           options: CarouselOptions(
+              enableInfiniteScroll: false,
               pauseAutoPlayOnTouch: true,
               autoPlay: false,
               height: MediaQuery.of(context).size.width * (3 / 4),

@@ -32,8 +32,16 @@ class EPaperController extends GetxController {
 
   Future<void> executeEPaperApi() async {
     try {
-      final aboutUsResponse = await restAPI.calllEPaperApi();
-      pdfUrl.value = aboutUsResponse.ePaperData;
+      if (await Utils.checkUserConnection()) {
+        final aboutUsResponse = await restAPI.calllEPaperApi();
+        pdfUrl.value = aboutUsResponse.ePaperData;
+      } else {
+        Utils(Get.context!).stopLoading();
+        DialogUtils.noInternetConnection(
+          context: Get.context!,
+          callBackFunction: () {},
+        );
+      }
     } on DioException catch (obj) {
       Utils(Get.context!).stopLoading();
       final res = (obj).response;

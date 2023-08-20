@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../constants/constant.dart';
+import '../../constants/dialog_utils.dart';
 import '../../constants/utils.dart';
 import '../../database/app_database.dart';
 import '../../models/news_list_db_model.dart';
@@ -134,39 +135,46 @@ class HomeNewsPageController extends FullLifeCycleController {
 
   Future<void> getHomeNews() async {
     try {
-      final response = await restAPI.callNewsListApi(
-          categoryId: categoryId,
-          locationId: locationId,
-          languageId: languageId,
-          pageNumber: pageNo,
-          pageSize: pageSize,
-          searchText: '');
+      if (await Utils.checkUserConnection()) {
+        final response = await restAPI.callNewsListApi(
+            categoryId: categoryId,
+            locationId: locationId,
+            languageId: languageId,
+            pageNumber: pageNo,
+            pageSize: pageSize,
+            searchText: '');
 
-      //For Testing purpose
-      if (response != null && response.newsListData.newsList.length != 0) {
-        List<VideoList> videoList = <VideoList>[];
-        VideoList video = VideoList(
-            url:
-                "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
-            type: "mp4",
-            placeholder: "");
-        videoList.add(video);
-        response.newsListData.newsList[0].mediaList?.videoList = videoList;
-      }
+        //For Testing purpose
+        // if (response != null && response.newsListData.newsList.length != 0) {
+        //   List<VideoList> videoList = <VideoList>[];
+        //   VideoList video = VideoList(
+        //       url:
+        //           "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
+        //       type: "mp4",
+        //       placeholder: "");
+        //   videoList.add(video);
+        //   response.newsListData.newsList[0].mediaList?.videoList = videoList;
+        // }
 
-      // Testing End
+        // Testing End
 
-      totalCount = response.newsListData.totalCount!;
-      for (int i = 0; i < response.newsListData.newsList.length; i++) {
-        final bookMarkNews = await appDatabase.newsListDao
-            .findNewsById(response.newsListData.newsList[i].id!);
-        if (bookMarkNews != null) {
-          response.newsListData.newsList[i].isBookmark = true;
-        } else {
-          response.newsListData.newsList[i].isBookmark = false;
+        totalCount = response.newsListData.totalCount!;
+        for (int i = 0; i < response.newsListData.newsList.length; i++) {
+          final bookMarkNews = await appDatabase.newsListDao
+              .findNewsById(response.newsListData.newsList[i].id!);
+          if (bookMarkNews != null) {
+            response.newsListData.newsList[i].isBookmark = true;
+          } else {
+            response.newsListData.newsList[i].isBookmark = false;
+          }
         }
+        newsList.addAll(response.newsListData.newsList);
+      } else {
+        DialogUtils.noInternetConnection(
+          context: Get.context!,
+          callBackFunction: () {},
+        );
       }
-      newsList.addAll(response.newsListData.newsList);
     } on DioError catch (obj) {
       final res = (obj).response;
       if (kDebugMode) {
