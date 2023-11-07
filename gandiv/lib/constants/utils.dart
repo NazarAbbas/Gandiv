@@ -5,11 +5,11 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
-import 'package:gandiv/models/categories_response.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+import '../models/advertisement_response.dart' as advertisement_media;
 import '../models/news_list_response.dart';
 import 'constant.dart';
 
@@ -90,7 +90,7 @@ class Utils {
     await ftts.awaitSpeakCompletion(true);
   }
 
-  void stopAudio(String content) async {
+  void stopAudio() async {
     await ftts.stop();
   }
 
@@ -108,6 +108,24 @@ class Utils {
     var tagsJson = jsonDecode(json) as List;
     return tagsJson.map((tagJson) => ImageList.fromJson(tagJson)).toList();
   }
+
+  // static String convertMediaListToJsonList(
+  //     List<advertisement_media.MediaList>? imageList) {
+  //   return jsonEncode(imageList?.map((e) => e.toJson()).toList());
+  // }
+
+  // static List<advertisement_media.MediaList> convertJsonListToMediaList(
+  //     String? json) {
+  //   if (json == null || json.isEmpty) {
+  //     List<advertisement_media.MediaList> emptyList =
+  //         <advertisement_media.MediaList>[];
+  //     return emptyList;
+  //   }
+  //   var tagsJson = jsonDecode(json) as List;
+  //   return tagsJson
+  //       .map((tagJson) => advertisement_media.MediaList.fromJson(tagJson))
+  //       .toList();
+  // }
 
   static String convertVideoListToJsonList(List<VideoList>? videoList) {
     return jsonEncode(videoList?.map((e) => e.toJson()).toList());
@@ -153,7 +171,8 @@ class Utils {
   }
 
   static void share(NewsList news) {
-    Share.share("${news.heading}\n${news.subHeading}\n${news.newsContent}");
+    //Share.share("${news.heading}\n${news.subHeading}\n${news.newsContent}");
+    Share.share(news.shortUrl ?? "");
   }
 
   static Future<File> genThumbnailFile(String path) async {

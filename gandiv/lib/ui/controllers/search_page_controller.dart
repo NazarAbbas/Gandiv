@@ -2,10 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:speech_to_text/speech_to_text.dart';
-
-import '../../constants/constant.dart';
 import '../../constants/dialog_utils.dart';
 import '../../constants/utils.dart';
 import '../../database/app_database.dart';
@@ -115,6 +112,8 @@ class SearchPageController extends GetxController {
           publishedOn: bookmarkNews.publishedOn,
           publishedBy: bookmarkNews.publishedBy,
           isBookmark: bookmarkNews.isBookmark,
+          durationInMin: bookmarkNews.durationInMin,
+          newsType: bookmarkNews.newsType,
           isAudioPlaying: bookmarkNews.isAudioPlaying);
       final newsListDao = appDatabase.newsListDao;
       await newsListDao.insertNews(newsListDB);
@@ -154,18 +153,31 @@ class SearchPageController extends GetxController {
             languageId: languageId,
             pageNumber: pageNo,
             pageSize: pageSize,
+            newsTypeId: 0,
             searchText: searchController.text);
-        totalCount = response.newsListData.totalCount!;
-        for (int i = 0; i < response.newsListData.newsList.length; i++) {
-          final bookMarkNews = await appDatabase.newsListDao
-              .findNewsById(response.newsListData.newsList[i].id!);
-          if (bookMarkNews != null) {
-            response.newsListData.newsList[i].isBookmark = true;
-          } else {
-            response.newsListData.newsList[i].isBookmark = false;
+        if (response.status == 200 || response.status == 201) {
+          totalCount = response.newsListData.totalCount!;
+          for (int i = 0; i < response.newsListData.newsList.length; i++) {
+            final bookMarkNews = await appDatabase.newsListDao
+                .findNewsById(response.newsListData.newsList[i].id!);
+            if (bookMarkNews != null) {
+              response.newsListData.newsList[i].isBookmark = true;
+            } else {
+              response.newsListData.newsList[i].isBookmark = false;
+            }
           }
+          newsList.addAll(response.newsListData.newsList);
+        } else {
+          DialogUtils.errorAlert(
+            context: Get.context!,
+            title: 'error'.tr,
+            message: response.message,
+            btnText: 'ok'.tr,
+            callBackFunction: () {
+              Navigator.of(Get.context!).pop();
+            },
+          );
         }
-        newsList.addAll(response.newsListData.newsList);
       } else {
         DialogUtils.noInternetConnection(
           context: Get.context!,
@@ -174,14 +186,49 @@ class SearchPageController extends GetxController {
       }
     } on DioException catch (obj) {
       final res = (obj).response;
-      if (kDebugMode) {
-        print("Got error : ${res?.statusCode} -> ${res?.statusMessage}");
+      if (res?.statusCode == 401) {
+        DialogUtils.errorAlert(
+          context: Get.context!,
+          title: 'unauthorized_title'.tr,
+          message: 'unauthorized_message'.tr,
+          btnText: 'ok'.tr,
+          callBackFunction: () {
+            // Navigator.of(Get.context!).pop();
+          },
+        );
+      } else {
+        DialogUtils.errorAlert(
+          context: Get.context!,
+          title: 'error'.tr,
+          message:
+              res != null ? res.data['message'] : 'something_went_wrong'.tr,
+          btnText: 'ok'.tr,
+          callBackFunction: () {
+            //Navigator.of(Get.context!).pop();
+          },
+        );
       }
-      // FOR CUSTOM MESSAGE
-      // final errorMessage = NetworkExceptions.getDioException(obj);
+      //return updateProfilleResponse;
     } on Exception catch (exception) {
       if (kDebugMode) {
         print("Got error : $exception");
+      }
+      try {
+        DialogUtils.errorAlert(
+          context: Get.context!,
+          title: 'error'.tr,
+          message: 'something_went_wrong'.tr,
+          btnText: 'ok'.tr,
+          callBackFunction: () {
+            //Navigator.of(Get.context!).pop();
+          },
+        );
+      } on Exception catch (exception) {
+        final message = exception.toString();
+      } catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
       }
     } finally {
       isDataLoading.value = false;
@@ -198,10 +245,13 @@ class SearchPageController extends GetxController {
         speechToText.listen(onResult: (value) {
           searchController.text = value.recognizedWords;
           if (value.hasConfidenceRating && value.confidence > 0) {
+            // if (value.hasConfidenceRating) {
             confidence.value = value.confidence;
             isListening.value = false;
             speechToText.stop();
-            FocusScope.of(context).requestFocus(focusNode.value);
+            //FocusScope.of(context).requestFocus(focusNode.value);
+            newsList.clear();
+            callSearchApi();
           }
         });
       }

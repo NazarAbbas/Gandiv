@@ -41,10 +41,16 @@ class Categories {
   @primaryKey
   String id;
   String name;
+  String? hindiName;
+  int catOrder;
+  bool isActive;
 
   Categories({
     required this.id,
     required this.name,
+    required this.hindiName,
+    required this.catOrder,
+    required this.isActive,
   });
 
   factory Categories.fromRawJson(String str) =>
@@ -55,10 +61,16 @@ class Categories {
   factory Categories.fromJson(Map<String, dynamic> json) => Categories(
         id: json["id"],
         name: json["name"],
+        hindiName: json["hindiName"] ?? "",
+        catOrder: json["catOrder"] ?? 0,
+        isActive: json["isActive"] ?? true,
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
+        "hindiName": hindiName,
+        "catOrder": catOrder,
+        "isActive": isActive,
       };
 }

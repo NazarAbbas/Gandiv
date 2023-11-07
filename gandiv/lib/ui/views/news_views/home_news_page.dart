@@ -1,8 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:gandiv/constants/tts_utils.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
+import 'package:gandiv/constants/values/size_config.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../constants/utils.dart';
 import '../../../constants/values/app_images.dart';
 import '../../../route_management/routes.dart';
@@ -10,21 +14,36 @@ import '../../controllers/dashboard_page_cotroller.dart';
 import '../../controllers/home_news_page_controller.dart';
 
 class HomeNewsPage extends StatefulWidget {
-  const HomeNewsPage({super.key});
+  // ignore: prefer_typing_uninitialized_variables
+  final categoryId;
+  const HomeNewsPage({super.key, this.categoryId});
   @override
-  HomeNewsPageListRow createState() => HomeNewsPageListRow();
+  // ignore: no_logic_in_create_state
+  HomeNewsPageListRow createState() => HomeNewsPageListRow(categoryId);
 }
 
 class HomeNewsPageListRow extends State<HomeNewsPage> {
+  final categoryId;
+  HomeNewsPageListRow(this.categoryId);
   DashboardPageController dashboardPageController =
       Get.find<DashboardPageController>();
   HomeNewsPageController controller = Get.find<HomeNewsPageController>();
+
   void refreshPage() async {
     controller.newsList.clear();
     controller.onInit();
   }
 
   Future<void> _pullRefresh() async {
+    if (controller.newsList.isNotEmpty) {
+      if (controller.newsList[selectedPosition].isAudioPlaying == true) {
+        //Future.delayed(Duration.zero, () async {
+        // Utils(context).stopAudio(null);
+        TtsUtills.stopAudio();
+        controller.setAudioPlaying(false, selectedPosition);
+        // });
+      }
+    }
     controller.pageNo = 1;
     controller.pageSize = 5;
     controller.newsList.clear();
@@ -34,7 +53,30 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
   @override
   void initState() {
     super.initState();
+    TtsUtills.stopAudio();
+    if (controller.newsList.isNotEmpty) {
+      Future.delayed(Duration.zero, () async {
+        controller.setAudioPlaying(false, selectedPosition);
+      });
+    }
+    controller.setCategoryId(categoryId);
     controller.onInit();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    TtsUtills.stopAudio();
+    if (controller.newsList.isNotEmpty) {
+      Future.delayed(Duration.zero, () async {
+        controller.setAudioPlaying(false, selectedPosition);
+      });
+    }
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
   }
 
   @override
@@ -51,6 +93,32 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
                 )
               : Column(
                   children: [
+                    // Container(
+                    //   height: 50,
+                    //   width: double.infinity,
+                    //   child: Align(
+                    //     alignment: Alignment.center,
+                    //     child: Marquee(
+                    //       text: 'The quick brown fox jumps over the lazy dog',
+                    //       style: TextStyle(
+                    //           color: AppColors.colorPrimary,
+                    //           fontWeight: FontWeight.bold,
+                    //           fontSize: 25),
+                    //       scrollAxis: Axis.horizontal, //scroll direction
+                    //       crossAxisAlignment: CrossAxisAlignment.start,
+                    //       blankSpace: 20.0,
+                    //       velocity: 20.0, //speed
+                    //       pauseAfterRound: const Duration(seconds: 1),
+                    //       startPadding: 10.0,
+                    //       accelerationDuration: const Duration(seconds: 1),
+                    //       accelerationCurve: Curves.linear,
+                    //       decelerationDuration:
+                    //           const Duration(milliseconds: 500),
+                    //       decelerationCurve: Curves.easeOut,
+                    //     ),
+                    //   ),
+                    // ),
+
                     Expanded(
                       child: controller.newsList.isEmpty
                           ? Padding(
@@ -58,11 +126,19 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
                               child: Container(
                                 width: double.infinity,
                                 height: double.infinity,
-                                color: AppColors.lightGray,
+                                color:
+                                    dashboardPageController.isDarkTheme.value ==
+                                            true
+                                        ? AppColors.dartTheme
+                                        : AppColors.white,
                                 child: Center(
                                   child: Text('no_news_available'.tr,
                                       style: TextStyle(
-                                          color: AppColors.colorPrimary,
+                                          color: dashboardPageController
+                                                      .isDarkTheme.value ==
+                                                  true
+                                              ? AppColors.white
+                                              : AppColors.colorPrimary,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 20)),
                                 ),
@@ -74,19 +150,21 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
                               child: ListView.builder(
                                 // key: const PageStorageKey('home_news_page'),
                                 physics: const AlwaysScrollableScrollPhysics(),
-                                itemCount: controller.newsList.length,
+                                itemCount: controller.newsList.length + 1,
                                 controller: controller.controller,
                                 itemBuilder: (context, index) {
+                                  if (index == 0) {
+                                    return Visibility(
+                                        visible:
+                                            controller.advertisementList.isEmpty
+                                                ? false
+                                                : true,
+                                        child: lisViewHeader());
+                                  }
+                                  index -= 1;
                                   return GestureDetector(
                                     onTap: () => {
-                                      Utils(context).stopAudio(controller
-                                                  .newsList[selectedPosition]
-                                                  .newsContent ==
-                                              null
-                                          ? ""
-                                          : controller
-                                              .newsList[selectedPosition]
-                                              .newsContent!),
+                                      Utils(context).stopAudio(),
                                       controller.setAudioPlaying(
                                           false, selectedPosition),
                                       Get.toNamed(Routes.newsDetailPage,
@@ -113,11 +191,19 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
                             children: [
                               Text('loading'.tr,
                                   style: TextStyle(
-                                      color: AppColors.colorPrimary,
+                                      color: dashboardPageController
+                                                  .isDarkTheme.value ==
+                                              true
+                                          ? AppColors.white
+                                          : AppColors.black,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16)),
+                                      fontSize: SizeConfig.loadMoreSize)),
                               CircularProgressIndicator(
-                                color: AppColors.colorPrimary,
+                                color:
+                                    dashboardPageController.isDarkTheme.value ==
+                                            true
+                                        ? AppColors.white
+                                        : AppColors.black,
                               ),
                             ],
                           ),
@@ -130,19 +216,71 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
     );
   }
 
+  Padding lisViewHeader() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: CarouselSlider(
+        options: CarouselOptions(
+            initialPage: 0,
+            enableInfiniteScroll:
+                controller.advertisementList.length == 1 ? false : true,
+            pauseAutoPlayOnTouch: false,
+            autoPlay: controller.advertisementList.length == 1 ? false : true,
+            height: 120, //MediaQuery.of(context).size.width * (3 / 7),
+            enlargeCenterPage: true,
+            onPageChanged: (index, reason) {
+              //final xx = index;
+            }),
+        items: controller.advertisementList.map((i) {
+          return Builder(
+            builder: (BuildContext context) {
+              return Container(
+                width: MediaQuery.of(context).size.width,
+                child: GestureDetector(
+                  onTap: () async {
+                    if (i.url != null && i.url.isNotEmpty)
+                    // ignore: curly_braces_in_flow_control_structures
+                    if (!await launchUrl(Uri.parse(i.url))) {}
+                  },
+                  child: CachedNetworkImage(
+                    fit: BoxFit.fill,
+                    imageUrl: i.imageUrl,
+                    placeholder: (context, url) => const Center(
+                      child: SizedBox(
+                        width: 40.0,
+                        height: 40.0,
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  ),
+                ),
+              );
+            },
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   int selectedPosition = 0;
-  Obx rowWidget(int index, BuildContext context) {
-    return Obx(
-      () => Card(
+  Container rowWidget(int index, BuildContext context) {
+    return Container(
+      color: dashboardPageController.isDarkTheme.value == true
+          ? AppColors.white
+          : AppColors.dartTheme,
+      child: Card(
+        margin: EdgeInsets.only(top: .5),
         color: dashboardPageController.isDarkTheme.value == true
             ? AppColors.dartTheme
             : AppColors.white,
-        elevation: 8.0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+        elevation: 20.0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.only(top: 10, left: 10),
               child: Visibility(
                 visible:
                     controller.newsList[index].heading == null ? false : true,
@@ -151,211 +289,315 @@ class HomeNewsPageListRow extends State<HomeNewsPage> {
                   child: Text(
                     controller.newsList[index].heading == null
                         ? ""
-                        : controller.newsList[index].heading!,
+                        : controller.newsList[index].heading!.trim(),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 16.0,
+                    style: TextStyle(
+                      color: controller.newsList[index].newsType ==
+                              "Breaking News"
+                          ? AppColors.redColor
+                          : dashboardPageController.isDarkTheme.value == true
+                              ? AppColors.white
+                              : AppColors.black,
+                      fontSize: SizeConfig.newsHeadingTitleSize,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Visibility(
-                visible: controller.newsList[index].newsContent == null
-                    ? false
-                    : true,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    controller.newsList[index].newsContent == null
-                        ? ""
-                        : controller.newsList[index].newsContent!,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: dashboardPageController.isDarkTheme.value == true
-                          ? AppColors.white
-                          : AppColors.black,
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                ),
-              ),
-            ),
             Visibility(
-              visible: controller.newsList[index].mediaList?.imageList == null
+              visible: controller.newsList[index].subHeading == null ||
+                      controller.newsList[index].subHeading == ""
                   ? false
-                  : true,
+                  : false,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: CarouselSlider(
-                  options: CarouselOptions(
-                      initialPage: 0,
-                      enableInfiniteScroll: false,
-                      pauseAutoPlayOnTouch: false,
-                      autoPlay: false,
-                      height: MediaQuery.of(context).size.width * (3 / 4),
-                      enlargeCenterPage: true,
-                      onPageChanged: (index, reason) {
-                        final xx = index;
-                      }),
-                  items:
-                      controller.newsList[index].mediaList?.imageList?.map((i) {
-                    return Builder(
-                      builder: (BuildContext context) {
-                        return CachedNetworkImage(
-                          fit: BoxFit.cover,
-                          width: MediaQuery.of(context).size.width,
-                          imageUrl: i.url!,
-                          placeholder: (context, url) => const Center(
-                            child: SizedBox(
-                              width: 40.0,
-                              height: 40.0,
-                              child: CircularProgressIndicator(),
-                            ),
-                          ),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
-                        );
-                      },
-                    );
-                  }).toList(),
-                ),
-
-                // child: Image.network(
-                //   controller.newsList[index].mediaList[0].url ??
-                //       'https://avatars.githubusercontent.com/u/1?v=4"',
-
-                //   height: MediaQuery.of(context).size.width * (3 / 4),
-                //   width: MediaQuery.of(context).size.width,
-                //   loadingBuilder: (BuildContext context, Widget child,
-                //       ImageChunkEvent? loadingProgress) {
-                //     if (loadingProgress == null) return child;
-                //     return Center(
-                //       child: CircularProgressIndicator(
-                //         value: loadingProgress.expectedTotalBytes != null
-                //             ? loadingProgress.cumulativeBytesLoaded /
-                //                 loadingProgress.expectedTotalBytes!
-                //             : null,
-                //       ),
-                //     );
-                //   },
-                // ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                children: [
-                  Center(
-                    child: Image.asset(
-                      color: dashboardPageController.isDarkTheme.value == true
-                          ? AppColors.white
-                          : AppColors.black,
-                      AppImages.clock,
-                      height: 25,
-                      width: 25,
-                    ),
-                  ),
-                  Center(
+                padding: const EdgeInsets.only(top: 0, left: 10, bottom: 0),
+                child: Visibility(
+                  visible:
+                      controller.newsList[index].heading == null ? false : true,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
                     child: Text(
-                      controller.newsList[index].durationInMin == null
-                          ? "0 ${'in_minutes'.tr}"
-                          : "${controller.newsList[index].durationInMin!} ${'in_minutes'.tr}",
-                      maxLines: 2,
+                      controller.newsList[index].subHeading == null
+                          ? ""
+                          : controller.newsList[index].subHeading!.trim(),
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: dashboardPageController.isDarkTheme.value == true
-                            ? AppColors.white
-                            : AppColors.black,
-                        fontSize: 10.0,
+                            ? AppColors.greenColor
+                            : AppColors.greenColor,
+                        fontSize: SizeConfig.newsHeadingSubTitleSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () {
-                      final newsContent =
-                          controller.newsList[index].newsContent == null
-                              ? ""
-                              : controller.newsList[index].newsContent!;
-                      if (newsContent.isEmpty) {
-                        return;
-                      }
-                      if (controller.newsList[index].isAudioPlaying == true) {
-                        Utils(context).stopAudio(newsContent);
-                        controller.setAudioPlaying(false, index);
-                      } else {
-                        Utils(context).stopAudio(newsContent);
-                        controller.setAudioPlaying(false, selectedPosition);
-                        selectedPosition = index;
-                        Utils(context).startAudio(newsContent);
-                        controller.setAudioPlaying(true, index);
-                        // Utils.ftts.setCompletionHandler(() {
-                        //   Utils(context).stopAudio(newsContent);
-                        //   controller.setAudioPlaying(false, index);
-                        // });
-                      }
-                    },
-                    child: Image.asset(
-                      color: dashboardPageController.isDarkTheme.value == true
-                          ? controller.newsList[index].isAudioPlaying == true
-                              ? AppColors.colorPrimary
-                              : AppColors.white
-                          : controller.newsList[index].isAudioPlaying == true
-                              ? AppColors.colorPrimary
-                              : AppColors.black,
-                      AppImages.audio,
-                      width: 30,
-                      height: 30,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: GestureDetector(
-                      onTap: () async {
-                        if (controller.newsList[index].isBookmark == true) {
-                          controller.removeBookmark(index);
-                        } else {
-                          controller.setBookmark(index);
-                        }
-                      },
-                      child: Image.asset(
-                        color: dashboardPageController.isDarkTheme.value == true
-                            ? AppColors.white
-                            : AppColors.colorPrimary,
-                        controller.newsList[index].isBookmark == true
-                            ? AppImages.highLightBookmark
-                            : AppImages.bookmark,
-                        width: 25,
-                        height: 25,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 5, top: 5),
+              child: Row(
+                children: [
+                  Visibility(
+                    visible:
+                        controller.newsList[index].mediaList?.imageList == null
+                            ? false
+                            : true,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16, right: 16, top: 5, bottom: 5),
+                      // child: Expanded(
+                      child: CachedNetworkImage(
+                        fit: BoxFit.cover,
+                        width: controller.newsList[index].newsContent == null
+                            ? MediaQuery.of(context).size.width - 40
+                            : 50,
+                        height: controller.newsList[index].newsContent == null
+                            ? MediaQuery.of(context).size.width * (3 / 6)
+                            : 65,
+                        imageUrl: controller
+                                .newsList[index].mediaList?.imageList![0].url ??
+                            "",
+                        //imageUrl: AppImages.tempURL,
+                        placeholder: (context, url) => const Center(
+                          child: SizedBox(
+                            width: 40.0,
+                            height: 40.0,
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
                       ),
+                      // ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: GestureDetector(
-                      onTap: () {
-                        Utils.share(controller.newsList[index]);
-                        // Share.share('check out my website https://example.com');
-                      },
-                      child: Image.asset(
-                        color: dashboardPageController.isDarkTheme.value == true
-                            ? AppColors.white
-                            : AppColors.black,
-                        AppImages.share,
-                        width: 25,
-                        height: 25,
+                  // ),
+                  Expanded(
+                    child: Padding(
+                      padding:
+                          controller.newsList[index].mediaList?.imageList ==
+                                  null
+                              ? const EdgeInsets.only(left: 10, right: 5)
+                              : const EdgeInsets.only(left: 0, right: 5),
+                      child: Visibility(
+                        visible: controller.newsList[index].newsContent == null
+                            ? false
+                            : true,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            controller.newsList[index].newsContent == null
+                                ? ""
+                                : controller.newsList[index].newsContent!,
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color:
+                                  dashboardPageController.isDarkTheme.value ==
+                                          true
+                                      ? AppColors.white
+                                      : AppColors.black,
+                              fontSize: SizeConfig.newsContentSize,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ],
+              ),
+            ),
+
+            // child: CarouselSlider(
+            //   options: CarouselOptions(
+            //       initialPage: 0,
+            //       enableInfiniteScroll: false,
+            //       pauseAutoPlayOnTouch: false,
+            //       autoPlay: false,
+            //       height: MediaQuery.of(context).size.width * (3 / 4),
+            //       enlargeCenterPage: true,
+            //       onPageChanged: (index, reason) {
+            //         //final xx = index;
+            //       }),
+            //   items:
+            //       controller.newsList[index].mediaList?.imageList?.map((i) {
+            //     return Builder(
+            //       builder: (BuildContext context) {
+            //         return CachedNetworkImage(
+            //           fit: BoxFit.cover,
+            //           width: MediaQuery.of(context).size.width,
+            //           imageUrl: i.url!,
+            //           //imageUrl: AppImages.tempURL,
+            //           placeholder: (context, url) => const Center(
+            //             child: SizedBox(
+            //               width: 40.0,
+            //               height: 40.0,
+            //               child: CircularProgressIndicator(),
+            //             ),
+            //           ),
+            //           errorWidget: (context, url, error) =>
+            //               const Icon(Icons.error),
+            //         );
+            //       },
+            //     );
+            //   }).toList(),
+            // ),
+
+            // child: Image.network(
+            //   controller.newsList[index].mediaList[0].url ??
+            //       'https://avatars.githubusercontent.com/u/1?v=4"',
+
+            //   height: MediaQuery.of(context).size.width * (3 / 4),
+            //   width: MediaQuery.of(context).size.width,
+            //   loadingBuilder: (BuildContext context, Widget child,
+            //       ImageChunkEvent? loadingProgress) {
+            //     if (loadingProgress == null) return child;
+            //     return Center(
+            //       child: CircularProgressIndicator(
+            //         value: loadingProgress.expectedTotalBytes != null
+            //             ? loadingProgress.cumulativeBytesLoaded /
+            //                 loadingProgress.expectedTotalBytes!
+            //             : null,
+            //       ),
+            //     );
+            //   },
+            // ),
+            //  ),
+            //),
+            Container(
+              color: dashboardPageController.isDarkTheme.value == true
+                  ? AppColors.dartTheme
+                  : AppColors.lightGray,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 10, right: 10, top: 5, bottom: 5),
+                child: Row(
+                  children: [
+                    Center(
+                      child: Image.asset(
+                        color: dashboardPageController.isDarkTheme.value == true
+                            ? AppColors.white
+                            : AppColors.black,
+                        AppImages.clock,
+                        height: 25,
+                        width: 25,
+                      ),
+                    ),
+                    Center(
+                      child: Text(
+                        controller.newsList[index].durationInMin == null
+                            ? "0 ${'in_minutes'.tr}"
+                            : "${controller.newsList[index].durationInMin!} ${'in_minutes'.tr}",
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color:
+                              dashboardPageController.isDarkTheme.value == true
+                                  ? AppColors.white
+                                  : AppColors.black,
+                          fontSize: 10.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: () {
+                        final heading =
+                            controller.newsList[index].heading ?? "";
+                        final subHeading =
+                            controller.newsList[index].subHeading ?? "";
+                        final newsContent =
+                            controller.newsList[index].newsContent ?? "";
+                        final finalNewsContent =
+                            "$heading.  $subHeading.   $newsContent";
+                        if (finalNewsContent.isEmpty) {
+                          return;
+                        }
+                        if (controller.newsList[index].isAudioPlaying == true) {
+                          TtsUtills.stopAudio();
+                          controller.setAudioPlaying(false, index);
+                        } else {
+                          TtsUtills.stopAudio();
+                          controller.setAudioPlaying(false, selectedPosition);
+                          selectedPosition = index;
+                          TtsUtills.startAudio(finalNewsContent);
+                          controller.setAudioPlaying(true, index);
+                          // Utils.ftts.setCompletionHandler(() {
+                          //   Utils(context).stopAudio(newsContent);
+                          //   controller.setAudioPlaying(false, index);
+                          // });
+                        }
+                      },
+                      child: controller.newsList[index].isAudioPlaying == true
+                          ? Image.asset(
+                              color:
+                                  dashboardPageController.isDarkTheme.value ==
+                                          true
+                                      ? AppColors.white
+                                      : AppColors.black,
+                              AppImages.audioPlay,
+                              width: 30,
+                              height: 30,
+                            )
+                          : Image.asset(
+                              color:
+                                  dashboardPageController.isDarkTheme.value ==
+                                          true
+                                      ? AppColors.white
+                                      : AppColors.black,
+                              AppImages.audioStop,
+                              width: 30,
+                              height: 30,
+                            ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: GestureDetector(
+                        onTap: () async {
+                          if (controller.newsList[index].isBookmark == true) {
+                            controller.removeBookmark(index);
+                          } else {
+                            controller.setBookmark(index);
+                          }
+                        },
+                        child: Image.asset(
+                          color:
+                              dashboardPageController.isDarkTheme.value == true
+                                  ? AppColors.white
+                                  : AppColors.colorPrimary,
+                          controller.newsList[index].isBookmark == true
+                              ? AppImages.highLightBookmark
+                              : AppImages.bookmark,
+                          width: 25,
+                          height: 25,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: GestureDetector(
+                        onTap: () {
+                          Utils.share(controller.newsList[index]);
+                          // Share.share('check out my website https://example.com');
+                        },
+                        child: Image.asset(
+                          color:
+                              dashboardPageController.isDarkTheme.value == true
+                                  ? AppColors.white
+                                  : AppColors.black,
+                          AppImages.share,
+                          width: 25,
+                          height: 25,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

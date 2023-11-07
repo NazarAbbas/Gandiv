@@ -33,58 +33,71 @@ class EPaperController extends GetxController {
   Future<void> executeEPaperApi() async {
     try {
       if (await Utils.checkUserConnection()) {
-        final aboutUsResponse = await restAPI.calllEPaperApi();
-        pdfUrl.value = aboutUsResponse.ePaperData;
+        final response = await restAPI.calllEPaperApi();
+        if (response.status == 200 || response.status == 201) {
+          pdfUrl.value = response.ePaperData;
+        } else {
+          DialogUtils.errorAlert(
+            context: Get.context!,
+            title: 'error'.tr,
+            message: response.message,
+            btnText: 'ok'.tr,
+            callBackFunction: () {
+              Navigator.of(Get.context!).pop();
+            },
+          );
+        }
       } else {
-        Utils(Get.context!).stopLoading();
         DialogUtils.noInternetConnection(
           context: Get.context!,
           callBackFunction: () {},
         );
       }
     } on DioException catch (obj) {
-      Utils(Get.context!).stopLoading();
       final res = (obj).response;
       if (res?.statusCode == 401) {
-        DialogUtils.showSingleButtonCustomDialog(
+        DialogUtils.errorAlert(
           context: Get.context!,
           title: 'unauthorized_title'.tr,
           message: 'unauthorized_message'.tr,
-          firstButtonText: 'ok'.tr,
-          firstBtnFunction: () {
-            Navigator.of(Get.context!).pop();
+          btnText: 'ok'.tr,
+          callBackFunction: () {
+            // Navigator.of(Get.context!).pop();
           },
         );
       } else {
-        DialogUtils.showSingleButtonCustomDialog(
+        DialogUtils.errorAlert(
           context: Get.context!,
           title: 'error'.tr,
           message:
               res != null ? res.data['message'] : 'something_went_wrong'.tr,
-          firstButtonText: 'ok'.tr,
-          firstBtnFunction: () {
-            Navigator.of(Get.context!).pop();
+          btnText: 'ok'.tr,
+          callBackFunction: () {
+            //Navigator.of(Get.context!).pop();
           },
         );
       }
       //return updateProfilleResponse;
     } on Exception catch (exception) {
-      Utils(Get.context!).stopLoading();
       if (kDebugMode) {
         print("Got error : $exception");
       }
       try {
-        DialogUtils.showSingleButtonCustomDialog(
+        DialogUtils.errorAlert(
           context: Get.context!,
           title: 'error'.tr,
           message: 'something_went_wrong'.tr,
-          firstButtonText: 'ok'.tr,
-          firstBtnFunction: () {
-            Navigator.of(Get.context!).pop();
+          btnText: 'ok'.tr,
+          callBackFunction: () {
+            //Navigator.of(Get.context!).pop();
           },
         );
       } on Exception catch (exception) {
         final message = exception.toString();
+      } catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
       }
     } finally {}
   }

@@ -20,6 +20,8 @@ class NewsListDB {
   final String? publishedBy;
   bool? isBookmark;
   bool? isAudioPlaying;
+  final int? durationInMin;
+  String? newsType;
 
   NewsListDB({
     required this.id,
@@ -36,6 +38,8 @@ class NewsListDB {
     required this.publishedBy,
     required this.isBookmark,
     required this.isAudioPlaying,
+    required this.durationInMin,
+    required this.newsType,
   });
 
   factory NewsListDB.fromRawJson(String str) =>
@@ -58,6 +62,8 @@ class NewsListDB {
         publishedBy: json["publishedBy"],
         isBookmark: json["isBookmark"],
         isAudioPlaying: json["isAudioPlaying"],
+        durationInMin: json["durationInMin"],
+        newsType: json["newsType"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -75,5 +81,7 @@ class NewsListDB {
         "publishedBy": publishedBy,
         "isBookmark": isBookmark,
         "isAudioPlaying": isAudioPlaying,
+        "durationInMin": durationInMin,
+        "newsType": newsType,
       };
 }

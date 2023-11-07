@@ -13,6 +13,7 @@ class AppImages {
   static String languageIcon = 'assets/images/language.png';
   static String sideMenuLocationIcon = 'assets/images/side_menu_location.png';
   static String appLogo = 'assets/images/logo.png';
+  static String editorialNews = 'assets/images/editorial_news_icon.png';
 
   static String profile = 'assets/images/login.png';
   static String location = 'assets/images/map.png';
@@ -26,10 +27,15 @@ class AppImages {
   static String loginLogout = 'assets/images/login_logout.png';
   static String sideArrow = 'assets/images/side_arrow.png';
   static String profileImage = 'assets/images/profile.png';
-  static String videoPlayerIcon = 'assets/images/video_player_icon.jpg';
+  //static String videoPlayerIcon = 'assets/images/video_player_icon.jpg';
   static String videoPlayIcon = 'assets/images/video_play_icon.png';
   static String audioPlayIcon = 'assets/images/sound.gif';
+  static String breakingNewsIcon = 'assets/images/breaking_news.png';
   static String audioPlayerIcon = 'assets/images/audio_player_icon.png';
   static String audioPlayer = 'assets/images/audio_player.jpg';
   static String appleMusicIcon = 'assets/images/apple_music_icon.png';
+  static String audioPlay = 'assets/images/audio_play.png';
+  static String audioStop = 'assets/images/audio_stop.png';
+  // static String tempURL =
+  //     'https://fastly.picsum.photos/id/237/200/300.jpg?hmac=TmmQSbShHz9CdQm0NkEjx1Dyh_Y984R9LpNrpvH2D_U';
 }

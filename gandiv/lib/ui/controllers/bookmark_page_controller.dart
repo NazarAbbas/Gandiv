@@ -68,6 +68,8 @@ class BookmarkPageController extends FullLifeCycleController {
               publishedOn: bookmarkNews[i].publishedOn,
               publishedBy: bookmarkNews[i].publishedBy,
               isBookmark: bookmarkNews[i].isBookmark,
+              durationInMin: bookmarkNews[i].durationInMin,
+              newsType: bookmarkNews[i].newsType,
               isAudioPlaying: bookmarkNews[i].isAudioPlaying);
           newsList.add(news);
         }

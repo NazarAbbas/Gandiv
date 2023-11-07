@@ -4,15 +4,22 @@ import 'package:gandiv/ui/controllers/e_paper_controller.dart';
 import 'package:get/get.dart';
 
 import '../../constants/values/app_colors.dart';
+import '../controllers/dashboard_page_cotroller.dart';
 
 class EPaperPage extends GetView<EPaperController> {
-  const EPaperPage({Key? key}) : super(key: key);
+  EPaperPage({Key? key}) : super(key: key);
+  DashboardPageController dashboardPageController =
+      Get.find<DashboardPageController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.colorPrimary,
+        backgroundColor: dashboardPageController.isDarkTheme.value == true
+            ? AppColors.dartTheme
+            : AppColors.colorPrimary,
+        elevation: 0,
+        centerTitle: true,
         title: Text('e_paper'.tr),
       ),
       body: Obx(

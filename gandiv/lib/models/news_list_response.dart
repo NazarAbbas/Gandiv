@@ -106,6 +106,13 @@ class NewsList {
   bool? isAudioPlaying;
   @JsonKey(name: 'durationInMin')
   final int? durationInMin;
+  @JsonKey(name: 'newsType')
+  String? newsType;
+  @JsonKey(name: 'newsTypeId')
+  int? newsTypeId;
+
+  @JsonKey(name: 'shortUrl')
+  String? shortUrl;
 
   NewsList({
     this.id,
@@ -121,6 +128,9 @@ class NewsList {
     this.isBookmark,
     this.isAudioPlaying,
     this.durationInMin,
+    this.newsType,
+    this.newsTypeId,
+    this.shortUrl,
   });
 
   factory NewsList.fromRawJson(String str) =>
@@ -129,23 +139,25 @@ class NewsList {
   String toRawJson() => json.encode(toJson());
 
   factory NewsList.fromJson(Map<String, dynamic> json) => NewsList(
-        id: json["id"],
-        heading: json["heading"],
-        subHeading: json["subHeading"],
-        newsContent: json["newsContent"],
-        categories: List<Category>.from(
-            json["categories"].map((x) => Category.fromJson(x))),
-        location: json["location"],
-        language: json["language"],
-        mediaList: json["mediaList"] != null
-            ? MediaList.fromJson(json["mediaList"])
-            : null,
-        publishedOn: json["publishedOn"],
-        publishedBy: json["publishedBy"],
-        isBookmark: json["isBookmark"],
-        isAudioPlaying: json["isAudioPlaying"],
-        durationInMin: json["durationInMin"],
-      );
+      id: json["id"],
+      heading: json["heading"],
+      subHeading: json["subHeading"],
+      newsContent: json["newsContent"],
+      categories: List<Category>.from(
+          json["categories"].map((x) => Category.fromJson(x))),
+      location: json["location"],
+      language: json["language"],
+      mediaList: json["mediaList"] != null
+          ? MediaList.fromJson(json["mediaList"])
+          : null,
+      publishedOn: json["publishedOn"],
+      publishedBy: json["publishedBy"],
+      isBookmark: json["isBookmark"],
+      isAudioPlaying: json["isAudioPlaying"],
+      durationInMin: json["durationInMin"],
+      newsType: json["newsType"],
+      newsTypeId: json["newsTypeId"],
+      shortUrl: json["shortUrl"]);
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -160,7 +172,10 @@ class NewsList {
         "publishedBy": publishedBy,
         "isBookmark": isBookmark,
         "isAudioPlaying": isAudioPlaying,
-        "durationInMin": durationInMin
+        "durationInMin": durationInMin,
+        "newsType": newsType,
+        "newsTypeId": newsTypeId,
+        "shortUrl": shortUrl
       };
 }
 

@@ -1,11 +1,5 @@
 import 'package:gandiv/route_management/routes.dart';
 import 'package:gandiv/ui/binding/screen_binding.dart';
-import 'package:gandiv/ui/views/account/change_password_page.dart';
-import 'package:gandiv/ui/views/account/edit_profile_page.dart';
-import 'package:gandiv/ui/views/account/forgot_password_page.dart';
-import 'package:gandiv/ui/views/account/signup_page.dart';
-import 'package:gandiv/ui/views/account/upload_news_page.dart';
-import 'package:gandiv/ui/views/bottombar_views/profile_page.dart';
 import 'package:gandiv/ui/views/dashboard_view/dashboard_page.dart';
 import 'package:gandiv/ui/views/e_paper_page.dart';
 import 'package:gandiv/ui/views/news_views/news_detail_page.dart';
@@ -15,7 +9,6 @@ import 'package:gandiv/ui/views/search_page.dart';
 import 'package:gandiv/ui/views/splash_page.dart';
 import 'package:get/route_manager.dart';
 import '../ui/views/drawer_views/about_us_page.dart';
-import '../ui/views/account/login_page.dart';
 import '../ui/views/news_views/audio_player_page.dart';
 
 class AllPages {
@@ -25,82 +18,55 @@ class AllPages {
         name: Routes.dashboardScreen,
         page: () => const DashboardPage(),
         binding: ScreenBindings(),
+        // transitionDuration: const Duration(
+        //     milliseconds: 300), //duration of transitions, default 1 sec
+        transition: Transition.cupertino,
       ),
       GetPage(
-        name: Routes.loginScreen,
-        page: () => LoginPage(),
-        binding: ScreenBindings(),
-      ),
+          name: Routes.searchPage,
+          page: () => const SearchPage(),
+          binding: ScreenBindings(),
+          transition: Transition.downToUp),
       GetPage(
-        name: Routes.searchPage,
-        page: () => const SearchPage(),
-        binding: ScreenBindings(),
-      ),
-      GetPage(
-        name: Routes.notificationPage,
-        page: () => const NotificationPage(),
-        binding: ScreenBindings(),
-      ),
+          name: Routes.notificationPage,
+          page: () => const NotificationPage(),
+          binding: ScreenBindings(),
+          transition: Transition.cupertino),
       GetPage(
         name: Routes.ePaperPage,
-        page: () => const EPaperPage(),
+        page: () => EPaperPage(),
         binding: ScreenBindings(),
+        // transitionDuration: const Duration(
+        //     milliseconds: 300), //duration of transitions, default 1 sec
+        transition: Transition.cupertino,
       ),
-      // GetPage(name: Routes.splashPage, page: () => const SplashPage()),
-
       GetPage(
           name: Routes.splashPage,
           page: () => const SplashPage(),
-          binding: ScreenBindings()),
+          binding: ScreenBindings(),
+          transition: Transition.zoom),
       GetPage(
           name: Routes.newsDetailPage,
           page: () => const NewsDetailPage(),
-          binding: ScreenBindings()),
+          binding: ScreenBindings(),
+          transition: Transition.zoom),
       GetPage(
-        name: Routes.aboutUsPage,
-        page: () => AboutUsPage(),
-        binding: ScreenBindings(),
-      ),
+          name: Routes.aboutUsPage,
+          page: () => AboutUsPage(),
+          binding: ScreenBindings(),
+          // transitionDuration: const Duration(
+          //     milliseconds: 300), //duration of transitions, default 1 sec
+          transition: Transition.cupertino),
       GetPage(
-        name: Routes.signupPage,
-        page: () => SignupPage(),
-        binding: ScreenBindings(),
-      ),
+          name: Routes.videoPlayerPage,
+          page: () => const VideoPlayerPage(),
+          binding: ScreenBindings(),
+          transition: Transition.zoom),
       GetPage(
-        name: Routes.profilePage,
-        page: () => const ProfilePage(),
-        binding: ScreenBindings(),
-      ),
-      GetPage(
-        name: Routes.editProfilePage,
-        page: () => EditProfilePage(),
-        binding: ScreenBindings(),
-      ),
-      GetPage(
-        name: Routes.uploadNewsPage,
-        page: () => UploadNewsPage(),
-        binding: ScreenBindings(),
-      ),
-      GetPage(
-        name: Routes.forgotPasswordPage,
-        page: () => ForgotPasswordPage(),
-        binding: ScreenBindings(),
-      ),
-      GetPage(
-        name: Routes.changePasswordPage,
-        page: () => ChangePassswordPage(),
-        binding: ScreenBindings(),
-      ),
-      GetPage(
-        name: Routes.videoPlayerPage,
-        page: () => const VideoPlayerPage(),
-        binding: ScreenBindings(),
-      ),
-      GetPage(
-        name: Routes.audioPlayerPage,
-        page: () => const AudioPlayerPage(),
-        binding: ScreenBindings(),
-      )
+          name: Routes.audioPlayerPage,
+          page: () => const AudioPlayerPage(),
+          binding: ScreenBindings(),
+          transition: Transition.zoom)
     ];
   }
 }

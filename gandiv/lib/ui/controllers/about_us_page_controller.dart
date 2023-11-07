@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:gandiv/models/about_us_response.dart';
 import 'package:get/get.dart';
 
 import '../../constants/dialog_utils.dart';
@@ -8,13 +9,16 @@ import '../../constants/utils.dart';
 import '../../network/rest_api.dart';
 
 class AboutUsPageController extends GetxController {
-  final abourUsData = "".obs;
+  final abourUsData = AboutusData().obs;
   final RestAPI restAPI = Get.find<RestAPI>();
+  var isDataLoading = false.obs;
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    executeSignupApi();
+    isDataLoading.value = true;
+    await executeSignupApi();
+    isDataLoading.value = false;
   }
 
   Future<void> executeSignupApi() async {
@@ -22,7 +26,19 @@ class AboutUsPageController extends GetxController {
       // Utils(Get.context!).startLoading();
       if (await Utils.checkUserConnection()) {
         final aboutUsResponse = await restAPI.calllAboutUsApi();
-        abourUsData.value = aboutUsResponse.aboutUsData;
+        if (aboutUsResponse.status == 200 || aboutUsResponse.status == 201) {
+          abourUsData.value = aboutUsResponse.aboutUsData;
+        } else {
+          DialogUtils.errorAlert(
+            context: Get.context!,
+            title: 'error'.tr,
+            message: aboutUsResponse.message,
+            btnText: 'ok'.tr,
+            callBackFunction: () {
+              Navigator.of(Get.context!).pop();
+            },
+          );
+        }
       } else {
         DialogUtils.noInternetConnection(
           context: Get.context!,
@@ -30,47 +46,50 @@ class AboutUsPageController extends GetxController {
         );
       }
     } on DioException catch (obj) {
-      // Utils(Get.context!).stopLoading();
       final res = (obj).response;
       if (res?.statusCode == 401) {
-        DialogUtils.showSingleButtonCustomDialog(
+        DialogUtils.errorAlert(
           context: Get.context!,
           title: 'unauthorized_title'.tr,
           message: 'unauthorized_message'.tr,
-          firstButtonText: 'ok'.tr,
-          firstBtnFunction: () {
-            Navigator.of(Get.context!).pop();
+          btnText: 'ok'.tr,
+          callBackFunction: () {
+            // Navigator.of(Get.context!).pop();
           },
         );
       } else {
-        DialogUtils.showSingleButtonCustomDialog(
+        DialogUtils.errorAlert(
           context: Get.context!,
           title: 'error'.tr,
-          message: res != null ? res.statusMessage : 'something_went_wrong'.tr,
-          firstButtonText: 'ok'.tr,
-          firstBtnFunction: () {
-            Navigator.of(Get.context!).pop();
+          message:
+              res != null ? res.data['message'] : 'something_went_wrong'.tr,
+          btnText: 'ok'.tr,
+          callBackFunction: () {
+            //Navigator.of(Get.context!).pop();
           },
         );
       }
       //return updateProfilleResponse;
     } on Exception catch (exception) {
-      //Utils(Get.context!).stopLoading();
       if (kDebugMode) {
         print("Got error : $exception");
       }
       try {
-        DialogUtils.showSingleButtonCustomDialog(
+        DialogUtils.errorAlert(
           context: Get.context!,
           title: 'error'.tr,
           message: 'something_went_wrong'.tr,
-          firstButtonText: 'ok'.tr,
-          firstBtnFunction: () {
-            Navigator.of(Get.context!).pop();
+          btnText: 'ok'.tr,
+          callBackFunction: () {
+            //Navigator.of(Get.context!).pop();
           },
         );
       } on Exception catch (exception) {
         final message = exception.toString();
+      } catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
       }
     } finally {}
   }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../constants/values/size_config.dart';
 import '../../../route_management/routes.dart';
 import '../../controllers/dashboard_page_cotroller.dart';
 import '../../../constants/values/app_images.dart';
@@ -42,10 +43,11 @@ class DrawerSupport extends GetView<DashboardPageController> {
         GestureDetector(
           onTap: () async {
             Get.back();
-            String email = Uri.encodeComponent("mail@fluttercampus.com");
-            String subject = Uri.encodeComponent("Hello Flutter");
-            String body = Uri.encodeComponent("Hi! I'm Flutter Developer");
-            Uri mail = Uri.parse("mailto:$email?subject=$subject&body=$body");
+            String email = Uri.encodeComponent("support@gandivsamachar.com");
+            //String subject = Uri.encodeComponent("Hello Flutter");
+            // String body = Uri.encodeComponent("Hi! I'm Flutter Developer");
+            //  Uri mail = Uri.parse("mailto:$email?subject=$subject&body=$body");
+            Uri mail = Uri.parse("mailto:$email");
             if (await launchUrl(mail)) {
               if (kDebugMode) {
                 print("email app is  opened");
@@ -84,7 +86,8 @@ class DrawerSupport extends GetView<DashboardPageController> {
                             color: controller.isDarkTheme.value == true
                                 ? AppColors.white
                                 : AppColors.black,
-                            fontSize: 16),
+                            fontSize:
+                                SizeConfig.navigationDrawerHeadingFontSize),
                       ),
                     ),
                   ],
@@ -136,7 +139,8 @@ class DrawerSupport extends GetView<DashboardPageController> {
                                 color: controller.isDarkTheme.value == true
                                     ? Colors.white
                                     : Colors.black,
-                                fontSize: 16),
+                                fontSize:
+                                    SizeConfig.navigationDrawerHeadingFontSize),
                           ),
                         ),
                       ],
@@ -153,7 +157,7 @@ class DrawerSupport extends GetView<DashboardPageController> {
 
   Container _supportTitleContainer() {
     return Container(
-      height: 50,
+      height: 40,
       width: double.infinity,
       color: controller.isDarkTheme.value == true
           ? AppColors.dartTheme
@@ -170,7 +174,7 @@ class DrawerSupport extends GetView<DashboardPageController> {
                   ? Colors.white
                   : Colors.black,
               fontWeight: FontWeight.w600,
-              fontSize: 16.0,
+              fontSize: SizeConfig.navigationDrawerHeadingFontSize,
             ),
           ),
         ),

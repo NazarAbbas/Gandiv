@@ -1,4 +1,8 @@
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import '../../constants/constant.dart';
+import '../../constants/enums.dart';
 import '../../network/rest_api.dart';
 
 class DashboardPageController extends GetxController {
@@ -10,6 +14,21 @@ class DashboardPageController extends GetxController {
   final singleLanguageValue = "Hindi".obs;
   final singleLocationValue = "Varansi".obs;
   RxInt bottomTabbarIndex = 0.obs;
+  final appName = "".obs;
+  final version = "".obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    final languageId = GetStorage().read(Constant.selectedLanguage);
+    if (languageId == Language.english) {
+      singleLanguageValue.value = "English";
+    } else {
+      singleLanguageValue.value = "Hindi";
+    }
+    findPackageInfo();
+  }
 
   void increment() {
     count.value++;
@@ -45,5 +64,13 @@ class DashboardPageController extends GetxController {
     } else {
       isLocVisible.value = true;
     }
+  }
+
+  void findPackageInfo() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    appName.value = packageInfo.appName;
+    version.value = packageInfo.version;
+    //String packageName = packageInfo.packageName;
+    //String buildNumber = packageInfo.buildNumber;
   }
 }

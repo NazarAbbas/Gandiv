@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gandiv/constants/enums.dart';
 import 'package:gandiv/ui/controllers/splash_page_controller.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -17,8 +18,14 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    GetStorage().write(Constant.selectedLanguage, 1);
-    GetStorage().write(Constant.selectedLocation, 'Varanasi');
+    //
+    final languageId = GetStorage().read(Constant.selectedLanguage);
+    if (languageId == Language.english) {
+      GetStorage().write(Constant.selectedLanguage, Language.english);
+    } else {
+      GetStorage().write(Constant.selectedLanguage, Language.hindi);
+    }
+    GetStorage().write(Constant.selectedLocation, Location.varanasi);
     Get.find<SplashPageController>();
   }
 

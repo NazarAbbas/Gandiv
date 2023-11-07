@@ -1,11 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:gandiv/constants/tts_utils.dart';
 import 'package:gandiv/ui/controllers/news_details_page_controller.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../constants/utils.dart';
 import '../../../constants/values/app_colors.dart';
 import '../../../constants/values/app_images.dart';
+import '../../../constants/values/size_config.dart';
 import '../../../route_management/routes.dart';
 import '../../controllers/dashboard_page_cotroller.dart';
 
@@ -30,7 +33,8 @@ class NewsDetailPageColumn extends State<NewsDetailPage> {
       () => WillPopScope(
         onWillPop: () {
           if (controller.newsList.value.isAudioPlaying == true) {
-            Utils(context).stopAudio(controller.newsList.value.newsContent!);
+            // Utils(context).stopAudio(controller.newsList.value.newsContent!);
+            TtsUtills.stopAudio();
             controller.setAudioPlaying(false);
           }
           //trigger leaving and use own data
@@ -57,158 +61,204 @@ class NewsDetailPageColumn extends State<NewsDetailPage> {
     );
   }
 
-  Obx buildAppBar() {
-    return Obx(
-      () => AppBar(
-        backgroundColor: dashboardPageController.isDarkTheme.value == true
-            ? AppColors.dartTheme
-            : AppColors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: Padding(
+  AppBar buildAppBar() {
+    return AppBar(
+      backgroundColor: dashboardPageController.isDarkTheme.value == true
+          ? AppColors.dartTheme
+          : AppColors.colorPrimary,
+      elevation: 0,
+      centerTitle: true,
+      title: Padding(
+        padding: const EdgeInsets.only(top: 5),
+        child: Text(
+          'news_details'.tr,
+          style: TextStyle(
+            color: dashboardPageController.isDarkTheme.value == true
+                ? AppColors.white
+                : AppColors.white,
+          ),
+        ),
+      ),
+      iconTheme: IconThemeData(
+          color: dashboardPageController.isDarkTheme.value == true
+              ? AppColors.white
+              : AppColors.white),
+      actions: <Widget>[
+        IconButton(
+          icon: controller.newsList.value.isAudioPlaying == true
+              ? Image.asset(
+                  color: dashboardPageController.isDarkTheme.value == true
+                      ? AppColors.white
+                      : AppColors.white,
+                  AppImages.audioPlay,
+                  width: 30,
+                  height: 30,
+                )
+              : Image.asset(
+                  color: dashboardPageController.isDarkTheme.value == true
+                      ? AppColors.white
+                      : AppColors.white,
+                  AppImages.audioStop,
+                  width: 30,
+                  height: 30,
+                ),
+          onPressed: () {
+            if (controller.newsList.value.isAudioPlaying == true) {
+              TtsUtills.stopAudio();
+              controller.setAudioPlaying(false);
+            } else {
+              final heading = controller.newsList.value.heading ?? "";
+              final subHeading = controller.newsList.value.subHeading ?? "";
+              final newsContent = controller.newsList.value.newsContent ?? "";
+              final finalNewsContent = "$heading. $subHeading. $newsContent";
+              if (finalNewsContent.isEmpty) {
+                return;
+              }
+              TtsUtills.startAudio(finalNewsContent);
+              controller.setAudioPlaying(true);
+            }
+            setState(() {});
+          },
+        ),
+        IconButton(
+          icon: Image.asset(
+            color: dashboardPageController.isDarkTheme.value == true
+                ? AppColors.white
+                : AppColors.white,
+            controller.newsList.value.isBookmark == true
+                ? AppImages.highLightBookmark
+                : AppImages.bookmark,
+            width: 25,
+            height: 25,
+          ),
+          onPressed: () {
+            if (controller.newsList.value.isBookmark == true) {
+              controller.removeBookmark(controller.newsList.value);
+            } else {
+              controller.setBookmark(controller.newsList.value);
+            }
+            setState(() {});
+          },
+        ),
+        Padding(
           padding: const EdgeInsets.only(top: 5),
+          child: Stack(
+            children: <Widget>[
+              IconButton(
+                icon: Image.asset(
+                  AppImages.share,
+                  fit: BoxFit.contain,
+                  width: 25,
+                  height: 25,
+                  color: dashboardPageController.isDarkTheme.value == true
+                      ? AppColors.white
+                      : AppColors.white,
+                ),
+                onPressed: () {
+                  Utils.share(controller.newsList.value);
+                  //Share.share('check out my website https://example.com');
+                },
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Expanded columnWidget(int index, BuildContext context) {
+    return Expanded(
+      child: SingleChildScrollView(
+        // child: Card(
+        //   color: dashboardPageController.isDarkTheme.value == true
+        //       ? AppColors.dartTheme
+        //       : AppColors.white,
+        //   elevation: 8.0,
+        //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+        child: Column(
+          children: [
+            headingWidget(),
+            imagesWidget(context),
+            subHeadingWidget(),
+            Visibility(
+                visible: controller.advertisementList.isEmpty ? false : true,
+                child: lisViewHeader()),
+            contentWidget(),
+          ],
+        ),
+      ),
+      //  ),
+    );
+  }
+
+  Padding lisViewHeader() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: CarouselSlider(
+        options: CarouselOptions(
+            initialPage: 0,
+            enableInfiniteScroll:
+                controller.advertisementList.length == 1 ? false : true,
+            pauseAutoPlayOnTouch: false,
+            autoPlay: controller.advertisementList.length == 1 ? false : true,
+            height: MediaQuery.of(context).size.width * (3 / 6),
+            enlargeCenterPage: true,
+            onPageChanged: (index, reason) {
+              //final xx = index;
+            }),
+        items: controller.advertisementList.map((i) {
+          return Builder(
+            builder: (BuildContext context) {
+              return Container(
+                width: MediaQuery.of(context).size.width,
+                child: GestureDetector(
+                  onTap: () async {
+                    if (i.url != null && i.url.isNotEmpty)
+                    // ignore: curly_braces_in_flow_control_structures
+                    if (!await launchUrl(Uri.parse(i.url))) {}
+                  },
+                  child: CachedNetworkImage(
+                    fit: BoxFit.fill,
+                    imageUrl: i.imageUrl,
+                    placeholder: (context, url) => const Center(
+                      child: SizedBox(
+                        width: 40.0,
+                        height: 40.0,
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  ),
+                ),
+              );
+            },
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Visibility contentWidget() {
+    return Visibility(
+      visible: controller.newsList.value.newsContent == null ? false : true,
+      child: Padding(
+        padding:
+            const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 50),
+        child: Align(
+          alignment: Alignment.centerLeft,
           child: Text(
-            'news_details'.tr,
+            textAlign: TextAlign.left,
+            controller.newsList.value.newsContent == null
+                ? ""
+                : controller.newsList.value.newsContent!,
             style: TextStyle(
               color: dashboardPageController.isDarkTheme.value == true
                   ? AppColors.white
                   : AppColors.black,
+              fontSize: SizeConfig.newsContentSize,
+              fontWeight: FontWeight.normal,
             ),
-          ),
-        ),
-        iconTheme: IconThemeData(
-            color: dashboardPageController.isDarkTheme.value == true
-                ? AppColors.white
-                : AppColors.black),
-        actions: <Widget>[
-          IconButton(
-            icon: Image.asset(
-              color: dashboardPageController.isDarkTheme.value == true
-                  ? controller.newsList.value.isAudioPlaying == true
-                      ? AppColors.colorPrimary
-                      : AppColors.white
-                  : controller.newsList.value.isAudioPlaying == true
-                      ? AppColors.colorPrimary
-                      : AppColors.black,
-              AppImages.audio,
-              width: 30,
-              height: 30,
-            ),
-            onPressed: () {
-              if (controller.newsList.value.isAudioPlaying == true) {
-                Utils(context)
-                    .stopAudio(controller.newsList.value.newsContent!);
-                controller.setAudioPlaying(false);
-              } else {
-                Utils(context)
-                    .startAudio(controller.newsList.value.newsContent!);
-                controller.setAudioPlaying(true);
-              }
-              setState(() {});
-              //Get.toNamed(Routes.searchPage);
-            },
-          ),
-          IconButton(
-            icon: Image.asset(
-              color: dashboardPageController.isDarkTheme.value == true
-                  ? AppColors.white
-                  : AppColors.colorPrimary,
-              controller.newsList.value.isBookmark == true
-                  ? AppImages.highLightBookmark
-                  : AppImages.bookmark,
-              width: 25,
-              height: 25,
-            ),
-            onPressed: () {
-              if (controller.newsList.value.isBookmark == true) {
-                controller.removeBookmark(controller.newsList.value);
-              } else {
-                controller.setBookmark(controller.newsList.value);
-              }
-              setState(() {});
-            },
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: Stack(
-              children: <Widget>[
-                IconButton(
-                  icon: Image.asset(
-                    AppImages.share,
-                    fit: BoxFit.contain,
-                    width: 25,
-                    height: 25,
-                    color: dashboardPageController.isDarkTheme.value == true
-                        ? AppColors.white
-                        : AppColors.black,
-                  ),
-                  onPressed: () {
-                    Utils.share(controller.newsList.value);
-                    //Share.share('check out my website https://example.com');
-                  },
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Obx columnWidget(int index, BuildContext context) {
-    return Obx(
-      () => Expanded(
-        child: SingleChildScrollView(
-          child: Expanded(
-            child: Card(
-              color: dashboardPageController.isDarkTheme.value == true
-                  ? AppColors.dartTheme
-                  : AppColors.white,
-              elevation: 8.0,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5)),
-              child: Column(
-                children: [
-                  headingWidget(),
-                  subHeadingWidget(),
-                  imagesWidget(context),
-                  contentWidget(),
-                  // controller.newsList.value.mediaList != null &&
-                  //         controller.newsList.value.mediaList!.videoList !=
-                  //             null &&
-                  //         controller
-                  //             .newsList.value.mediaList!.videoList!.isNotEmpty
-                  //     ? videoWidget()
-                  //     : emptyWidget(),
-                  // controller.newsList.value.mediaList != null &&
-                  //         controller.newsList.value.mediaList!.audioList !=
-                  //             null &&
-                  //         controller
-                  //             .newsList.value.mediaList!.videoList!.isNotEmpty
-                  //     ? audioWidget()
-                  //     : emptyWidget()
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Padding contentWidget() {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          controller.newsList.value!.newsContent!,
-          style: TextStyle(
-            color: dashboardPageController.isDarkTheme.value == true
-                ? AppColors.white
-                : AppColors.black,
-            fontSize: 14.0,
-            fontWeight: FontWeight.normal,
           ),
         ),
       ),
@@ -222,13 +272,13 @@ class NewsDetailPageColumn extends State<NewsDetailPage> {
           ? false
           : true,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(5),
         child: CarouselSlider(
           options: CarouselOptions(
               enableInfiniteScroll: false,
               pauseAutoPlayOnTouch: true,
               autoPlay: false,
-              height: MediaQuery.of(context).size.width * (3 / 4),
+              height: MediaQuery.of(context).size.width * (3 / 6),
               enlargeCenterPage: true),
           items: controller.newsList.value.mediaList?.imageList!.map((i) {
             return Builder(
@@ -237,6 +287,7 @@ class NewsDetailPageColumn extends State<NewsDetailPage> {
                   fit: BoxFit.cover,
                   width: MediaQuery.of(context).size.width,
                   imageUrl: i.url!,
+                  //imageUrl: AppImages.tempURL,
                   placeholder: (context, url) => const Center(
                     child: SizedBox(
                       width: 40.0,
@@ -282,8 +333,8 @@ class NewsDetailPageColumn extends State<NewsDetailPage> {
             controller.newsList.value.subHeading == null
                 ? ""
                 : controller.newsList.value.subHeading!,
-            style: const TextStyle(
-              fontSize: 16.0,
+            style: TextStyle(
+              fontSize: SizeConfig.newsHeadingSubTitleSize,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -294,13 +345,13 @@ class NewsDetailPageColumn extends State<NewsDetailPage> {
 
   Padding headingWidget() {
     return Padding(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.only(left: 10, top: 20),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
           controller.newsList.value.heading!,
-          style: const TextStyle(
-            fontSize: 16.0,
+          style: TextStyle(
+            fontSize: SizeConfig.newsHeadingTitleSize,
             fontWeight: FontWeight.bold,
           ),
         ),

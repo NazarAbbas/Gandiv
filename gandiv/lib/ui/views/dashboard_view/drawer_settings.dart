@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:gandiv/constants/constant.dart';
 import 'package:gandiv/constants/values/app_colors.dart';
+import 'package:gandiv/constants/values/size_config.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import '../../../constants/enums.dart';
 import '../../controllers/dashboard_page_cotroller.dart';
 import '../../../constants/values/app_images.dart';
 import 'dashboard_page.dart';
@@ -20,8 +22,8 @@ class DrawerSettings extends GetView<DashboardPageController> {
       children: <Widget>[
         _settingTitleContainer(),
         _settingLanguageContainer(),
-        const SizedBox(height: 10),
-        _settingLocationTitle(),
+        //const SizedBox(height: 10),
+        //  _settingLocationTitle(),
         const SizedBox(height: 10),
         _settingThemeTitle(),
         const SizedBox(height: 10),
@@ -76,7 +78,8 @@ class DrawerSettings extends GetView<DashboardPageController> {
                             color: controller.isDarkTheme.value == true
                                 ? AppColors.white
                                 : AppColors.black,
-                            fontSize: 16),
+                            fontSize:
+                                SizeConfig.navigationDrawerHeadingFontSize),
                       ),
                     ),
                     const Spacer(),
@@ -126,7 +129,9 @@ class DrawerSettings extends GetView<DashboardPageController> {
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         'theme'.tr,
-                        style: const TextStyle(fontSize: 16),
+                        style: TextStyle(
+                            fontSize:
+                                SizeConfig.navigationDrawerHeadingFontSize),
                       ),
                     ),
                     const Spacer(),
@@ -159,11 +164,34 @@ class DrawerSettings extends GetView<DashboardPageController> {
                           color: Color(0xFFFFDF5D),
                         ),
                         onToggle: (val) {
-                          Get.changeTheme(
-                            Get.isDarkMode
-                                ? ThemeData.light()
-                                : ThemeData.dark(),
-                          );
+                          // Get.changeTheme(
+                          //   Get.isDarkMode
+                          //       ? ThemeData.light()
+                          //       : ThemeData.dark(),
+                          // );
+                          Get.changeTheme(GetStorage()
+                                      .read(Constant.selectedLanguage) ==
+                                  Language.english
+                              ? Get.isDarkMode
+                                  ? ThemeData(
+                                      brightness: Brightness.light,
+                                      fontFamily:
+                                          AppFontFamily.englishFontStyle,
+                                    )
+                                  : ThemeData(
+                                      brightness: Brightness.dark,
+                                      fontFamily:
+                                          AppFontFamily.englishFontStyle,
+                                    )
+                              : Get.isDarkMode
+                                  ? ThemeData(
+                                      brightness: Brightness.light,
+                                      fontFamily: AppFontFamily.hindiFontStyle,
+                                    )
+                                  : ThemeData(
+                                      brightness: Brightness.dark,
+                                      fontFamily: AppFontFamily.hindiFontStyle,
+                                    ));
                           controller.setTheme(val);
                         },
                       ),
@@ -190,7 +218,14 @@ class DrawerSettings extends GetView<DashboardPageController> {
                 dense: true,
                 visualDensity:
                     const VisualDensity(horizontal: -4, vertical: -4),
-                title: const Text('हिंदी'),
+                title: Text(
+                  'हिंदी',
+                  style: TextStyle(
+                      color: controller.isDarkTheme.value == true
+                          ? Colors.white
+                          : Colors.black,
+                      fontSize: SizeConfig.navigationDrawerOptionFontSize),
+                ),
                 selectedTileColor: controller.isDarkTheme.value == true
                     ? AppColors.white
                     : AppColors.black,
@@ -200,21 +235,36 @@ class DrawerSettings extends GetView<DashboardPageController> {
                     : AppColors.black,
                 groupValue: controller.singleLanguageValue.value,
                 onChanged: (value) {
-                  callback();
                   DashboardPageController dashboardPageController =
                       Get.find<DashboardPageController>();
                   dashboardPageController.setTabbarIndex(0);
-                  Get.updateLocale(const Locale('hi', 'IN'));
+                  Get.updateLocale(
+                      Locale(Constant.hindiLanguage, Constant.hindiCountry));
                   controller.selectLanguage(value.toString());
                   closeNavigationDrawer();
-                  GetStorage().write(Constant.selectedLanguage, 1);
+                  GetStorage().write(Constant.selectedLanguage, Language.hindi);
+                  Get.changeTheme(ThemeData(
+                    brightness: Get.isDarkMode == true
+                        ? Brightness.dark
+                        : Brightness.light,
+                    fontFamily: AppFontFamily.hindiFontStyle,
+                  ));
+
+                  callback();
                 },
               ),
               RadioListTile(
                 dense: true,
                 visualDensity:
                     const VisualDensity(horizontal: -4, vertical: -4),
-                title: const Text("English"),
+                title: Text(
+                  "English",
+                  style: TextStyle(
+                      color: controller.isDarkTheme.value == true
+                          ? Colors.white
+                          : Colors.black,
+                      fontSize: SizeConfig.navigationDrawerOptionFontSize),
+                ),
                 selectedTileColor: controller.isDarkTheme.value == true
                     ? AppColors.white
                     : AppColors.black,
@@ -224,11 +274,21 @@ class DrawerSettings extends GetView<DashboardPageController> {
                     : AppColors.black,
                 groupValue: controller.singleLanguageValue.value,
                 onChanged: (value) {
-                  callback();
-                  Get.updateLocale(const Locale('en', 'US'));
+                  Get.updateLocale(Locale(
+                      Constant.englishLanguage, Constant.englishCountry));
                   controller.selectLanguage(value.toString());
                   closeNavigationDrawer();
-                  GetStorage().write(Constant.selectedLanguage, 2);
+                  GetStorage()
+                      .write(Constant.selectedLanguage, Language.english);
+                  Get.changeTheme(
+                    ThemeData(
+                      brightness: Get.isDarkMode == true
+                          ? Brightness.dark
+                          : Brightness.light,
+                      fontFamily: AppFontFamily.englishFontStyle,
+                    ),
+                  );
+                  callback();
                 },
               )
             ],
@@ -250,7 +310,14 @@ class DrawerSettings extends GetView<DashboardPageController> {
                 dense: true,
                 visualDensity:
                     const VisualDensity(horizontal: -4, vertical: -4),
-                title: Text('varansi'.tr),
+                title: Text(
+                  'varansi'.tr,
+                  style: TextStyle(
+                      color: controller.isDarkTheme.value == true
+                          ? Colors.white
+                          : Colors.black,
+                      fontSize: SizeConfig.navigationDrawerOptionFontSize),
+                ),
                 selectedTileColor: controller.isDarkTheme.value == true
                     ? AppColors.white
                     : AppColors.black,
@@ -261,7 +328,8 @@ class DrawerSettings extends GetView<DashboardPageController> {
                 groupValue: controller.singleLocationValue.value,
                 onChanged: (value) {
                   callback();
-                  GetStorage().write(Constant.selectedLocation, 'Varanasi');
+                  GetStorage()
+                      .write(Constant.selectedLocation, Location.varanasi);
                   controller.selectLocation(value.toString());
                   closeNavigationDrawer();
                 },
@@ -270,7 +338,14 @@ class DrawerSettings extends GetView<DashboardPageController> {
                 dense: true,
                 visualDensity:
                     const VisualDensity(horizontal: -4, vertical: -4),
-                title: Text('agra'.tr),
+                title: Text(
+                  'agra'.tr,
+                  style: TextStyle(
+                      color: controller.isDarkTheme.value == true
+                          ? Colors.white
+                          : Colors.black,
+                      fontSize: SizeConfig.navigationDrawerOptionFontSize),
+                ),
                 selectedTileColor: controller.isDarkTheme.value == true
                     ? AppColors.white
                     : AppColors.black,
@@ -281,7 +356,7 @@ class DrawerSettings extends GetView<DashboardPageController> {
                 groupValue: controller.singleLocationValue.value,
                 onChanged: (value) {
                   callback();
-                  GetStorage().write(Constant.selectedLocation, 'Agra');
+                  GetStorage().write(Constant.selectedLocation, Location.agra);
                   controller.selectLocation(value.toString());
                   closeNavigationDrawer();
                 },
@@ -330,7 +405,8 @@ class DrawerSettings extends GetView<DashboardPageController> {
                                 color: controller.isDarkTheme.value == true
                                     ? Colors.white
                                     : Colors.black,
-                                fontSize: 16),
+                                fontSize: SizeConfig
+                                    .navigationDrawerSubHeadingFontSize),
                           ),
                         ),
                         const Spacer(),
@@ -355,7 +431,7 @@ class DrawerSettings extends GetView<DashboardPageController> {
 
   Container _settingTitleContainer() {
     return Container(
-      height: 50,
+      height: 40,
       width: double.infinity,
       color: controller.isDarkTheme.value == true
           ? AppColors.dartTheme
@@ -372,7 +448,7 @@ class DrawerSettings extends GetView<DashboardPageController> {
                   ? Colors.white
                   : Colors.black,
               fontWeight: FontWeight.w600,
-              fontSize: 16.0,
+              fontSize: SizeConfig.newsHeadingTitleSize,
             ),
           ),
         ),

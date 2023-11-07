@@ -63,11 +63,11 @@ class _$AppDatabase extends AppDatabase {
 
   NewsListDao? _newsListDaoInstance;
 
-  ProfileDao? _profileDaoInstance;
-
   CategoriesDao? _categoriesDaoInstance;
 
   LocationsDao? _locationsDaoInstance;
+
+  AdvertisementDao? _advertisementDaoInstance;
 
   Future<sqflite.Database> open(
     String path,
@@ -91,13 +91,13 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `NewsListDB` (`id` TEXT, `heading` TEXT, `subHeading` TEXT, `newsContent` TEXT, `categoryList` TEXT, `location` TEXT, `language` TEXT, `imageListDb` TEXT, `videoListDb` TEXT, `audioListDb` TEXT, `publishedOn` TEXT, `publishedBy` TEXT, `isBookmark` INTEGER, `isAudioPlaying` INTEGER, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `NewsListDB` (`id` TEXT, `heading` TEXT, `subHeading` TEXT, `newsContent` TEXT, `categoryList` TEXT, `location` TEXT, `language` TEXT, `imageListDb` TEXT, `videoListDb` TEXT, `audioListDb` TEXT, `publishedOn` TEXT, `publishedBy` TEXT, `isBookmark` INTEGER, `isAudioPlaying` INTEGER, `durationInMin` INTEGER, `newsType` TEXT, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `ProfileData` (`id` TEXT, `title` TEXT, `firstName` TEXT, `lastName` TEXT, `mobileNo` TEXT, `email` TEXT, `gender` TEXT, `profileImage` TEXT, `role` TEXT, `token` TEXT, PRIMARY KEY (`id`))');
-        await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Categories` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `Categories` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `hindiName` TEXT, `catOrder` INTEGER NOT NULL, `isActive` INTEGER NOT NULL, PRIMARY KEY (`id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Locations` (`id` TEXT, `name` TEXT, PRIMARY KEY (`id`))');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `AdvertisementDb` (`id` TEXT NOT NULL, `url` TEXT NOT NULL, `placeHolder` TEXT NOT NULL, `mediaList` TEXT NOT NULL, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -111,11 +111,6 @@ class _$AppDatabase extends AppDatabase {
   }
 
   @override
-  ProfileDao get profileDao {
-    return _profileDaoInstance ??= _$ProfileDao(database, changeListener);
-  }
-
-  @override
   CategoriesDao get categoriesDao {
     return _categoriesDaoInstance ??= _$CategoriesDao(database, changeListener);
   }
@@ -123,6 +118,12 @@ class _$AppDatabase extends AppDatabase {
   @override
   LocationsDao get locationsDao {
     return _locationsDaoInstance ??= _$LocationsDao(database, changeListener);
+  }
+
+  @override
+  AdvertisementDao get advertisementDao {
+    return _advertisementDaoInstance ??=
+        _$AdvertisementDao(database, changeListener);
   }
 }
 
@@ -152,7 +153,9 @@ class _$NewsListDao extends NewsListDao {
                       : (item.isBookmark! ? 1 : 0),
                   'isAudioPlaying': item.isAudioPlaying == null
                       ? null
-                      : (item.isAudioPlaying! ? 1 : 0)
+                      : (item.isAudioPlaying! ? 1 : 0),
+                  'durationInMin': item.durationInMin,
+                  'newsType': item.newsType
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -184,7 +187,9 @@ class _$NewsListDao extends NewsListDao {
                 : (row['isBookmark'] as int) != 0,
             isAudioPlaying: row['isAudioPlaying'] == null
                 ? null
-                : (row['isAudioPlaying'] as int) != 0));
+                : (row['isAudioPlaying'] as int) != 0,
+            durationInMin: row['durationInMin'] as int?,
+            newsType: row['newsType'] as String?));
   }
 
   @override
@@ -208,7 +213,9 @@ class _$NewsListDao extends NewsListDao {
                 : (row['isBookmark'] as int) != 0,
             isAudioPlaying: row['isAudioPlaying'] == null
                 ? null
-                : (row['isAudioPlaying'] as int) != 0),
+                : (row['isAudioPlaying'] as int) != 0,
+            durationInMin: row['durationInMin'] as int?,
+            newsType: row['newsType'] as String?),
         arguments: [id]);
   }
 
@@ -225,110 +232,6 @@ class _$NewsListDao extends NewsListDao {
   }
 }
 
-class _$ProfileDao extends ProfileDao {
-  _$ProfileDao(
-    this.database,
-    this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database),
-        _profileDataInsertionAdapter = InsertionAdapter(
-            database,
-            'ProfileData',
-            (ProfileData item) => <String, Object?>{
-                  'id': item.id,
-                  'title': item.title,
-                  'firstName': item.firstName,
-                  'lastName': item.lastName,
-                  'mobileNo': item.mobileNo,
-                  'email': item.email,
-                  'gender': item.gender,
-                  'profileImage': item.profileImage,
-                  'role': item.role,
-                  'token': item.token
-                }),
-        _profileDataUpdateAdapter = UpdateAdapter(
-            database,
-            'ProfileData',
-            ['id'],
-            (ProfileData item) => <String, Object?>{
-                  'id': item.id,
-                  'title': item.title,
-                  'firstName': item.firstName,
-                  'lastName': item.lastName,
-                  'mobileNo': item.mobileNo,
-                  'email': item.email,
-                  'gender': item.gender,
-                  'profileImage': item.profileImage,
-                  'role': item.role,
-                  'token': item.token
-                });
-
-  final sqflite.DatabaseExecutor database;
-
-  final StreamController<String> changeListener;
-
-  final QueryAdapter _queryAdapter;
-
-  final InsertionAdapter<ProfileData> _profileDataInsertionAdapter;
-
-  final UpdateAdapter<ProfileData> _profileDataUpdateAdapter;
-
-  @override
-  Future<List<ProfileData>> findProfile() async {
-    return _queryAdapter.queryList('SELECT * FROM ProfileData',
-        mapper: (Map<String, Object?> row) => ProfileData(
-            id: row['id'] as String?,
-            title: row['title'] as String?,
-            firstName: row['firstName'] as String?,
-            lastName: row['lastName'] as String?,
-            mobileNo: row['mobileNo'] as String?,
-            email: row['email'] as String?,
-            gender: row['gender'] as String?,
-            profileImage: row['profileImage'] as String?,
-            role: row['role'] as String?,
-            token: row['token'] as String?));
-  }
-
-  @override
-  Future<ProfileData?> findProfileById(String id) async {
-    return _queryAdapter.query('SELECT * FROM ProfileData WHERE id = ?1',
-        mapper: (Map<String, Object?> row) => ProfileData(
-            id: row['id'] as String?,
-            title: row['title'] as String?,
-            firstName: row['firstName'] as String?,
-            lastName: row['lastName'] as String?,
-            mobileNo: row['mobileNo'] as String?,
-            email: row['email'] as String?,
-            gender: row['gender'] as String?,
-            profileImage: row['profileImage'] as String?,
-            role: row['role'] as String?,
-            token: row['token'] as String?),
-        arguments: [id]);
-  }
-
-  @override
-  Future<void> deleteProfileById(String id) async {
-    await _queryAdapter.queryNoReturn('DELETE FROM ProfileData WHERE id = ?1',
-        arguments: [id]);
-  }
-
-  @override
-  Future<void> deleteProfile() async {
-    await _queryAdapter.queryNoReturn('DELETE FROM ProfileData');
-  }
-
-  @override
-  Future<void> insertProfile(ProfileData profileData) async {
-    await _profileDataInsertionAdapter.insert(
-        profileData, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<int> updateProfile(List<ProfileData> profileData) {
-    return _profileDataUpdateAdapter.updateListAndReturnChangedRows(
-        profileData, OnConflictStrategy.abort);
-  }
-}
-
 class _$CategoriesDao extends CategoriesDao {
   _$CategoriesDao(
     this.database,
@@ -337,8 +240,13 @@ class _$CategoriesDao extends CategoriesDao {
         _categoriesInsertionAdapter = InsertionAdapter(
             database,
             'Categories',
-            (Categories item) =>
-                <String, Object?>{'id': item.id, 'name': item.name});
+            (Categories item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'hindiName': item.hindiName,
+                  'catOrder': item.catOrder,
+                  'isActive': item.isActive ? 1 : 0
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -351,31 +259,47 @@ class _$CategoriesDao extends CategoriesDao {
   @override
   Future<List<Categories>> findCategories() async {
     return _queryAdapter.queryList('SELECT * FROM Categories',
-        mapper: (Map<String, Object?> row) =>
-            Categories(id: row['id'] as String, name: row['name'] as String));
+        mapper: (Map<String, Object?> row) => Categories(
+            id: row['id'] as String,
+            name: row['name'] as String,
+            hindiName: row['hindiName'] as String?,
+            catOrder: row['catOrder'] as int,
+            isActive: (row['isActive'] as int) != 0));
   }
 
   @override
   Future<Categories?> findCategoriesById(String id) async {
     return _queryAdapter.query('SELECT * FROM Categories WHERE id = ?1',
-        mapper: (Map<String, Object?> row) =>
-            Categories(id: row['id'] as String, name: row['name'] as String),
+        mapper: (Map<String, Object?> row) => Categories(
+            id: row['id'] as String,
+            name: row['name'] as String,
+            hindiName: row['hindiName'] as String?,
+            catOrder: row['catOrder'] as int,
+            isActive: (row['isActive'] as int) != 0),
         arguments: [id]);
   }
 
   @override
   Future<Categories?> findCategoriessNameById(String id) async {
     return _queryAdapter.query('SELECT * FROM Categories WHERE id = ?1',
-        mapper: (Map<String, Object?> row) =>
-            Categories(id: row['id'] as String, name: row['name'] as String),
+        mapper: (Map<String, Object?> row) => Categories(
+            id: row['id'] as String,
+            name: row['name'] as String,
+            hindiName: row['hindiName'] as String?,
+            catOrder: row['catOrder'] as int,
+            isActive: (row['isActive'] as int) != 0),
         arguments: [id]);
   }
 
   @override
   Future<Categories?> findCategoriesIdByName(String name) async {
     return _queryAdapter.query('SELECT * FROM Categories WHERE name = ?1',
-        mapper: (Map<String, Object?> row) =>
-            Categories(id: row['id'] as String, name: row['name'] as String),
+        mapper: (Map<String, Object?> row) => Categories(
+            id: row['id'] as String,
+            name: row['name'] as String,
+            hindiName: row['hindiName'] as String?,
+            catOrder: row['catOrder'] as int,
+            isActive: (row['isActive'] as int) != 0),
         arguments: [name]);
   }
 
@@ -474,5 +398,68 @@ class _$LocationsDao extends LocationsDao {
   Future<void> insertLocations(Locations locations) async {
     await _locationsInsertionAdapter.insert(
         locations, OnConflictStrategy.abort);
+  }
+}
+
+class _$AdvertisementDao extends AdvertisementDao {
+  _$AdvertisementDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
+        _advertisementDbInsertionAdapter = InsertionAdapter(
+            database,
+            'AdvertisementDb',
+            (AdvertisementDb item) => <String, Object?>{
+                  'id': item.id,
+                  'url': item.url,
+                  'placeHolder': item.placeHolder,
+                  'mediaList': item.mediaList
+                });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<AdvertisementDb> _advertisementDbInsertionAdapter;
+
+  @override
+  Future<List<AdvertisementDb>> findAllAdvertisement() async {
+    return _queryAdapter.queryList('SELECT * FROM AdvertisementDB',
+        mapper: (Map<String, Object?> row) => AdvertisementDb(
+            id: row['id'] as String,
+            url: row['url'] as String,
+            placeHolder: row['placeHolder'] as String,
+            mediaList: row['mediaList'] as String));
+  }
+
+  @override
+  Future<AdvertisementDb?> findAdvertisementById(String id) async {
+    return _queryAdapter.query('SELECT * FROM AdvertisementDB WHERE id = ?1',
+        mapper: (Map<String, Object?> row) => AdvertisementDb(
+            id: row['id'] as String,
+            url: row['url'] as String,
+            placeHolder: row['placeHolder'] as String,
+            mediaList: row['mediaList'] as String),
+        arguments: [id]);
+  }
+
+  @override
+  Future<void> deleteAdvertisementById(String id) async {
+    await _queryAdapter.queryNoReturn(
+        'DELETE FROM AdvertisementDB WHERE id = ?1',
+        arguments: [id]);
+  }
+
+  @override
+  Future<void> deleteAdvertisementDB() async {
+    await _queryAdapter.queryNoReturn('DELETE FROM AdvertisementDB');
+  }
+
+  @override
+  Future<void> insertAdvertisement(AdvertisementDb advertisement) async {
+    await _advertisementDbInsertionAdapter.insert(
+        advertisement, OnConflictStrategy.abort);
   }
 }

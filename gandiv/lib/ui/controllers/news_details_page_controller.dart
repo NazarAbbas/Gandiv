@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 
 import '../../constants/utils.dart';
 import '../../database/app_database.dart';
+import '../../database/entity/advertisement_list_db_model.dart';
+import '../../models/custom_advertisement_list.dart';
 import '../../models/news_list_db_model.dart';
 import '../../models/news_list_response.dart';
 
@@ -13,11 +15,15 @@ class NewsDetailsPageController extends FullLifeCycleController {
   final AppDatabase appDatabase = Get.find<AppDatabase>();
   final isLoading = false.obs;
   List<File> files = <File>[].obs;
+  List<CustomAdvertisementList> advertisementList =
+      <CustomAdvertisementList>[].obs;
 
   @override
   void onInit() async {
     super.onInit();
+
     isLoading.value = true;
+
     newsList.value = Get.arguments; //[...Get.arguments];
     if (newsList.value.mediaList != null &&
         newsList.value.mediaList!.videoList != null &&
@@ -29,6 +35,21 @@ class NewsDetailsPageController extends FullLifeCycleController {
           files.add(file);
         }
       } on Exception catch (exception) {}
+    }
+
+    List<AdvertisementDb> listAdvertisementDb =
+        await appDatabase.advertisementDao.findAllAdvertisement();
+    for (int i = 0; i < listAdvertisementDb.length; i++) {
+      if (listAdvertisementDb[i].placeHolder == "Detail") {
+        CustomAdvertisementList customAdvertisementList =
+            CustomAdvertisementList(
+                id: listAdvertisementDb[i].id,
+                url: listAdvertisementDb[i].url,
+                placeHolder: listAdvertisementDb[i].placeHolder,
+                imageUrl: listAdvertisementDb[i].mediaList);
+
+        advertisementList.add(customAdvertisementList);
+      }
     }
 
     isLoading.value = false;
@@ -70,6 +91,8 @@ class NewsDetailsPageController extends FullLifeCycleController {
           publishedOn: bookmarkNews.publishedOn,
           publishedBy: bookmarkNews.publishedBy,
           isBookmark: bookmarkNews.isBookmark,
+          durationInMin: bookmarkNews.durationInMin,
+          newsType: bookmarkNews.newsType,
           isAudioPlaying: bookmarkNews.isAudioPlaying);
       final newsListDao = appDatabase.newsListDao;
       await newsListDao.insertNews(newsListDB);

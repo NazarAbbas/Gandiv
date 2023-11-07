@@ -86,8 +86,11 @@ class Languages extends Translations {
           'new_password': 'नया पासवर्ड',
           'password_change_success_message': 'पासवर्ड सफलतापूर्वक बदल गया!',
           'no_internet_title': 'कोई इंटरनेट कनेक्शन नहीं है।',
+          'app_version': 'ऐप संस्करण: ',
+          'breaking_news': 'ब्रेकिंग',
           'no_internet_message':
-              'इस क्षेत्र में उपलब्ध विशेषता इंटरनेट कनेक्टिविटी की आवश्यकता है। कृपया अपने डिवाइस को इंटरनेट से कनेक्ट करें और पुनः प्रयास करें।'
+              'इस क्षेत्र में उपलब्ध विशेषता इंटरनेट कनेक्टिविटी की आवश्यकता है। कृपया अपने डिवाइस को इंटरनेट से कनेक्ट करें और पुनः प्रयास करें।',
+          'editorial_news': 'संपादकीय'
         },
         'en_US': {
           'setting': 'SETTING',
@@ -172,6 +175,9 @@ class Languages extends Translations {
           'new_password': 'New password',
           'password_change_success_message': 'Password changed successfully!',
           'no_internet_title': 'No internet connection.',
+          'app_version': 'App Version: ',
+          'breaking_news': 'Breaking',
+          'editorial_news': 'Editorial',
           'no_internet_message':
               'The feature in this area require internet connectivity. Please connect your device to the internet and try again.'
         },

@@ -194,59 +194,59 @@ class DialogUtils {
         });
   }
 
-  static void showSingleButtonCustomDialog(
-      {required BuildContext context,
-      required String? title,
-      required String? message,
-      required String firstButtonText,
-      required Function firstBtnFunction}) {
-    showDialog(
-        context: context,
-        builder: (_) {
-          return AlertDialog(
-            title: Text(
-              title ?? "",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            content: Container(
-              color: dashboardPageController.isDarkTheme.value == true
-                  ? AppColors.dartTheme
-                  : AppColors.white,
-              height: 150,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 100,
-                    child: Text(
-                      message ?? "",
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            dashboardPageController.isDarkTheme.value == true
-                                ? AppColors.white
-                                : AppColors.colorPrimary,
-                        foregroundColor:
-                            dashboardPageController.isDarkTheme.value == true
-                                ? AppColors.black
-                                : AppColors.white,
-                      ),
-                      onPressed: () {
-                        firstBtnFunction.call();
-                      },
-                      child: Text(firstButtonText),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-  }
+  // static void showSingleButtonCustomDialog(
+  //     {required BuildContext context,
+  //     required String? title,
+  //     required String? message,
+  //     required String firstButtonText,
+  //     required Function firstBtnFunction}) {
+  //   showDialog(
+  //       context: context,
+  //       builder: (_) {
+  //         return AlertDialog(
+  //           title: Text(
+  //             title ?? "",
+  //             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+  //           ),
+  //           content: Container(
+  //             color: dashboardPageController.isDarkTheme.value == true
+  //                 ? AppColors.dartTheme
+  //                 : AppColors.white,
+  //             height: 150,
+  //             child: Column(
+  //               children: [
+  //                 SizedBox(
+  //                   height: 100,
+  //                   child: Text(
+  //                     message ?? "",
+  //                     style: const TextStyle(fontSize: 16),
+  //                   ),
+  //                 ),
+  //                 SizedBox(
+  //                   width: double.infinity,
+  //                   child: ElevatedButton(
+  //                     style: ElevatedButton.styleFrom(
+  //                       backgroundColor:
+  //                           dashboardPageController.isDarkTheme.value == true
+  //                               ? AppColors.white
+  //                               : AppColors.colorPrimary,
+  //                       foregroundColor:
+  //                           dashboardPageController.isDarkTheme.value == true
+  //                               ? AppColors.black
+  //                               : AppColors.white,
+  //                     ),
+  //                     onPressed: () {
+  //                       firstBtnFunction.call();
+  //                     },
+  //                     child: Text(firstButtonText),
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       });
+  // }
 
   static void noInternetConnection(
       {required BuildContext context, required Function callBackFunction}) {
@@ -257,6 +257,48 @@ class DialogUtils {
       animType: AnimType.rightSlide,
       title: 'no_internet_title'.tr,
       desc: 'no_internet_message'.tr,
+      btnOkColor: AppColors.colorPrimary,
+      btnOkOnPress: () {
+        callBackFunction.call();
+      },
+    ).show();
+  }
+
+  static void successAlert(
+      {required BuildContext context,
+      required String title,
+      required String message,
+      required String? btnText,
+      required Function callBackFunction}) {
+    AwesomeDialog(
+      dismissOnTouchOutside: false,
+      context: context,
+      dialogType: DialogType.success,
+      animType: AnimType.rightSlide,
+      title: title,
+      desc: message,
+      btnOkText: btnText ?? 'ok'.tr,
+      btnOkColor: AppColors.colorPrimary,
+      btnOkOnPress: () {
+        callBackFunction.call();
+      },
+    ).show();
+  }
+
+  static void errorAlert(
+      {required BuildContext context,
+      required String title,
+      required String message,
+      required String? btnText,
+      required Function callBackFunction}) {
+    AwesomeDialog(
+      dismissOnTouchOutside: false,
+      context: context,
+      dialogType: DialogType.error,
+      animType: AnimType.rightSlide,
+      title: title.tr,
+      desc: message.tr,
+      btnOkText: btnText ?? 'ok'.tr,
       btnOkColor: AppColors.colorPrimary,
       btnOkOnPress: () {
         callBackFunction.call();

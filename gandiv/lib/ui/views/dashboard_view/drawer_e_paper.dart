@@ -3,6 +3,7 @@ import 'package:gandiv/ui/controllers/dashboard_page_cotroller.dart';
 import 'package:get/get.dart';
 
 import '../../../constants/values/app_colors.dart';
+import '../../../constants/values/size_config.dart';
 import '../../../route_management/routes.dart';
 
 class DrawerEPaper extends GetView<DashboardPageController> {
@@ -40,7 +41,7 @@ class DrawerEPaper extends GetView<DashboardPageController> {
                           ? Colors.white
                           : Colors.black,
                       fontWeight: FontWeight.w600,
-                      fontSize: 16.0,
+                      fontSize: SizeConfig.navigationDrawerHeadingFontSize,
                     ),
                   ),
                 ),
